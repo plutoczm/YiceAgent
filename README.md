@@ -7,7 +7,7 @@
 
 ## 当前状态
 
-2026-10-01：**P1 安全导入与运行边界已验证完成；P2–P6 未开始。**
+2026-10-01：**P1 安全导入与运行边界、P2 模拟数据与受控导入已验证完成；P3–P6 未开始。**
 三服务源码快照、隔离分派、doctor 与 Contract 检查已具备；尚未启动融合服务或实现业务闭环。证据见 [P1 验证记录](docs/P1_VALIDATION.md)。根 Git 已按用户授权独立初始化；P1 基线纳入本地版本控制，不 push。
 工作名称 WorkflowOps 可在后续统一改名，不影响架构边界。
 
@@ -33,7 +33,7 @@ offline 模式不调用 LLM，但使用实际 API、实际业务库和实际 SQL
 
 P1 安全目录与源码导入 → P2 模拟数据 → P3 固定流程与客服 → P4 交付与报表 → P5 统一工作台 → P6 验证与面试材料。
 完成 Spec 的 AC-01–AC-12 后即冻结演示版，不自动追加平台化阶段。
-P1 到此停止。后续另行指定 P2；Plan 中后续命令必须先实现对应脚本才能运行。
+P2 到此停止。后续阶段须另行指定；Plan 中后续命令必须先实现对应脚本才能运行。
 
 ## 保护原项目
 
@@ -50,3 +50,13 @@ conda run -n agentopshub python -B scripts/verify_import.py
 ```
 
 `test-service <harness|supportops|datacopilot> <pytest 参数>` 分别在对应 Conda 环境和服务 cwd 执行。服务历史文档属于原项目上下文，根 docs/PLAN.md 才是当前阶段依据。
+
+## P2 数据准备入口
+
+```text
+conda run -n agentopshub python scripts/dev.py seed-demo --seed 42
+conda run -n agentopshub python scripts/dev.py test-service supportops --group demo-data
+conda run -n agentopshub python scripts/dev.py test-service datacopilot --group demo-data
+```
+
+生成器与导入器分别使用 DataCopilot、SupportOps 环境。相同 fixture 返回 no-op；显式 `seed-demo --seed 42 --reset-demo` 仅重置核验归属后的专用演示库。首次准备专用 PostgreSQL 可能需要固定 Docker 镜像；不操作原项目库。运行配置与密码仅存 ignored `.runtime/`，不要将其纳入 Git。当前有 24 个真实导入的模拟订单，尚无融合 HTTP/UI 入口。完整证据见 [P2 验证记录](docs/P2_VALIDATION.md)。

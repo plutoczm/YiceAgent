@@ -1,0 +1,3 @@
+# Preserve byte-level fixture reproducibility across Windows checkouts.
+/demo/expected/fixture-v1.json text eol=lf
+/contracts/demo_fixture/v1/schema.json text eol=lf

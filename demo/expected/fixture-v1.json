@@ -1,0 +1,289 @@
+{
+  "currency": "CNY",
+  "customers": [
+    {
+      "customer_id": "customer-a1",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "customer_id": "customer-a2",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "customer_id": "customer-a3",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "customer_id": "customer-b1",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "customer_id": "customer-b2",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "customer_id": "customer-b3",
+      "tenant_id": "tenant-b"
+    }
+  ],
+  "fixture_version": "v1",
+  "generator_version": "workflowops-fixture-1.0",
+  "orders": [
+    {
+      "amount": 199,
+      "customer_id": "customer-a1",
+      "order_id": "ORD-1001",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-a1",
+      "order_id": "ORD-1002",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-a1",
+      "order_id": "ORD-1003",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 500,
+      "customer_id": "customer-a1",
+      "order_id": "ORD-1004",
+      "refund_status": "none",
+      "refundable_amount": 500,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 199,
+      "customer_id": "customer-a2",
+      "order_id": "ORD-1005",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-a2",
+      "order_id": "ORD-1006",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-a2",
+      "order_id": "ORD-1007",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 427,
+      "customer_id": "customer-a2",
+      "order_id": "ORD-1008",
+      "refund_status": "none",
+      "refundable_amount": 427,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 199,
+      "customer_id": "customer-a3",
+      "order_id": "ORD-1009",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-a3",
+      "order_id": "ORD-1010",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-a3",
+      "order_id": "ORD-1011",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 157,
+      "customer_id": "customer-a3",
+      "order_id": "ORD-1012",
+      "refund_status": "none",
+      "refundable_amount": 157,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-a"
+    },
+    {
+      "amount": 199,
+      "customer_id": "customer-b1",
+      "order_id": "ORD-2001",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-b1",
+      "order_id": "ORD-2002",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-b1",
+      "order_id": "ORD-2003",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 500,
+      "customer_id": "customer-b1",
+      "order_id": "ORD-2004",
+      "refund_status": "none",
+      "refundable_amount": 500,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 199,
+      "customer_id": "customer-b2",
+      "order_id": "ORD-2005",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-b2",
+      "order_id": "ORD-2006",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-b2",
+      "order_id": "ORD-2007",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 112,
+      "customer_id": "customer-b2",
+      "order_id": "ORD-2008",
+      "refund_status": "none",
+      "refundable_amount": 112,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 199,
+      "customer_id": "customer-b3",
+      "order_id": "ORD-2009",
+      "refund_status": "none",
+      "refundable_amount": 199,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 899,
+      "customer_id": "customer-b3",
+      "order_id": "ORD-2010",
+      "refund_status": "none",
+      "refundable_amount": 899,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 89,
+      "customer_id": "customer-b3",
+      "order_id": "ORD-2011",
+      "refund_status": "none",
+      "refundable_amount": 0,
+      "return_status": "none",
+      "status": "shipped",
+      "tenant_id": "tenant-b"
+    },
+    {
+      "amount": 479,
+      "customer_id": "customer-b3",
+      "order_id": "ORD-2012",
+      "refund_status": "none",
+      "refundable_amount": 479,
+      "return_status": "none",
+      "status": "delivered",
+      "tenant_id": "tenant-b"
+    }
+  ],
+  "reference_time": "2026-10-01T00:00:00Z",
+  "scenarios": {
+    "boundary_refund": "ORD-1004",
+    "high_refund": "ORD-1002",
+    "human_consultation": "Please arrange a human agent for my complaint.",
+    "low_refund": "ORD-1001",
+    "non_refundable": "ORD-1003",
+    "other_customer": "ORD-1005",
+    "other_tenant": "ORD-2001"
+  },
+  "seed": 42,
+  "synthetic": true,
+  "tenants": [
+    "tenant-a",
+    "tenant-b"
+  ]
+}

@@ -185,6 +185,9 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor")
     commands.add_parser("check-contracts")
+    seed = commands.add_parser("seed-demo")
+    seed.add_argument("--seed", type=int, default=42)
+    seed.add_argument("--reset-demo", action="store_true")
     test = commands.add_parser("test-service")
     test.add_argument("service", choices=SERVICES)
     test.add_argument("pytest_args", nargs=argparse.REMAINDER)
@@ -197,11 +200,43 @@ def main():
             cwd=ROOT,
             check=False,
         ).returncode
+    if args.command == "seed-demo":
+        from demo_db import ensure_database
+
+        for service in ("datacopilot", "supportops"):
+            if not probe_service(service)["passed"]:
+                return 1
+        result = service_process(
+            "datacopilot",
+            [
+                "scripts/generate_demo_data.py",
+                "--seed",
+                str(args.seed),
+                "--output",
+                str(ROOT / ".runtime/demo-fixture"),
+            ],
+        )
+        if result.returncode:
+            return result.returncode
+        ensure_database(port_free)
+        result = service_process("supportops", ["scripts/prepare_demo_db.py"])
+        if result.returncode:
+            return result.returncode
+        return service_process(
+            "supportops",
+            [
+                "scripts/import_demo_fixture.py",
+                *(["--reset-demo"] if args.reset_demo else []),
+            ],
+        ).returncode
     report = probe_service(args.service)
     if not report["passed"]:
         print(json.dumps(report))
         return 1
-    return service_process(args.service, ["-m", "pytest", *args.pytest_args]).returncode
+    pytest_args = args.pytest_args
+    if pytest_args[:2] == ["--group", "demo-data"]:
+        pytest_args = ["tests/test_demo_data.py", *pytest_args[2:]]
+    return service_process(args.service, ["-m", "pytest", *pytest_args]).returncode
 
 
 if __name__ == "__main__":

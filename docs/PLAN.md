@@ -2,7 +2,7 @@
 
 版本：v1.0 | 日期：2026-09-30 | 依据：[SPEC.md](SPEC.md)
 范围：六个执行批次 P1–P6；每批只交付一个可验证增量；不沿用原项目的无限 Phase 扩展。
-当前状态：P1 已于 2026-10-01 验证完成；P2–P6 未执行。P1 实测证据见 [P1_VALIDATION.md](P1_VALIDATION.md)；后续文件、路由及命令仍是实施目标。
+当前状态：P1、P2 已于 2026-10-01 验证完成；P3–P6 未执行。实测证据见 [P1_VALIDATION.md](P1_VALIDATION.md) 与 [P2_VALIDATION.md](P2_VALIDATION.md)；P3–P6 的文件、路由及命令仍是实施目标。
 
 ## 1. 执行约束与进度板
 
@@ -16,7 +16,7 @@
 | 批次 | 交付物 | 前置 | 状态 | 完成判据 |
 |---|---|---|---|---|
 | P1 | 安全单仓库布局与环境分派入口 | 文档基线 | COMPLETE | 698 文件哈希一致；三环境来源/端口/Docker/Contract 通过；原目录不变；根 Git 已独立初始化 |
-| P2 | 可复现模拟输入与 SupportOps 受控导入 | P1 | NOT_STARTED | fixture 稳定；24 订单；重复导入与误重置被阻断 |
+| P2 | 可复现模拟输入与 SupportOps 受控导入 | P1 | COMPLETE | fixture 稳定；真实 PostgreSQL 24 订单、no-op/reset/回滚/边界通过；见 P2_VALIDATION |
 | P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | NOT_STARTED | 客户/人工流程可通过 API 运行；权限/确认/超时有效 |
 | P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | NOT_STARTED | 同一业务变更能改变刷新后的分析结果 |
 | P5 | 一个浏览器工作台 | P4 | NOT_STARTED | 客户/运营/数据/运行视图贯通，不是三个链接 |
@@ -107,6 +107,10 @@ conda run -n agentopshub python scripts/dev.py test-service datacopilot --group 
 覆盖 AC-02；产物为两次生成 hash、导入行数、负例结果。fixture 文件不是伪造的业务查询结果。
 拒绝无归属/坏金额/重复主键输入；无损坏的部分导入；越界 reset 请求产生零写入。
 回退只销毁本次创建的测试资源或演示资源，并先校验所有权；默认停止服务不删除卷。
+
+### P2 实际状态（2026-10-01）
+
+规定四条命令及显式 reset 均 exit 0；SupportOps P2 21 passed、DataCopilot P2 3 passed，根测试最新 13 passed；相关 SupportOps 回归 169 passed/1 skipped（Windows symlink，不计为通过）。Ruff lint/format、Contract 和 verify-import 通过。两次 seed 返回相同 hash/no-op，订单保持 24 个；真实 PostgreSQL 并发、事务回滚、归属与查询隔离均有测试。审阅后显式固定 Compose 项目名，新增环境覆盖回归及实际 seed 验证通过，并修复 README 命令围栏。详细文件、命令、资源及限制见 [P2_VALIDATION.md](P2_VALIDATION.md)。P2 完成后停止，P3–P6 未执行。
 
 ## 4. P3 — Harness 固定工作流与客服闭环
 
