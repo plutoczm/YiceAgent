@@ -2,7 +2,7 @@
 
 版本：v1.0 | 日期：2026-09-30 | 依据：[SPEC.md](SPEC.md)
 范围：六个执行批次 P1–P6；每批只交付一个可验证增量；不沿用原项目的无限 Phase 扩展。
-当前状态：P1、P2 已于 2026-10-01 验证完成；P3–P6 未执行。实测证据见 [P1_VALIDATION.md](P1_VALIDATION.md) 与 [P2_VALIDATION.md](P2_VALIDATION.md)；P3–P6 的文件、路由及命令仍是实施目标。
+当前状态：P1–P3 已于 2026-10-01 验证完成；P4–P6 未执行。实测证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md) 与 [P3_VALIDATION.md](P3_VALIDATION.md)；P4–P6 的文件、路由及命令仍是实施目标。
 
 ## 1. 执行约束与进度板
 
@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | P1 | 安全单仓库布局与环境分派入口 | 文档基线 | COMPLETE | 698 文件哈希一致；三环境来源/端口/Docker/Contract 通过；原目录不变；根 Git 已独立初始化 |
 | P2 | 可复现模拟输入与 SupportOps 受控导入 | P1 | COMPLETE | fixture 稳定；真实 PostgreSQL 24 订单、no-op/reset/回滚/边界通过；见 P2_VALIDATION |
-| P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | NOT_STARTED | 客户/人工流程可通过 API 运行；权限/确认/超时有效 |
+| P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | COMPLETE | Harness 26、安全 153、真实 HTTP 1、根边界 23 passed；见 P3_VALIDATION |
 | P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | NOT_STARTED | 同一业务变更能改变刷新后的分析结果 |
 | P5 | 一个浏览器工作台 | P4 | NOT_STARTED | 客户/运营/数据/运行视图贯通，不是三个链接 |
 | P6 | 24 场景验证、演示手册、技术取舍与面试说明 | P5 | NOT_STARTED | SPEC AC-01–AC-12 达成，冻结 v1 |
@@ -147,6 +147,14 @@ conda run -n agentopshub python scripts/dev.py test-integration --group support
 错误 token/客户冒充运营/他租户对象/他人 run 均失败；验证拒绝路径无业务副作用。
 写入超时标记 unknown_outcome，保留可查询 operation_id；日志无 token、对话、SQL 或结果行。
 回退：停新 demo 入口，原项目仍原样可用；保留已发生的演示操作，不声称软件回退会撤销数据库提交。
+
+### P3 实际状态（2026-10-01）
+
+规定四条命令与 demo-down 均 exit 0。Harness 26 passed、SupportOps safety 153 passed、真实 HTTP + PostgreSQL 组合闭环 1 passed、根边界 23 passed，均无 skip；Ruff lint/format、13 个源码的 strict mypy、Business Contract、698 文件原项目保护及 diff 检查通过。集成测试复用真实 fixture importer，在独立 PostgreSQL schema 中运行 26 次 workflow 后清理；低金额确认/重复确认、高金额独立审批后客户确认、人工工单往返、越权拒绝与运行隐私均有证据。写超时和 60 秒截止使用故障注入验证 unknown_outcome、不重放和已知 operation_id。详细命令、文件与限制见 [P3_VALIDATION.md](P3_VALIDATION.md)。
+
+最终已停止两个 demo HTTP 进程；PostgreSQL/数据卷保留。早期在主演示库实际确认的 ORD-1001 请求保留，未 reset；后续测试 schema 已清理。未启动 DataCopilot API、未实现 P4、UI 或 live 模型。验证阶段未 commit/push；复审通过后按用户授权提交 P3，不 push。P3 到此停止，P4–P6 保持 NOT_STARTED。
+
+P3 审阅三项修复已于 2026-10-01 验证：确认无 parent 也记录 operation_id；只有已派发且结果未确定的写请求标记 unknown_outcome；测试 schema 准备失败也执行归属核验清理。新增/扩展回归已纳入上述最新结果，原日志与业务提交保留。详见 P3_VALIDATION 的审阅修复节及 ignored `.runtime/p3-review-fixes/`。
 
 ## 5. P4 — 快照交付与确定性报表
 

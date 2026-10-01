@@ -185,6 +185,11 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor")
     commands.add_parser("check-contracts")
+    up = commands.add_parser("demo-up")
+    up.add_argument("--mode", choices=["offline"], default="offline")
+    commands.add_parser("demo-down")
+    integration = commands.add_parser("test-integration")
+    integration.add_argument("--group", choices=["support"], required=True)
     seed = commands.add_parser("seed-demo")
     seed.add_argument("--seed", type=int, default=42)
     seed.add_argument("--reset-demo", action="store_true")
@@ -192,6 +197,18 @@ def main():
     test.add_argument("service", choices=SERVICES)
     test.add_argument("pytest_args", nargs=argparse.REMAINDER)
     args = parser.parse_args()
+    if args.command == "demo-up":
+        from demo_runtime import up
+
+        return up(port_free, SERVICES)
+    if args.command == "demo-down":
+        from demo_runtime import down
+
+        return down()
+    if args.command == "test-integration":
+        from p3_integration import run
+
+        return run(port_free, SERVICES, service_process)
     if args.command == "doctor":
         return doctor()
     if args.command == "check-contracts":
@@ -236,6 +253,19 @@ def main():
     pytest_args = args.pytest_args
     if pytest_args[:2] == ["--group", "demo-data"]:
         pytest_args = ["tests/test_demo_data.py", *pytest_args[2:]]
+    elif pytest_args[:2] == ["--group", "workflow"] and args.service == "harness":
+        pytest_args = ["backend/tests/test_p3_workflow.py", *pytest_args[2:]]
+    elif pytest_args[:2] == ["--group", "safety"] and args.service == "supportops":
+        pytest_args = [
+            "tests/test_p3_demo.py",
+            "tests/test_p3_database_cleanup.py",
+            "tests/test_auth.py",
+            "tests/test_tenant_boundary.py",
+            "tests/test_business_operations.py",
+            "tests/test_ticket_messages.py",
+            "tests/test_s1_workflows.py",
+            *pytest_args[2:],
+        ]
     return service_process(args.service, ["-m", "pytest", *pytest_args]).returncode
 
 
