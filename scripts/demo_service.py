@@ -14,13 +14,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     service = sys.argv[1]
-    if service not in {"harness", "supportops"}:
+    if service not in {"harness", "supportops", "datacopilot"}:
         raise ValueError("unsupported demo service")
     path = Path(os.environ["WORKFLOWOPS_DEMO_CONFIG"]).resolve()
     if not path.is_relative_to(ROOT / ".runtime"):
         raise ValueError("invalid demo config")
     config = json.loads(path.read_text(encoding="utf-8"))
-    module = importlib.import_module("app.demo.composition")
+    module = importlib.import_module(
+        "backend.app.composition.demo_reports"
+        if service == "datacopilot"
+        else "app.demo.composition"
+    )
     if not Path(module.__file__).resolve().is_relative_to(ROOT / "services" / service):
         raise ValueError("import escaped service snapshot")
     app = module.create_app()
@@ -46,7 +50,7 @@ def main():
         uvicorn.run(
             app,
             host="127.0.0.1",
-            port=8010 if service == "harness" else 8011,
+            port={"harness": 8010, "supportops": 8011, "datacopilot": 8012}[service],
             access_log=False,
             log_level="critical",
             workers=1,

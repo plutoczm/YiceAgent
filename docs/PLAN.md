@@ -2,7 +2,7 @@
 
 版本：v1.0 | 日期：2026-09-30 | 依据：[SPEC.md](SPEC.md)
 范围：六个执行批次 P1–P6；每批只交付一个可验证增量；不沿用原项目的无限 Phase 扩展。
-当前状态：P1–P3 已于 2026-10-01 验证完成；P4–P6 未执行。实测证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md) 与 [P3_VALIDATION.md](P3_VALIDATION.md)；P4–P6 的文件、路由及命令仍是实施目标。
+当前状态：P1–P4 已于 2026-10-01 验证完成；P5–P6 未执行。实际证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md)、[P3_VALIDATION.md](P3_VALIDATION.md) 与 [P4_VALIDATION.md](P4_VALIDATION.md)。P5–P6 的文件、路由及命令仍为实施目标。
 
 ## 1. 执行约束与进度板
 
@@ -18,7 +18,7 @@
 | P1 | 安全单仓库布局与环境分派入口 | 文档基线 | COMPLETE | 698 文件哈希一致；三环境来源/端口/Docker/Contract 通过；原目录不变；根 Git 已独立初始化 |
 | P2 | 可复现模拟输入与 SupportOps 受控导入 | P1 | COMPLETE | fixture 稳定；真实 PostgreSQL 24 订单、no-op/reset/回滚/边界通过；见 P2_VALIDATION |
 | P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | COMPLETE | Harness 26、安全 153、真实 HTTP 1、根边界 23 passed；见 P3_VALIDATION |
-| P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | NOT_STARTED | 同一业务变更能改变刷新后的分析结果 |
+| P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | COMPLETE | governed 279 passed/1 skipped；producer 36 passed/1 skipped；真实 delivery 6、reports 1 passed；五报表与独立 oracle 一致，见 P4_VALIDATION |
 | P5 | 一个浏览器工作台 | P4 | NOT_STARTED | 客户/运营/数据/运行视图贯通，不是三个链接 |
 | P6 | 24 场景验证、演示手册、技术取舍与面试说明 | P5 | NOT_STARTED | SPEC AC-01–AC-12 达成，冻结 v1 |
 
@@ -191,6 +191,14 @@ conda run -n agentopshub python scripts/dev.py test-integration --group reports
 坏 hash、错租户、坏 schema、越界路径、非法 SQL、超结果限制均拒绝；正常旧快照仍可查询。
 回退仅切回经过验证的已有快照索引；不删业务事实，不将新业务数据悄悄说成已回滚。
 大数据吞吐、实时增量、索引归档、消费者签名与分布式总线不在本批增加。
+
+### P4 实际状态（2026-10-01）
+
+四条规定命令全部 exit 0。DataCopilot governed 279 passed/1 skipped；SupportOps producer/Contract/真实 PG 快照 36 passed/1 skipped；真实 HTTP delivery 6 passed、reports 1 passed（19 个 workflow run、五个独立 PG 行数据 oracle）。额外 Harness 32、SupportOps safety 153、P3 HTTP 1、根边界 23 passed。两项 skip 是原有 POSIX 专用/Windows 无 symlink 权限测试，不计为通过；新增 Windows junction 拒绝与真实 PG repeatable-read/read-only 测试通过。
+
+SupportOps 单独发布不可变 Delivery v2 目录和原子 current 索引；消费者固定一个目录，独立校验再走原 AST/DuckDB 管线。低金额退款提交与高金额待审批后，报表由空分布变为 pending_approval=1、submitted=1；旧快照仍可实际查询。五报表返回真实 rows/row_count、快照/水位、生成时间、as_of、耗时与 template v1 来源。坏 hash/tenant/schema/path/fingerprint、非法 SQL、越权和错服务凭据被拒绝；刷新失败保留已提交业务与旧索引。
+
+29 个 Python 文件 Ruff lint/format、配置的 Harness strict mypy（6 个本次源码）、Business Contract、698 文件与原仓库保护、diff 检查通过。无模型调用/安装/commit/push；未改 Business Contract、原项目源码、原数据库或用户级配置。真实集成使用独立自有测试 schema，结束后遗留 0。主演示库仍为 24 订单、0 工单、1 pending action、1 receipt，P3 原有 ORD-1001 requested 保留；三个自有 HTTP 进程已停止，PostgreSQL/卷保留。详细命令、限制和证据见 [P4_VALIDATION.md](P4_VALIDATION.md)。P4 到此停止，P5–P6 保持 NOT_STARTED。
 
 ## 6. P5 — 单一演示工作台
 

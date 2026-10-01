@@ -99,8 +99,10 @@ def probe_service(service):
             f"representative = importlib.import_module({PROBE_MODULES[service]!r})",
             "representative_origin = str(Path(representative.__file__).resolve())",
             "assert Path(origin).is_relative_to(expected), 'import escaped service snapshot'",
-            "assert Path(representative_origin).is_relative_to(expected), 'submodule escaped snapshot'",
-            "print(json.dumps(dict(executable=sys.executable, version=sys.version.split()[0], origin=origin, representative_origin=representative_origin, missing=missing)))",
+            "assert Path(representative_origin).is_relative_to(expected), "
+            "'submodule escaped snapshot'",
+            "print(json.dumps(dict(executable=sys.executable, version=sys.version.split()[0], "
+            "origin=origin, representative_origin=representative_origin, missing=missing)))",
         ]
     )
     result = service_process(service, ["-c", code], capture=True)
@@ -189,7 +191,9 @@ def main():
     up.add_argument("--mode", choices=["offline"], default="offline")
     commands.add_parser("demo-down")
     integration = commands.add_parser("test-integration")
-    integration.add_argument("--group", choices=["support"], required=True)
+    integration.add_argument(
+        "--group", choices=["support", "delivery", "reports"], required=True
+    )
     seed = commands.add_parser("seed-demo")
     seed.add_argument("--seed", type=int, default=42)
     seed.add_argument("--reset-demo", action="store_true")
@@ -208,7 +212,7 @@ def main():
     if args.command == "test-integration":
         from p3_integration import run
 
-        return run(port_free, SERVICES, service_process)
+        return run(port_free, SERVICES, service_process, group=args.group)
     if args.command == "doctor":
         return doctor()
     if args.command == "check-contracts":
@@ -254,7 +258,23 @@ def main():
     if pytest_args[:2] == ["--group", "demo-data"]:
         pytest_args = ["tests/test_demo_data.py", *pytest_args[2:]]
     elif pytest_args[:2] == ["--group", "workflow"] and args.service == "harness":
-        pytest_args = ["backend/tests/test_p3_workflow.py", *pytest_args[2:]]
+        pytest_args = [
+            "backend/tests/test_p3_workflow.py",
+            "backend/tests/test_p4_analytics.py",
+            *pytest_args[2:],
+        ]
+    elif pytest_args[:2] == ["--group", "governed"] and args.service == "datacopilot":
+        pytest_args = [
+            "tests/application/business_analytics",
+            "tests/infrastructure/business_analytics",
+            "tests/infrastructure/business_data",
+            "tests/application/identity",
+            "tests/infrastructure/identity",
+            "tests/api/test_business_analytics_dependencies.py",
+            "tests/api/test_business_analytics_api.py",
+            "tests/test_p4_reports.py",
+            *pytest_args[2:],
+        ]
     elif pytest_args[:2] == ["--group", "safety"] and args.service == "supportops":
         pytest_args = [
             "tests/test_p3_demo.py",

@@ -5,6 +5,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.adapters.analytics_dto import ExportView, ReportId, ReportView
 from app.adapters.supportops_dto import (
     ConfirmationResponse,
     OperationView,
@@ -81,13 +82,25 @@ class Ticket(Closed):
         return self
 
 
-Payload = Lookup | Message | Confirm | Review | Ticket
+class RefreshSnapshot(Closed):
+    """Explicit operator snapshot refresh; no caller configuration."""
+
+
+class AnalyticsReport(Closed):
+    """Only a versioned report ID crosses the service boundary."""
+
+    report_id: ReportId
+
+
+Payload = Lookup | Message | Confirm | Review | Ticket | RefreshSnapshot | AnalyticsReport
 REQUESTS: dict[str, type[Payload]] = {
     "support_lookup": Lookup,
     "support_message": Message,
     "support_confirm": Confirm,
     "support_review": Review,
     "ticket_action": Ticket,
+    "refresh_snapshot": RefreshSnapshot,
+    "analytics_report": AnalyticsReport,
 }
 
 
@@ -152,5 +165,7 @@ class RunResponse(RunRecord):
         | TicketMessageView
         | list[TicketView]
         | list[TicketMessageView]
+        | ExportView
+        | ReportView
         | None
     ) = None

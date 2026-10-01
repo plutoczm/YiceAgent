@@ -10,6 +10,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response
 
+from app.adapters.analytics import AnalyticsAdapter
 from app.adapters.supportops import SupportOpsAdapter
 from app.api.workflows import router
 from app.demo.identity import Sessions
@@ -19,17 +20,21 @@ from app.workflows.engine import WorkflowEngine
 ROOT = Path(__file__).resolve().parents[6]
 
 
-def demo_app(adapter: SupportOpsAdapter, run_root: Path) -> FastAPI:
+def demo_app(
+    adapter: SupportOpsAdapter, run_root: Path, analytics: AnalyticsAdapter | None = None
+) -> FastAPI:
     """Build only the P3 graph, sessions and run store."""
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
         await adapter.close()
+        if analytics is not None:
+            await analytics.close()
 
     app = FastAPI(title="WorkflowOps offline demo", lifespan=lifespan)
     app.state.sessions = Sessions()
-    app.state.engine = WorkflowEngine(adapter, RunStore(run_root))
+    app.state.engine = WorkflowEngine(adapter, RunStore(run_root), analytics)
 
     @app.middleware("http")
     async def local_only(request: Request, call_next: Any) -> Response:
@@ -58,4 +63,8 @@ def create_app() -> FastAPI:
     config = json.loads(path.read_text(encoding="utf-8"))
     if config["owner"] != "workflowops-demo":
         raise ValueError("unowned_demo_config")
-    return demo_app(SupportOpsAdapter(config["supportops_tokens"]), ROOT / ".runtime/runs")
+    return demo_app(
+        SupportOpsAdapter(config["supportops_tokens"]),
+        ROOT / ".runtime/runs",
+        AnalyticsAdapter(config["supportops_tokens"], config["datacopilot_tokens"]),
+    )

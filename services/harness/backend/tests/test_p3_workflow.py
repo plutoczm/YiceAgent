@@ -48,7 +48,7 @@ def test_closed_inputs_never_dispatch(tmp_path, payload):
             == 422
         )
         assert (
-            client.post("/api/workflows/refresh_snapshot/runs", json={"payload": {}}).status_code
+            client.post("/api/workflows/unknown_workflow/runs", json={"payload": {}}).status_code
             == 404
         )
     assert list(tmp_path.iterdir()) == []

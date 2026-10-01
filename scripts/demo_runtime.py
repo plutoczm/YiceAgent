@@ -38,9 +38,13 @@ def validate_record(record, config):
     ):
         raise ValueError("invalid process startup marker")
     service = record["service"]
-    if service not in {"supportops", "harness"}:
+    if service not in {"supportops", "harness", "datacopilot"}:
         raise ValueError("unknown owned service")
-    environment = "supportops-ai" if service == "supportops" else "agentopshub"
+    environment = {
+        "supportops": "supportops-ai",
+        "harness": "agentopshub",
+        "datacopilot": "datacopilot",
+    }[service]
     expected = Path("D:/Anaconda3/envs") / environment / "python.exe"
     if Path(record["executable"]).resolve() != expected.resolve():
         raise ValueError("unexpected service executable")
@@ -59,7 +63,7 @@ def down():
         raise ValueError("unowned process state")
     config = json.loads(path.read_text(encoding="utf-8"))
     records = []
-    for service in ("harness", "supportops"):
+    for service in ("harness", "datacopilot", "supportops"):
         marker = path.parent / (service + "-process.json")
         if marker.exists():
             record = json.loads(marker.read_text(encoding="utf-8"))
@@ -82,7 +86,7 @@ def down():
 def up(port_free, services, test_schema=None):
     if STATE.exists():
         raise ValueError("demo process state exists; use demo-down before restarting")
-    if any(not port_free(port) for port in (8010, 8011)):
+    if any(not port_free(port) for port in (8010, 8011, 8012)):
         raise ValueError("demo HTTP port occupied; no process stopped")
     container = inspect_resource("container", CONTAINER)
     inspect_resource("volume", VOLUME)
@@ -101,6 +105,14 @@ def up(port_free, services, test_schema=None):
                 "supportops_tokens": {
                     name: secrets.token_urlsafe(32) for name in PERSONAS
                 },
+                "datacopilot_tokens": {
+                    name: secrets.token_urlsafe(32) for name in PERSONAS
+                },
+                "delivery_root": str(
+                    directory / "deliveries"
+                    if test_schema
+                    else ROOT / ".runtime/deliveries"
+                ),
                 **({"test_schema": test_schema} if test_schema is not None else {}),
             }
         ),
@@ -112,7 +124,7 @@ def up(port_free, services, test_schema=None):
     )
     children = []
     try:
-        for service in ("supportops", "harness"):
+        for service in ("supportops", "datacopilot", "harness"):
             environment, source, _, _, port = services[service]
             cwd = ROOT / "services" / service
             executable = Path("D:/Anaconda3/envs") / environment / "python.exe"
@@ -150,7 +162,7 @@ def up(port_free, services, test_schema=None):
             else:
                 raise RuntimeError("owned demo service did not become healthy")
         print(
-            "Offline P3 HTTP APIs ready: Harness 127.0.0.1:8010; SupportOps 127.0.0.1:8011"
+            "Offline HTTP APIs ready: Harness :8010; SupportOps :8011; DataCopilot :8012 (loopback)"
         )
         return 0
     except Exception:

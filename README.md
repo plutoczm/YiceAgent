@@ -7,7 +7,7 @@
 
 ## 当前状态
 
-2026-10-01：**P1–P3 已验证完成：安全导入、模拟数据、固定工作流与客服 HTTP 闭环；P4–P6 未开始。**
+2026-10-01：**P1–P4 已验证完成：安全导入、模拟数据、固定客服工作流、不可变交付与受控模板报表；P5–P6 未开始。**
 三服务源码快照、隔离分派、doctor 与 Contract 检查已具备；P3 已通过真实 HTTP 与 PostgreSQL 的确认、审批及人工工单闭环。证据见 [P3 验证记录](docs/P3_VALIDATION.md)。根 Git 为独立仓库；P3 验证与复审后按用户授权创建本地提交，不 push。
 工作名称 WorkflowOps 可在后续统一改名，不影响架构边界。
 
@@ -26,14 +26,14 @@
 | services/datacopilot | DataCopilot | 模拟数据生成、快照消费、受控 SQL 分析 |
 
 完整 v1 目标：模拟数据 → 客户查询/申请 → 确认或人工接管 → 数据快照 → 运营报表 → 运行记录。
-已实现的 offline 客服流程不调用 LLM，使用实际 API 与业务库；快照与实际 SQL 分析属于待执行 P4。
+已实现的 offline 流程不调用 LLM，使用实际 API、业务库、独立校验的快照与实际 DuckDB SQL 结果。P4 实测证据见 [P4 验证记录](docs/P4_VALIDATION.md)。
 已有语言模型能力作为可选 live 路径保留，不把自主规划或新模型下载作为完成条件。
 
 ## 实施顺序
 
 P1 安全目录与源码导入 → P2 模拟数据 → P3 固定流程与客服 → P4 交付与报表 → P5 统一工作台 → P6 验证与面试材料。
 完成 Spec 的 AC-01–AC-12 后即冻结演示版，不自动追加平台化阶段。
-P3 到此停止。后续阶段须另行指定；Plan 中后续命令必须先实现对应脚本才能运行。
+P4 到此停止。P5–P6 须另行指定；未实现统一 UI 或 P6 全套演示验收。
 
 ## 保护原项目
 
@@ -71,7 +71,7 @@ conda run -n agentopshub python scripts/dev.py test-integration --group support
 conda run -n agentopshub python scripts/dev.py demo-down
 ```
 
-前置为已准备并运行的 P2 自有 PostgreSQL。P3 启动 Harness `127.0.0.1:8010` 与 SupportOps `127.0.0.1:8011`，不启动 DataCopilot API 或 UI。不安装依赖或加载模型。停机只停止本次自有 HTTP 进程，保留数据库。集成测试使用独立 PostgreSQL schema，可重复执行，不重置主演示库；需要通过上述测试入口运行，避免直接将集成测试指向主演示库。
+前置为已准备并运行的 P2 自有 PostgreSQL。当前启动 Harness `127.0.0.1:8010`、SupportOps `127.0.0.1:8011` 与 DataCopilot `127.0.0.1:8012` 的 offline API；统一 UI 待 P5。不安装依赖或加载模型。停机只停止本次自有 HTTP 进程，保留数据库。集成测试使用独立 PostgreSQL schema，可重复执行，不重置主演示库；需要通过上述测试入口运行，避免直接将集成测试指向主演示库。
 
 先向 Harness `POST /api/demo/session` 提交 `{"persona":"customer-a1"}` 并保留 HttpOnly cookie；白名单身份为 customer-a1、customer-a2、operator-a、customer-b1，切换撤销旧 session。这是本地演示身份选择。
 
@@ -86,3 +86,18 @@ conda run -n agentopshub python scripts/dev.py demo-down
 | ticket_action | action 为 list/get/messages/reply/assign/transition/operation；reply 带 message，transition 带 status，除 list 外带 ticket_id |
 
 返回 run_id、实际 steps、domain_refs、终态和 typed result/error。`GET /api/runs/<run_id>` 返回权限过滤的元数据，不返回消息或结果行。等待确认/审批后本次 run 结束；下一人工动作创建新 run，可关联 parent_run_id。写入未知时核对 domain_refs 中已知 operation_id，不能自动重放。确认请求即使省略 parent_run_id，也按领域契约返回 operation_id=action_id。派发前/只读失败标记 failed；只有写请求已开始且结果不确定时标记 unknown_outcome。已实现机器契约见 [P3 API schema](contracts/service_api/v1/p3.json)，实测证据和当前演示库状态见 [P3 验证记录](docs/P3_VALIDATION.md)。
+
+## P4 快照与模板报表
+
+```text
+conda run -n agentopshub python scripts/dev.py check-contracts
+conda run -n agentopshub python scripts/dev.py test-service datacopilot --group governed -q -rs
+conda run -n agentopshub python scripts/dev.py test-integration --group delivery
+conda run -n agentopshub python scripts/dev.py test-integration --group reports
+```
+
+在 Harness 选择 operator-a 后，调用 `refresh_snapshot`，payload 为 `{}`；再调用 `analytics_report`，payload 为 `{"report_id":"orders_total"}`。另外四个固定 ID 为 refund_requests_by_status、pending_approval_count、tickets_by_status、overdue_open_tickets。原五个客服 workflow 保持可用，当前共七个固定 workflow。
+
+刷新由运营显式触发；业务提交与分析刷新分别返回各自 run。首次未发布快照时报表明确失败，退款提交后刷新前仍看到旧统计。消费者每个请求固定一个不可变目录，独立校验后执行真实 SQL；只允许报表 ID，不接受租户、路径、SQL、policy 或 as_of。结果显示 template/v1、真实 rows/row_count、snapshot_id、delivery_fingerprint、生成时间、水位、服务端 as_of 和耗时，不返回路径或 SQL。旧快照保留，没有归档/自动清理策略。原 live Text2SQL/JWT 入口保持原样，P4 未调用真实模型。
+
+当前机器契约见 [P4 API schema](contracts/service_api/v1/p4.json)，实测结果、原有 skip 与边界见 [P4 验证记录](docs/P4_VALIDATION.md)。

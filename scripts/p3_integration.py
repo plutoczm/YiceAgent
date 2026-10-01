@@ -7,7 +7,7 @@ from uuid import uuid4
 from demo_runtime import ROOT, STATE, down, up
 
 
-def run(port_free, services, service_process):
+def run(port_free, services, service_process, group="support"):
     restore = STATE.exists()
     schema = "p3_test_" + uuid4().hex
     if restore:
@@ -27,7 +27,9 @@ def run(port_free, services, service_process):
                 "-B",
                 "-m",
                 "pytest",
-                "tests/integration/test_p3_support.py",
+                "tests/integration/test_p3_support.py"
+                if group == "support"
+                else "tests/integration/test_p4_" + group + ".py",
                 "-q",
             ],
             cwd=ROOT,

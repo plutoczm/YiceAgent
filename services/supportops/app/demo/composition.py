@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from app.auth import Principal
 from app.config import Settings
 from app.container import ServiceContainer
+from app.demo.exports import DemoPublisher, export_router
 from app.demo.fixtures import validate_url
 from app.demo.identity import DemoIdentity
 from app.domain import SupportResponse
@@ -103,8 +104,10 @@ def build_demo_container(store, tokens):
     )
 
 
-def create_demo_app(container):
+def create_demo_app(container, delivery_root=None):
     app = domain_app(container)
+    if delivery_root is not None:
+        app.include_router(export_router(DemoPublisher(container.store.engine, delivery_root)))
 
     @app.post("/internal/demo/actions", response_model=SupportResponse)
     def explicit_action(
@@ -178,4 +181,7 @@ def create_app():
         ).all()
         if len(rows) != 1 or rows[0][0] != "workflowops-demo" or not rows[0][1]:
             raise ValueError("demo_database_not_seeded_or_owned")
-    return create_demo_app(build_demo_container(store, config["supportops_tokens"]))
+    delivery_root = Path(config.get("delivery_root", str(ROOT / ".runtime/deliveries")))
+    if not delivery_root.resolve().is_relative_to(ROOT / ".runtime"):
+        raise ValueError("delivery_root_outside_runtime")
+    return create_demo_app(build_demo_container(store, config["supportops_tokens"]), delivery_root)

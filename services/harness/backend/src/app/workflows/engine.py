@@ -11,11 +11,13 @@ from app.adapters.supportops import DispatchState, DomainFailure, SupportOpsAdap
 from app.demo.identity import Identity
 from app.runs.store import RunStore
 from app.workflows.models import (
+    AnalyticsReport,
     Confirm,
     Error,
     Lookup,
     Message,
     Payload,
+    RefreshSnapshot,
     Review,
     RunRecord,
     Status,
@@ -37,10 +39,11 @@ class State(TypedDict):
 class WorkflowEngine:
     """Register finite nodes and explicit failure branches."""
 
-    def __init__(self, adapter: SupportOpsAdapter, store: RunStore):
+    def __init__(self, adapter: SupportOpsAdapter, store: RunStore, analytics: Any = None):
         """Compile the finite graph once for this application."""
         self.adapter = adapter
         self.store = store
+        self.analytics = analytics
         graph = StateGraph(State)
         graph.add_node("validate", self.validate)
         graph.add_node("authorize", self.authorize)
@@ -79,7 +82,9 @@ class WorkflowEngine:
         started = perf_counter()
         payload, identity = state["payload"], state["identity"]
         denied = (
-            isinstance(payload, Review)
+            isinstance(payload, (RefreshSnapshot, AnalyticsReport))
+            and not identity.operator
+            or isinstance(payload, Review)
             and not identity.operator
             or isinstance(payload, (Confirm, Message))
             and identity.operator
@@ -100,7 +105,12 @@ class WorkflowEngine:
         """One domain request; a write failure is never retried."""
         started = perf_counter()
         try:
-            state["result"] = await self.adapter.invoke(
+            adapter = (
+                self.analytics
+                if isinstance(state["payload"], (RefreshSnapshot, AnalyticsReport))
+                else self.adapter
+            )
+            state["result"] = await adapter.invoke(
                 state["payload"],
                 state["identity"],
                 dispatch=state["dispatch"],
@@ -120,6 +130,11 @@ class WorkflowEngine:
             data = result.model_dump(mode="json") if not isinstance(result, list) else {}
             for key in ("operation_id", "pending_action_id", "ticket_id", "trace_id", "action_id"):
                 value = data.get(key)
+                if isinstance(value, str):
+                    record.domain_refs[key] = value
+            snapshot = data.get("data", {}).get("snapshot", {})
+            for key in ("snapshot_id", "delivery_fingerprint"):
+                value = data.get(key) or snapshot.get(key)
                 if isinstance(value, str):
                     record.domain_refs[key] = value
             status = data.get("operation_status") or data.get("status")
