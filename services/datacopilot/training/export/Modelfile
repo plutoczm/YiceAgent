@@ -1,0 +1,19 @@
+# Ollama Modelfile：导入 DataCopilot 微调后的 Qwen3-4B GGUF
+# 用法：ollama create datacopilot-qwen3-4b -f training/export/Modelfile
+FROM ../data/models/datacopilot-qwen3-4b-q4_k_m.gguf
+
+# 关闭思考模式的 Qwen3 ChatML 模板（与服务端 JSON 解析兼容）
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{- end }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+<|im_start|>assistant
+"""
+
+PARAMETER temperature 0
+PARAMETER top_p 0.95
+PARAMETER num_ctx 8192
+
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "<|endoftext|>"

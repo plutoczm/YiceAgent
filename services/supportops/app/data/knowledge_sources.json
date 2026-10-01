@@ -1,0 +1,72 @@
+[
+  {
+    "document_id": "KB-REFUND-01",
+    "version": "1",
+    "title": "退款政策 Refund policy",
+    "text": "已签收订单若商品符合售后条件，可申请退款 refund。退款执行前必须由用户确认；高金额退款 high-value refund 需要人工客服审核。原路退款到账时间取决于支付渠道。",
+    "source_uri": "supportops://policy/refund"
+  },
+  {
+    "document_id": "KB-SHIPPING-01",
+    "version": "1",
+    "title": "物流与配送 Shipping tracking carrier status",
+    "text": "已发货订单可查询物流 tracking 状态和承运商信息。运输中的订单 in transit 不能直接发起已签收商品的退货流程；预计送达时间 delivery estimate 以物流更新为准。Shipping status includes carrier information and package tracking.",
+    "source_uri": "supportops://policy/shipping"
+  },
+  {
+    "document_id": "KB-RETURN-01",
+    "version": "1",
+    "title": "退货政策 Return policy",
+    "text": "已签收订单可以申请退货 return。系统先创建待确认动作，用户确认后才提交退货申请。商品需满足退货条件，部分特殊品类可能不支持无理由退货。",
+    "source_uri": "supportops://policy/return"
+  },
+  {
+    "document_id": "KB-COUPON-01",
+    "version": "1",
+    "title": "优惠券与促销 Coupon policy",
+    "text": "优惠券 coupon 能否使用取决于有效期、适用商品范围和订单门槛。促销码 promo code 不能绕过营销规则，通常不可与明确标注互斥的活动叠加。",
+    "source_uri": "supportops://policy/coupon"
+  },
+  {
+    "document_id": "KB-ADDRESS-01",
+    "version": "1",
+    "title": "收货地址修改 Shipping address changes",
+    "text": "订单未进入仓库锁定或发货阶段时，可以申请修改收货地址 shipping address。已发货订单通常不能直接改址，需要联系人工客服确认承运商能力。",
+    "source_uri": "supportops://policy/address"
+  },
+  {
+    "document_id": "KB-INVOICE-01",
+    "version": "1",
+    "title": "发票与账单 Invoice and billing",
+    "text": "已支付订单可以按平台规则申请发票 invoice。账单 billing 信息应与订单和支付记录一致；发票抬头、税号等字段提交后如需修改，可能需要重新开具。",
+    "source_uri": "supportops://policy/invoice"
+  },
+  {
+    "document_id": "KB-WARRANTY-01",
+    "version": "1",
+    "title": "保修与质量问题 Warranty coverage",
+    "text": "商品 warranty 保修范围取决于品类和厂商条款。质量问题应保留订单、故障描述和必要凭证；超过普通退货期不代表一定失去保修资格。",
+    "source_uri": "supportops://policy/warranty"
+  },
+  {
+    "document_id": "KB-ACCOUNT-01",
+    "version": "1",
+    "title": "账户与登录安全 Account security",
+    "text": "忘记密码 password 时应通过官方重置流程验证账户身份。客服不会索要完整密码、验证码或支付密钥。发现异常登录 suspicious login 时应立即修改密码并检查账户安全设置。",
+    "source_uri": "supportops://policy/account-security"
+  },
+  {
+    "document_id": "KB-SUBSCRIPTION-01",
+    "version": "1",
+    "title": "订阅取消 Subscription cancellation and renewal",
+    "text": "SaaS subscription 订阅可在符合套餐规则时取消自动续费 cancel renewal。取消续费不会自动承诺退款；已经产生的账单是否可退仍按退款和合同规则处理。Cancel auto renewal does not guarantee a refund.",
+    "source_uri": "supportops://policy/subscription"
+  },
+  {
+    "document_id": "KB-PRIVACY-01",
+    "version": "1",
+    "title": "隐私与数据请求 Privacy request",
+    "text": "用户可按隐私政策提交个人数据访问、更正或删除 data deletion 请求。涉及身份敏感操作时需要先完成身份验证；客服回复不得暴露其他客户数据。",
+    "source_uri": "supportops://policy/privacy"
+  }
+]

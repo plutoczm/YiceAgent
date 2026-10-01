@@ -1,0 +1,63 @@
+{
+  "contract_name": "supportops_business_data",
+  "contract_version": "v1",
+  "currency": "USD",
+  "datasets": [
+    {
+      "content_sha256": "4ed77e1e298ea00e5b9d86810ffba6046bd3f1a51415f9c45cc6194f6d60b915",
+      "dataset_name": "orders_v1",
+      "file_name": "orders_v1.jsonl",
+      "row_count": 6
+    },
+    {
+      "content_sha256": "e5ab2a226455cb2f3cf8da990b470965b30f763b8027c03bb05d621b059a3ca5",
+      "dataset_name": "tickets_v1",
+      "file_name": "tickets_v1.jsonl",
+      "row_count": 4
+    },
+    {
+      "content_sha256": "8419a7dba107f64e7be32aa0e27bb5b15a5f2bca7fd4eefb338a6492a686073d",
+      "dataset_name": "ticket_events_v1",
+      "file_name": "ticket_events_v1.jsonl",
+      "row_count": 4
+    },
+    {
+      "content_sha256": "0a440f97548ea9ab7aba2df6a7afbd5df272553767b2df240a1f9e01a6bdef87",
+      "dataset_name": "actions_v1",
+      "file_name": "actions_v1.jsonl",
+      "row_count": 4
+    }
+  ],
+  "encoding": "utf-8",
+  "export_format_version": "v2",
+  "generated_at": "2026-09-24T00:04:00Z",
+  "media_type": "application/x-ndjson",
+  "schema_sha256": "7c718f38934a9105d3529b32f24b62c08a1e86f7d9ea634668a35039aa427d2b",
+  "snapshot": {
+    "completed_at": "2026-09-24T00:04:00Z",
+    "consistency": "single_connection_read_transaction",
+    "snapshot_id": "abe0cb8826b0aa721bb6d1f2c9e8933a112f747ec7aa215c642078209e7c119e",
+    "started_at": "2026-09-24T00:00:00Z",
+    "watermarks": {
+      "actions_v1": {
+        "kind": "unavailable",
+        "reason": "actions_v1_has_no_reliable_change_timestamp"
+      },
+      "orders_v1": {
+        "kind": "unavailable",
+        "reason": "orders_v1_has_no_reliable_change_timestamp"
+      },
+      "ticket_events_v1": {
+        "field": "created_at",
+        "kind": "max_timestamp",
+        "max_value": "2026-09-23T01:00:00Z"
+      },
+      "tickets_v1": {
+        "field": "updated_at",
+        "kind": "max_timestamp",
+        "max_value": "2026-09-23T00:00:00Z"
+      }
+    }
+  },
+  "tenant_id": "tenant-a"
+}

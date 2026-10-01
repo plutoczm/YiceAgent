@@ -1,0 +1,16 @@
+.git/
+.github/
+.runtime/
+.pytest_cache/
+**/__pycache__/
+backend/
+frontend/
+data/
+docker/
+docs/
+knowledge_base/
+models/
+tests/
+*.md
+*.yml
+requirements*.txt

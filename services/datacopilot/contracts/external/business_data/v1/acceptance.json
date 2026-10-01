@@ -1,0 +1,7 @@
+{
+  "contract_name": "supportops_business_data",
+  "accepted_version": "v1",
+  "contract_sha256": "7c718f38934a9105d3529b32f24b62c08a1e86f7d9ea634668a35039aa427d2b",
+  "source_owner": "SupportOps",
+  "compatibility_policy": "exact-artifact-sha256"
+}

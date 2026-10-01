@@ -1,0 +1,63 @@
+{
+  "contract_name": "supportops_business_data",
+  "contract_version": "v1",
+  "currency": "USD",
+  "datasets": [
+    {
+      "content_sha256": "cb09fe0e0f15bfd4da04a86571339fdc1884231eec94fe0798491504d492dbe8",
+      "dataset_name": "orders_v1",
+      "file_name": "orders_v1.jsonl",
+      "row_count": 1
+    },
+    {
+      "content_sha256": "f6da05c50d6e71278b32f7030909280dece36033f9395226d642f51afc054245",
+      "dataset_name": "tickets_v1",
+      "file_name": "tickets_v1.jsonl",
+      "row_count": 1
+    },
+    {
+      "content_sha256": "b55cfe0a438cbf26e5ea873a37ce77db7143c70831e8af7ef5777929e7c234f8",
+      "dataset_name": "ticket_events_v1",
+      "file_name": "ticket_events_v1.jsonl",
+      "row_count": 1
+    },
+    {
+      "content_sha256": "c5f49dfe8d2589b4d6afd462071693f8bc8af547fe9fac40a6f332756fc0a574",
+      "dataset_name": "actions_v1",
+      "file_name": "actions_v1.jsonl",
+      "row_count": 1
+    }
+  ],
+  "encoding": "utf-8",
+  "export_format_version": "v2",
+  "generated_at": "2026-09-24T00:04:00Z",
+  "media_type": "application/x-ndjson",
+  "schema_sha256": "7c718f38934a9105d3529b32f24b62c08a1e86f7d9ea634668a35039aa427d2b",
+  "snapshot": {
+    "completed_at": "2026-09-24T00:04:00Z",
+    "consistency": "single_connection_read_transaction",
+    "snapshot_id": "c7b196957b230d97df09b9337a913b9a610df7f2582dd4d2b0c57233870aee6f",
+    "started_at": "2026-09-24T00:00:00Z",
+    "watermarks": {
+      "actions_v1": {
+        "kind": "unavailable",
+        "reason": "actions_v1_has_no_reliable_change_timestamp"
+      },
+      "orders_v1": {
+        "kind": "unavailable",
+        "reason": "orders_v1_has_no_reliable_change_timestamp"
+      },
+      "ticket_events_v1": {
+        "field": "created_at",
+        "kind": "max_timestamp",
+        "max_value": "2026-09-24T00:02:00Z"
+      },
+      "tickets_v1": {
+        "field": "updated_at",
+        "kind": "max_timestamp",
+        "max_value": "2026-09-24T00:01:00Z"
+      }
+    }
+  },
+  "tenant_id": "tenant-synthetic"
+}

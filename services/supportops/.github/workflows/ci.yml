@@ -1,0 +1,98 @@
+name: ci
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: supportops_s2a
+          POSTGRES_USER: supportops
+          POSTGRES_PASSWORD: supportops
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U supportops -d supportops_s2a"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      qdrant:
+        image: qdrant/qdrant:v1.18.2
+        ports:
+          - 6333:6333
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check .
+      - name: Compile
+        run: python -m compileall app evals migrations tests/integration
+      - name: Compose config
+        run: |
+          docker compose config -q
+          docker compose --profile rag config -q
+      - name: PostgreSQL migration contract
+        env:
+          DATABASE_URL: postgresql+psycopg://supportops:supportops@localhost:5432/supportops_s2a
+        run: |
+          alembic upgrade head
+          alembic current --check-heads
+          alembic check
+      - name: PostgreSQL tenant migration and legacy backfill
+        env:
+          S2A_POSTGRES_TEST_URL: postgresql+psycopg://supportops:supportops@localhost:5432/supportops_s2a
+        run: pytest -q -m integration tests/integration/test_tenant_migration.py
+      - name: PostgreSQL business operation concurrency and recovery
+        env:
+          S2B_POSTGRES_TEST_URL: postgresql+psycopg://supportops:supportops@localhost:5432/supportops_s2a
+        run: pytest -q -m integration tests/integration/test_operation_postgres.py
+      - name: PostgreSQL business-data export snapshot
+        env:
+          S2B_POSTGRES_TEST_URL: postgresql+psycopg://supportops:supportops@localhost:5432/supportops_s2a
+        run: pytest -q -m integration tests/integration/test_business_data_snapshot_postgres.py
+      - name: Tests
+        run: pytest --cov=app --cov-report=term-missing --cov-fail-under=75
+      - name: Offline agent safety eval
+        run: python -m evals.run_evals
+      - name: Offline retrieval eval
+        run: python -m evals.run_retrieval_evals
+      - name: End-to-end regression v1
+        run: python -m evals.run_e2e_regression
+      - name: End-to-end regression v2
+        run: python -m evals.run_e2e_regression_v2
+      - name: Durable operation HTTP regression
+        run: python -m evals.run_operation_evals
+      - name: Local observability SLO smoke
+        run: python -m evals.run_slo_smoke
+      - name: Redis reliability integration
+        env:
+          RUN_REDIS_INTEGRATION: "1"
+        run: pytest -q -m integration tests/integration/test_redis_integration.py
+      - name: Install RAG adapter
+        run: pip install -e ".[rag]"
+      - name: Qdrant lifecycle integration
+        env:
+          RUN_QDRANT_INTEGRATION: "1"
+        run: pytest -q -m integration tests/integration/test_qdrant_integration.py
+      - name: Container build
+        run: docker build -t supportops-ai:ci .

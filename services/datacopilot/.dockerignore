@@ -1,0 +1,17 @@
+.git
+.runtime
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+data
+models
+docs
+tests
+*.log
+.env
+docker/.env.local

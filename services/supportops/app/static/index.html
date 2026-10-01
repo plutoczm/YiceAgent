@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SupportOps AI 本地用户聊天与客服工单工作台"
+    />
+    <title>SupportOps AI · 本地工作台</title>
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/ui/" aria-label="SupportOps AI 首页">
+          <span class="brand-mark">SO</span>
+          <span>
+            <strong>SupportOps AI</strong>
+            <small>LOCAL OPERATIONS DESK</small>
+          </span>
+        </a>
+
+        <nav class="workspace-tabs" aria-label="工作区切换">
+          <button class="workspace-tab is-active" data-workspace="customer" type="button">
+            用户会话
+          </button>
+          <button class="workspace-tab" data-workspace="agent" type="button">
+            客服工单
+          </button>
+        </nav>
+
+        <div class="system-status" id="system-status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="system-status-text">正在检查服务</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="workspace is-active" id="customer-workspace" aria-label="用户聊天">
+          <aside class="context-panel">
+            <div class="eyebrow">CUSTOMER CONTEXT</div>
+            <h1>把问题交给<br />安全边界内的 AI</h1>
+            <p class="lede">
+              查询政策、订单与物流；退款和退货始终需要明确确认，不会静默执行。
+            </p>
+
+            <div class="field-stack">
+              <label>
+                <span>客户编号</span>
+                <input id="customer-id" value="CUST-001" autocomplete="off" />
+              </label>
+              <label>
+                <span>用户身份</span>
+                <input id="customer-principal" value="local-user" autocomplete="off" />
+              </label>
+              <label>
+                <span>会话编号</span>
+                <div class="inline-field">
+                  <input id="conversation-id" autocomplete="off" />
+                  <button class="icon-button" id="new-conversation" type="button" title="新建会话">
+                    新建
+                  </button>
+                </div>
+              </label>
+            </div>
+
+            <div class="quick-prompts">
+              <span class="section-label">快捷问题</span>
+              <button type="button" data-prompt="如何在发货前修改收货地址？">
+                修改收货地址
+              </button>
+              <button type="button" data-prompt="查询订单状态 ORD-1001">
+                查询演示订单
+              </button>
+              <button type="button" data-prompt="退款 ORD-1001">
+                发起退款
+              </button>
+              <button type="button" data-prompt="我要投诉服务态度">
+                创建人工工单
+              </button>
+            </div>
+
+            <div class="local-note">
+              <strong>本地开发身份</strong>
+              <span>身份信息只作为请求头发送，不包含任何模型密钥。</span>
+            </div>
+          </aside>
+
+          <section class="chat-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">ACTIVE CONVERSATION</span>
+                <h2>智能支持会话</h2>
+              </div>
+              <div class="chat-heading-actions">
+                <span class="sync-label" id="customer-sync-label">AI 支持模式</span>
+                <button class="quiet-button" id="clear-chat" type="button">刷新会话</button>
+              </div>
+            </div>
+
+            <div class="message-stream" id="message-stream" aria-live="polite">
+              <article class="message assistant-message welcome-message">
+                <div class="avatar">AI</div>
+                <div class="message-content">
+                  <div class="message-meta">SupportOps · 已连接安全工作流</div>
+                  <p>
+                    你好，我可以解释支持政策、查询订单、发起退款或退货，以及把复杂问题转交人工客服。
+                  </p>
+                </div>
+              </article>
+            </div>
+
+            <form class="composer" id="chat-form">
+              <label class="sr-only" for="message-input">输入消息</label>
+              <textarea
+                id="message-input"
+                rows="2"
+                maxlength="8000"
+                placeholder="输入问题；按 Enter 发送，Shift + Enter 换行"
+                required
+              ></textarea>
+              <button class="send-button" id="send-button" type="submit">
+                <span>发送</span>
+                <span aria-hidden="true">↗</span>
+              </button>
+            </form>
+          </section>
+        </section>
+
+        <section class="workspace" id="agent-workspace" aria-label="客服工单">
+          <aside class="agent-rail">
+            <div class="eyebrow">AGENT CONSOLE</div>
+            <h1>把每个工单<br />推进到下一步</h1>
+            <p class="lede">
+              按优先级和 SLA 处理人工转交，所有指派与状态变更由后端记录审计。
+            </p>
+
+            <div class="field-stack">
+              <label>
+                <span>客服身份</span>
+                <input id="agent-id" value="local-agent" autocomplete="off" />
+              </label>
+              <label>
+                <span>状态筛选</span>
+                <select id="ticket-filter">
+                  <option value="">全部状态</option>
+                  <option value="open">待处理</option>
+                  <option value="assigned">处理中</option>
+                  <option value="pending_customer">等待用户</option>
+                  <option value="resolved">已解决</option>
+                  <option value="closed">已关闭</option>
+                </select>
+              </label>
+            </div>
+
+            <button class="primary-button" id="refresh-tickets" type="button">刷新工单</button>
+
+            <div class="ticket-stats" aria-label="工单统计">
+              <div><strong id="stat-total">0</strong><span>当前列表</span></div>
+              <div><strong id="stat-urgent">0</strong><span>紧急 / 高</span></div>
+              <div><strong id="stat-breached">0</strong><span>SLA 超时</span></div>
+            </div>
+          </aside>
+
+          <section class="tickets-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">HUMAN HANDOFF QUEUE</span>
+                <h2>客服工单队列</h2>
+              </div>
+              <span class="sync-label" id="ticket-sync-label">尚未同步</span>
+            </div>
+
+            <div class="ticket-list" id="ticket-list" aria-live="polite">
+              <div class="empty-state">
+                <span>QUEUE</span>
+                <h3>加载工单后，从这里开始处理</h3>
+                <p>刷新列表，查看用户投诉和人工转交请求。</p>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <footer>
+        <span>SupportOps AI v0.7.0</span>
+        <span>本地开发工作台 · <a href="/docs" target="_blank" rel="noreferrer">API 文档</a></span>
+      </footer>
+    </div>
+
+    <div class="toast-region" id="toast-region" aria-live="assertive"></div>
+    <script src="/ui/app.js" defer></script>
+  </body>
+</html>

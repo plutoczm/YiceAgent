@@ -1,0 +1,534 @@
+{
+  "contract_name": "supportops_business_data",
+  "version": "v1",
+  "owner": "SupportOps",
+  "description": "Stable business-data interface owned by SupportOps for approved external analytical consumers. It defines business semantics, not persistence or ORM structure.",
+  "data_classifications": {
+    "public": "Approved for unrestricted disclosure. No v1 field is classified public by default.",
+    "internal": "Operational business data for approved internal consumers; not for unrestricted disclosure.",
+    "confidential": "Identifiers or business facts that can identify, correlate, or profile a tenant, customer, conversation, actor, order, ticket, or action. Approved consumers must enforce tenant-scoped access.",
+    "restricted": "Free text, opaque JSON, detailed audit data, prompts, model responses, secrets, traces, or infrastructure metadata. Restricted data is outside this contract."
+  },
+  "compatibility": {
+    "v1_minor_allows": [
+      "Add an optional field.",
+      "Add dataset metadata.",
+      "Clarify a non-breaking description."
+    ],
+    "new_major_required_for": [
+      "Remove an existing field.",
+      "Change a field's business meaning.",
+      "Change dataset grain or primary-key semantics.",
+      "Change an optional field to required.",
+      "Make an incompatible logical-type change.",
+      "Change the meaning of an enum value."
+    ]
+  },
+  "datasets": [
+    {
+      "name": "orders_v1",
+      "description": "SupportOps operational order facts, one current row per order within its tenant.",
+      "grain": "One row represents one order in one tenant at the time the dataset is produced.",
+      "primary_key": {
+        "fields": [
+          "tenant_id",
+          "order_id"
+        ],
+        "semantic_meaning": "The tenant and order identifier together are the stable logical identity. This is a business key, not a statement about ORM primary-key implementation."
+      },
+      "relationships": [],
+      "sensitivity": "confidential",
+      "stability": {
+        "level": "stable",
+        "compatibility": "Subject to the contract-level v1.x compatibility rules."
+      },
+      "fields": [
+        {
+          "name": "tenant_id",
+          "description": "Identifier of the tenant that owns the order.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Required partition and authorization scope for every order fact.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable within SupportOps; consumers must not join or disclose across tenants."
+        },
+        {
+          "name": "order_id",
+          "description": "SupportOps business identifier for the order.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Uniquely identifies an order within tenant_id.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable SupportOps correlation key within a tenant; it is not public data."
+        },
+        {
+          "name": "customer_id",
+          "description": "Identifier of the customer associated with the order.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Identifies the customer relationship for tenant-scoped analysis.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Pseudonymous identifier; it is not public data."
+        },
+        {
+          "name": "status",
+          "description": "Current operational order lifecycle status.",
+          "logical_type": "string",
+          "nullable": false,
+          "semantic_meaning": "Producer-defined current order status. V1 does not declare a closed enum because the current source does not enforce one.",
+          "sensitivity": "internal"
+        },
+        {
+          "name": "amount",
+          "description": "Original order monetary amount used by SupportOps.",
+          "logical_type": "decimal",
+          "nullable": false,
+          "semantic_meaning": "A monetary amount in major currency units; it is not a binary floating-point contract value.",
+          "sensitivity": "internal",
+          "unit": "major currency units",
+          "serialization": "Canonical base-10 decimal string; no exponent notation.",
+          "currency_semantics": "The current source does not provide a currency code. A delivery must declare one known currency context for its partition, and consumers must not aggregate or convert values across unknown or different currencies."
+        },
+        {
+          "name": "refundable_amount",
+          "description": "Amount currently available to quote for a refund for the order.",
+          "logical_type": "decimal",
+          "nullable": false,
+          "semantic_meaning": "Current refund-eligible monetary amount, not a settled refund total.",
+          "sensitivity": "internal",
+          "unit": "major currency units",
+          "serialization": "Canonical base-10 decimal string; no exponent notation.",
+          "currency_semantics": "Uses the same declared currency context as amount; no cross-currency inference or conversion is permitted."
+        },
+        {
+          "name": "refund_status",
+          "description": "Current SupportOps refund-request status for the order.",
+          "logical_type": "string",
+          "nullable": false,
+          "semantic_meaning": "Local operational refund state only; it does not prove payment-provider processing, reconciliation, or settlement.",
+          "sensitivity": "internal"
+        },
+        {
+          "name": "return_status",
+          "description": "Current SupportOps return-request status for the order.",
+          "logical_type": "string",
+          "nullable": false,
+          "semantic_meaning": "Local operational return state only; it does not prove physical receipt, inspection, or completion of a return.",
+          "sensitivity": "internal"
+        }
+      ]
+    },
+    {
+      "name": "tickets_v1",
+      "description": "SupportOps support-ticket facts, one current row per ticket within its tenant.",
+      "grain": "One row represents one support ticket in one tenant at the time the dataset is produced.",
+      "primary_key": {
+        "fields": [
+          "tenant_id",
+          "ticket_id"
+        ],
+        "semantic_meaning": "The tenant and ticket identifier together are the stable logical identity."
+      },
+      "relationships": [],
+      "sensitivity": "confidential",
+      "stability": {
+        "level": "stable",
+        "compatibility": "Subject to the contract-level v1.x compatibility rules."
+      },
+      "fields": [
+        {
+          "name": "tenant_id",
+          "description": "Identifier of the tenant that owns the ticket.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Required partition and authorization scope for every ticket fact.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable within SupportOps; consumers must not join or disclose across tenants."
+        },
+        {
+          "name": "ticket_id",
+          "description": "SupportOps business identifier for the support ticket.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Uniquely identifies a ticket within tenant_id.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable SupportOps correlation key within a tenant; it is not public data."
+        },
+        {
+          "name": "customer_id",
+          "description": "Identifier of the customer for whom the ticket was created.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Customer relationship for tenant-scoped support analysis.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Pseudonymous identifier; it is not public data."
+        },
+        {
+          "name": "conversation_id",
+          "description": "Identifier correlating the ticket to its support conversation.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Correlation key for a conversation, not the conversation's text content.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Pseudonymous identifier; it is not public data."
+        },
+        {
+          "name": "status",
+          "description": "Current support-ticket lifecycle status.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "Current state of the SupportOps ticket lifecycle.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "open",
+            "assigned",
+            "pending_customer",
+            "resolved",
+            "closed"
+          ]
+        },
+        {
+          "name": "priority",
+          "description": "Current operational priority assigned to the ticket.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "SupportOps triage priority, not a customer-facing service guarantee.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "urgent",
+            "high",
+            "normal",
+            "low"
+          ]
+        },
+        {
+          "name": "assignee_id",
+          "description": "Identifier of the currently assigned support agent, when one exists.",
+          "logical_type": "identifier",
+          "nullable": true,
+          "semantic_meaning": "Current ticket ownership assignment; null means no agent is assigned.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "SupportOps actor identifier; it is not public personnel data."
+        },
+        {
+          "name": "sla_due_at",
+          "description": "Time by which the ticket is due under the current SupportOps SLA calculation.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Operational due time, not a statement that an SLA was met or breached.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        },
+        {
+          "name": "created_at",
+          "description": "Time at which SupportOps created the ticket.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Ticket creation instant.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        },
+        {
+          "name": "updated_at",
+          "description": "Time at which SupportOps last updated the ticket record.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Latest persisted ticket-record update instant; it is not necessarily a customer-message time.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        }
+      ]
+    },
+    {
+      "name": "ticket_events_v1",
+      "description": "Recorded SupportOps ticket state-transition facts.",
+      "grain": "One row represents one recorded transition of one ticket from one status to another in one tenant.",
+      "primary_key": {
+        "fields": [
+          "tenant_id",
+          "event_id"
+        ],
+        "semantic_meaning": "The tenant and event identifier together are the stable logical identity."
+      },
+      "relationships": [
+        {
+          "field": "ticket_id",
+          "target_dataset": "tickets_v1",
+          "target_primary_key": [
+            "tenant_id",
+            "ticket_id"
+          ],
+          "cardinality": "many-to-one",
+          "nullable": false,
+          "semantic_meaning": "Each transition belongs to exactly one ticket in the same tenant."
+        }
+      ],
+      "sensitivity": "confidential",
+      "stability": {
+        "level": "stable",
+        "compatibility": "Subject to the contract-level v1.x compatibility rules."
+      },
+      "fields": [
+        {
+          "name": "tenant_id",
+          "description": "Identifier of the tenant that owns the ticket event.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Required partition and authorization scope for every ticket event.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable within SupportOps; consumers must not join or disclose across tenants."
+        },
+        {
+          "name": "event_id",
+          "description": "SupportOps business identifier for the recorded transition event.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Uniquely identifies one ticket transition within tenant_id.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable SupportOps correlation key within a tenant; it is not public data."
+        },
+        {
+          "name": "ticket_id",
+          "description": "Identifier of the ticket whose status changed.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "References tickets_v1 within the same tenant.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable SupportOps correlation key within a tenant; it is not public data.",
+          "references": "tickets_v1.(tenant_id,ticket_id)"
+        },
+        {
+          "name": "actor_id",
+          "description": "Identifier of the principal that performed the recorded transition.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Actor attribution for operational analysis; no actor profile is exposed.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "SupportOps principal identifier; it is not public data."
+        },
+        {
+          "name": "from_status",
+          "description": "Ticket status immediately before the recorded transition.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "Prior state in the SupportOps ticket lifecycle.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "open",
+            "assigned",
+            "pending_customer",
+            "resolved",
+            "closed"
+          ]
+        },
+        {
+          "name": "to_status",
+          "description": "Ticket status immediately after the recorded transition.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "Resulting state in the SupportOps ticket lifecycle.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "open",
+            "assigned",
+            "pending_customer",
+            "resolved",
+            "closed"
+          ]
+        },
+        {
+          "name": "created_at",
+          "description": "Time at which SupportOps recorded the transition.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Recorded transition instant, not free-text note time.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        }
+      ]
+    },
+    {
+      "name": "actions_v1",
+      "description": "Durable SupportOps refund or return-request lifecycle facts.",
+      "grain": "One row represents one logical customer-requested refund or return operation in one tenant, at its current persisted lifecycle state.",
+      "primary_key": {
+        "fields": [
+          "tenant_id",
+          "action_id"
+        ],
+        "semantic_meaning": "The tenant and action identifier together are the stable logical identity for a requested business action."
+      },
+      "relationships": [
+        {
+          "field": "order_id",
+          "target_dataset": "orders_v1",
+          "target_primary_key": [
+            "tenant_id",
+            "order_id"
+          ],
+          "cardinality": "many-to-one",
+          "nullable": true,
+          "semantic_meaning": "When present, the action concerns this order in the same tenant. Null is retained for migrated legacy records without a verified order reference."
+        },
+        {
+          "field": "ticket_id",
+          "target_dataset": "tickets_v1",
+          "target_primary_key": [
+            "tenant_id",
+            "ticket_id"
+          ],
+          "cardinality": "many-to-one",
+          "nullable": true,
+          "semantic_meaning": "When present, the ticket is the SupportOps human-review ticket associated with the action."
+        }
+      ],
+      "sensitivity": "confidential",
+      "stability": {
+        "level": "stable",
+        "compatibility": "Subject to the contract-level v1.x compatibility rules."
+      },
+      "fields": [
+        {
+          "name": "tenant_id",
+          "description": "Identifier of the tenant that owns the requested business action.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Required partition and authorization scope for every action fact.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable within SupportOps; consumers must not join or disclose across tenants."
+        },
+        {
+          "name": "action_id",
+          "description": "SupportOps business identifier for the requested refund or return operation.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Uniquely identifies one durable requested business action within tenant_id.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Stable action correlation key within a tenant; it is not a receipt payload."
+        },
+        {
+          "name": "order_id",
+          "description": "Identifier of the order targeted by the action, when verified.",
+          "logical_type": "identifier",
+          "nullable": true,
+          "semantic_meaning": "References orders_v1 within the same tenant. New actions are order-scoped; null preserves the known limitation of migrated legacy records.",
+          "sensitivity": "confidential",
+          "references": "orders_v1.(tenant_id,order_id)",
+          "identifier_semantics": "Order correlation key within a tenant."
+        },
+        {
+          "name": "ticket_id",
+          "description": "Identifier of the human-review ticket associated with the action, when one exists.",
+          "logical_type": "identifier",
+          "nullable": true,
+          "semantic_meaning": "References tickets_v1 within the same tenant; null means no associated human-review ticket.",
+          "sensitivity": "confidential",
+          "references": "tickets_v1.(tenant_id,ticket_id)",
+          "identifier_semantics": "Ticket correlation key within a tenant."
+        },
+        {
+          "name": "conversation_id",
+          "description": "Identifier of the support conversation in which the action was requested.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Conversation correlation key only; no conversation content is exposed.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Pseudonymous identifier; it is not public data."
+        },
+        {
+          "name": "customer_id",
+          "description": "Identifier of the customer who requested the action.",
+          "logical_type": "identifier",
+          "nullable": false,
+          "semantic_meaning": "Customer relationship for tenant-scoped action analysis.",
+          "sensitivity": "confidential",
+          "identifier_semantics": "Pseudonymous identifier; it is not public data."
+        },
+        {
+          "name": "action_kind",
+          "description": "Business operation requested by the customer.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "Determines whether the durable action is a refund request or a return request.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "refund",
+            "return_request"
+          ]
+        },
+        {
+          "name": "action_status",
+          "description": "Current durable lifecycle status of the requested business action.",
+          "logical_type": "enum",
+          "nullable": false,
+          "semantic_meaning": "Local SupportOps lifecycle state. submitted records a local submission; it does not prove provider processing, settlement, physical return completion, or reconciliation.",
+          "sensitivity": "internal",
+          "enum_values": [
+            "pending_confirmation",
+            "pending_approval",
+            "submitted",
+            "cancelled",
+            "expired",
+            "rejected",
+            "invalidated"
+          ]
+        },
+        {
+          "name": "quoted_amount",
+          "description": "Refund amount quoted when the refund action was prepared.",
+          "logical_type": "decimal",
+          "nullable": true,
+          "semantic_meaning": "Present only for refund actions. It is a local quoted amount, not proof of payment processing or settlement.",
+          "sensitivity": "internal",
+          "unit": "major currency units",
+          "serialization": "Canonical base-10 decimal string; no exponent notation.",
+          "currency_semantics": "Uses the delivery's declared currency context. Null is required for return_request actions; consumers must not infer a value from omitted internal data."
+        },
+        {
+          "name": "approval_required",
+          "description": "Whether SupportOps policy requires a human approval before the action can progress.",
+          "logical_type": "boolean",
+          "nullable": false,
+          "semantic_meaning": "Current policy requirement for the action; it does not reveal an approver identity or approval evidence.",
+          "sensitivity": "internal"
+        },
+        {
+          "name": "created_at",
+          "description": "Time at which SupportOps created the durable action.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Action creation instant.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        },
+        {
+          "name": "expires_at",
+          "description": "Time after which an uncompleted action proposal expires.",
+          "logical_type": "timestamp",
+          "nullable": false,
+          "semantic_meaning": "Confirmation or approval expiry instant; it does not itself state that an action is terminal.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        },
+        {
+          "name": "confirmed_at",
+          "description": "Time at which SupportOps recorded the required customer confirmation, when one was recorded.",
+          "logical_type": "timestamp",
+          "nullable": true,
+          "semantic_meaning": "Records confirmation timing without exposing the confirming actor or confirmation payload.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        },
+        {
+          "name": "terminal_at",
+          "description": "Time at which SupportOps recorded a terminal lifecycle outcome, when one exists.",
+          "logical_type": "timestamp",
+          "nullable": true,
+          "semantic_meaning": "Terminal action lifecycle instant; it is not payment settlement or physical-return completion time.",
+          "sensitivity": "internal",
+          "timestamp_semantics": "UTC instant serialized in RFC 3339 format with an explicit offset."
+        }
+      ]
+    }
+  ]
+}

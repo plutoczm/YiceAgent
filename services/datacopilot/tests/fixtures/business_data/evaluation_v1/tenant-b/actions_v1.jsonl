@@ -1,0 +1,1 @@
+{"action_id":"b-act-1","action_kind":"return_request","action_status":"submitted","approval_required":false,"confirmed_at":null,"conversation_id":"conversation-tenant-b-1","created_at":"2026-09-21T02:00:00Z","customer_id":"customer-tenant-b-1","expires_at":"2026-09-21T03:00:00Z","order_id":"b-002","quoted_amount":null,"tenant_id":"tenant-b","terminal_at":null,"ticket_id":"b-t-1"}

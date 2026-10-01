@@ -1,0 +1,21 @@
+# 微调前后对比评测配置（Qwen3-4B，RTX 5060 Ti 8G）
+base_model: /home/jeremy/.cache/modelscope/models/Qwen--Qwen3-4B/snapshots/master
+lora_adapter: training/data/models/lora-datacopilot
+
+# 评测 runner：
+#   base = transformers 离线推理基座模型（--runner base）
+#   lora = transformers 加载基座 + LoRA 适配器（--runner lora，无需 Ollama）
+#   ft   = Ollama OpenAI 兼容接口（--runner ft，需先完成 GGUF 导入）
+ollama_base_url: http://127.0.0.1:11434/v1
+ollama_base_model: qwen3:4b
+ollama_ft_model: datacopilot-qwen3-4b:latest
+
+# 评测样例（由数据集构建器产出）
+text2sql_cases: training/data/processed/text2sql_cases.jsonl
+warehouse_cases: training/data/processed/warehouse_cases.jsonl
+output_dir: training/data/eval
+
+# 推理参数
+temperature: 0.0
+max_new_tokens_sql: 1024
+max_new_tokens_warehouse: 3072

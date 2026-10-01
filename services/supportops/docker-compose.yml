@@ -1,0 +1,107 @@
+# Local demo only: explicit development identity and loopback API binding.
+# Production must set APP_ENV=production, both auth modes=jwt, and disable demo seeding.
+services:
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://supportops:supportops@postgres:5432/supportops
+      DATABASE_AUTO_CREATE_SCHEMA: "false"
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      APP_ENV: ${APP_ENV:-development}
+      AUTH_MODE: ${AUTH_MODE:-dev}
+      DEV_TENANT_ID: ${DEV_TENANT_ID:-TENANT-DEMO}
+      AUTH_ISSUER: ${AUTH_ISSUER:-}
+      AUTH_AUDIENCE: ${AUTH_AUDIENCE:-}
+      AUTH_JWKS_URL: ${AUTH_JWKS_URL:-}
+      AUTH_ALGORITHM: ${AUTH_ALGORITHM:-RS256}
+      MCP_AUTH_MODE: ${MCP_AUTH_MODE:-disabled}
+      MCP_ISSUER_URL: ${MCP_ISSUER_URL:-}
+      MCP_RESOURCE_SERVER_URL: ${MCP_RESOURCE_SERVER_URL:-http://127.0.0.1:8001/mcp}
+      MCP_REQUIRED_SCOPE: ${MCP_REQUIRED_SCOPE:-support:read}
+      MCP_WRITE_SCOPE: ${MCP_WRITE_SCOPE:-support:write}
+      MCP_DEV_CUSTOMER_ID: ${MCP_DEV_CUSTOMER_ID:-CUST-001}
+      LEGACY_DEMO_BACKFILL: ${LEGACY_DEMO_BACKFILL:-false}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      REFUND_HUMAN_REVIEW_THRESHOLD: "500"
+      RELIABILITY_BACKEND: redis
+      REDIS_URL: redis://redis:6379/0
+      REDIS_SOCKET_TIMEOUT_SECONDS: ${REDIS_SOCKET_TIMEOUT_SECONDS:-0.5}
+      REDIS_KEY_PREFIX: ${REDIS_KEY_PREFIX:-supportops}
+      RELIABILITY_REQUIRE_STARTUP: ${RELIABILITY_REQUIRE_STARTUP:-true}
+      RELIABILITY_FAIL_CLOSED_MUTATIONS: ${RELIABILITY_FAIL_CLOSED_MUTATIONS:-true}
+      ACTION_CONFIRMATION_TTL_SECONDS: ${ACTION_CONFIRMATION_TTL_SECONDS:-600}
+      ACTION_LOCK_TTL_SECONDS: ${ACTION_LOCK_TTL_SECONDS:-15}
+      RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS:-60}
+      SUPPORT_MESSAGE_RATE_LIMIT: ${SUPPORT_MESSAGE_RATE_LIMIT:-30}
+      ACTION_CONFIRMATION_RATE_LIMIT: ${ACTION_CONFIRMATION_RATE_LIMIT:-10}
+      RATE_LIMIT_FAIL_OPEN: ${RATE_LIMIT_FAIL_OPEN:-true}
+      METRICS_ENABLED: ${METRICS_ENABLED:-true}
+      TRACING_ENABLED: ${TRACING_ENABLED:-true}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-supportops-ai}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORT_TIMEOUT_SECONDS: ${OTEL_EXPORT_TIMEOUT_SECONDS:-3}
+      KNOWLEDGE_BACKEND: ${KNOWLEDGE_BACKEND:-local}
+      KNOWLEDGE_SOURCES_PATH: ${KNOWLEDGE_SOURCES_PATH:-}
+      EMBEDDING_BACKEND: ${EMBEDDING_BACKEND:-deterministic}
+      EMBEDDING_BASE_URL: http://host.docker.internal:11434/v1
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-}
+      EMBEDDING_TIMEOUT_SECONDS: ${EMBEDDING_TIMEOUT_SECONDS:-5}
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_API_KEY: ${QDRANT_API_KEY:-}
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-supportops_knowledge}
+      QDRANT_TIMEOUT_SECONDS: ${QDRANT_TIMEOUT_SECONDS:-3}
+      QDRANT_SYNC_ON_START: ${QDRANT_SYNC_ON_START:-true}
+      RETRIEVAL_MIN_EVIDENCE_SCORE: ${RETRIEVAL_MIN_EVIDENCE_SCORE:-0.16}
+      RETRIEVAL_ALLOW_SPARSE_FALLBACK: ${RETRIEVAL_ALLOW_SPARSE_FALLBACK:-true}
+    ports:
+      - "127.0.0.1:8002:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: supportops
+      POSTGRES_USER: supportops
+      POSTGRES_PASSWORD: supportops
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U supportops -d supportops"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - supportops-postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - supportops-redis:/data
+
+  qdrant:
+    image: qdrant/qdrant:v1.18.2
+    profiles: ["rag"]
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - supportops-qdrant:/qdrant/storage
+
+volumes:
+  supportops-postgres:
+  supportops-redis:
+  supportops-qdrant:

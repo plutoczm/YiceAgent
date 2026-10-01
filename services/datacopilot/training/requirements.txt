@@ -1,0 +1,14 @@
+# 训练依赖（安装到 conda "agent" 环境：pip install -r training/requirements.txt）
+# 注意：以下依赖仅训练/评测需要，与后端运行环境（datacopilot）解耦。
+unsloth>=2025.6.0
+trl>=0.15.0
+bitsandbytes>=0.45.0
+transformers>=4.46.0
+peft>=0.14.0
+accelerate>=1.0.0
+datasets>=3.0.0
+sentencepiece>=0.2.0
+einops>=0.8.0
+pyyaml>=6.0
+httpx>=0.28.0
+torch>=2.6.0

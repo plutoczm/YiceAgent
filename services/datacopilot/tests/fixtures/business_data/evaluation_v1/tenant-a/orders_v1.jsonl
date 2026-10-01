@@ -1,0 +1,6 @@
+{"amount":"12.30","customer_id":"customer-a-1","order_id":"a-001","refund_status":"none","refundable_amount":"12.30","return_status":"none","status":"paid","tenant_id":"tenant-a"}
+{"amount":"20.00","customer_id":"customer-a-2","order_id":"a-002","refund_status":"pending","refundable_amount":"20.00","return_status":"none","status":"paid","tenant_id":"tenant-a"}
+{"amount":"0.00","customer_id":"customer-a-3","order_id":"a-003","refund_status":"none","refundable_amount":"0.00","return_status":"none","status":"cancelled","tenant_id":"tenant-a"}
+{"amount":"99.90","customer_id":"customer-a-4","order_id":"a-004","refund_status":"none","refundable_amount":"0.00","return_status":"none","status":"pending","tenant_id":"tenant-a"}
+{"amount":"14.00","customer_id":"customer-a-5","order_id":"a-005","refund_status":"approved","refundable_amount":"0.00","return_status":"none","status":"refunded","tenant_id":"tenant-a"}
+{"amount":"100.00","customer_id":"customer-a-6","order_id":"a-006","refund_status":"none","refundable_amount":"50.00","return_status":"pending","status":"paid","tenant_id":"tenant-a"}

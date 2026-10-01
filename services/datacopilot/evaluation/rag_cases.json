@@ -1,0 +1,29 @@
+[
+  {
+    "id": "spark_aqe",
+    "question": "Spark AQE 可以在运行时优化哪些问题？",
+    "source_path": "knowledge_base/spark/spark_aqe.md",
+    "domain": "spark",
+    "expected_filename": "spark_aqe.md",
+    "golden_answer": "Spark AQE 会根据运行时统计调整 Join 策略、合并小分区，并优化倾斜分区。",
+    "required_answer_terms": ["Join", "小分区", "倾斜分区"]
+  },
+  {
+    "id": "hive_partition",
+    "question": "Hive 分区和分桶的主要区别是什么？",
+    "source_path": "knowledge_base/hive/hive_partition.md",
+    "domain": "hive",
+    "expected_filename": "hive_partition.md",
+    "golden_answer": "Hive 分区是目录级裁剪，分桶是文件级哈希组织，分别面向过滤和 Join 等优化场景。",
+    "required_answer_terms": ["目录级", "文件级", "Join"]
+  },
+  {
+    "id": "kafka_offset",
+    "question": "Kafka 如何降低消息丢失风险？",
+    "source_path": "knowledge_base/kafka/kafka_offset.md",
+    "domain": "kafka",
+    "expected_filename": "kafka_offset.md",
+    "golden_answer": "Kafka 生产端使用 acks=all 和幂等，Broker 保持副本与 ISR，消费端在处理完成后提交 offset。",
+    "required_answer_terms": ["acks=all", "ISR", "offset"]
+  }
+]

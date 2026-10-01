@@ -1,0 +1,42 @@
+# Qwen3-4B 4-bit QLoRA 微调配置（RTX 5060 Ti 单卡，实际 8G 显存）
+# 注意：网络受限环境下 HF/ModelScope 均无 Instruct 版，改用 base 版 + ChatML 模板 SFT。
+# 8G 显存跑 8B 会因显存占满而病态变慢，改用 4B 稳定训练；需 8B 时改 base_model + 更大显存机器。
+# base_model 为本地 ModelScope 缓存路径（也可填 HF 仓库 id）。
+base_model: /home/jeremy/.cache/modelscope/models/Qwen--Qwen3-4B/snapshots/master
+data_file: training/data/processed/train.jsonl
+output_dir: training/data/models/lora-datacopilot
+
+# 训练（8G 显存安全配置：batch 2 × 累积 4 ≈ 等效 batch 8）
+epochs: 2
+learning_rate: 2.0e-4
+batch_size: 2
+gradient_accumulation_steps: 4
+optimizer: adamw_8bit
+lr_scheduler: linear
+warmup_steps: 10
+max_seq_length: 2048
+seed: 42
+
+# QLoRA
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.0
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+use_4bit: true
+quant_type: nf4
+use_bf16: true
+gradient_checkpointing: true
+
+# 记忆优化
+# save_steps 设为极大值以禁用中间 checkpoint：Unsloth 修补 trl 后 torch.save(SFTConfig) 会抛
+# PicklingError，中间保存必崩；最终适配器由 model.save_pretrained 落盘，不受影响。
+save_steps: 999999
+logging_steps: 10
+report_to: none

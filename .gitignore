@@ -1,0 +1,17 @@
+.runtime/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage*
+*.egg-info/
+.venv/
+node_modules/
+*.db
+*.sqlite*
+*.pem
+*.key

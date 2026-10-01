@@ -1,0 +1,2 @@
+{"amount":"500.00","customer_id":"customer-b-1","order_id":"b-001","refund_status":"none","refundable_amount":"0.00","return_status":"none","status":"paid","tenant_id":"tenant-b"}
+{"amount":"125.50","customer_id":"customer-b-2","order_id":"b-002","refund_status":"none","refundable_amount":"25.50","return_status":"pending","status":"paid","tenant_id":"tenant-b"}
