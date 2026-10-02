@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "before_summary": "D:\\Projects\\WorkflowOps\\.runtime\\p6-f9bce7304606410198209f8ad86710c3\\summary.json",
+  "after_summary": "D:\\Projects\\WorkflowOps\\.runtime\\p6-b828732e207e4a5a9e08d3e7e2bce07d\\summary.json",
+  "test_counts_exit_codes_skip_reasons_equal": true,
+  "e2e_case_status_workflow_sequence_reference_shapes_equal": true,
+  "workflow_runs_before": 50,
+  "workflow_runs_after": 50,
+  "evaluation_metrics_and_50_case_results_equal": true,
+  "public_database_fingerprints_equal": true,
+  "ignored_dynamic_fields": [
+    "run/ticket/action IDs",
+    "runtime timestamps/as_of",
+    "timing",
+    "snapshot/export fingerprints",
+    "process/session handles"
+  ],
+  "notes": "Actual report rows/counts are checked against the same independent PG oracle in each run; expected files never serve as API responses."
+}

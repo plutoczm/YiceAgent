@@ -7,6 +7,8 @@ import stat
 import subprocess
 from pathlib import Path
 
+from service_paths import SERVICE_DIRECTORIES
+
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = {
     "harness": Path("D:/Projects/AgentOpsHub"),
@@ -184,7 +186,7 @@ def inventory(sources=SOURCES, root=ROOT):
                     {"service": service, "path": relative, "reason": reason}
                 )
                 continue
-            target_relative = f"services/{service}/{relative}"
+            target_relative = f"services/{SERVICE_DIRECTORIES[service]}/{relative}"
             target = safe_path(root, target_relative)
             digest = sha(source_file)
             if target.exists() and (not target.is_file() or sha(target) != digest):
@@ -204,7 +206,7 @@ def inventory(sources=SOURCES, root=ROOT):
         f
         for f in files
         if f["target_path"]
-        == "services/supportops/contracts/business_data/v1/contract.json"
+        == "services/support/contracts/business_data/v1/contract.json"
     )
     for f in files.copy():
         if f["service"] == "supportops" and f["source_path"].startswith(
@@ -219,7 +221,7 @@ def inventory(sources=SOURCES, root=ROOT):
         f
         for f in files
         if f["target_path"]
-        == "services/datacopilot/contracts/external/business_data/v1/contract.json"
+        == "services/analytics/contracts/external/business_data/v1/contract.json"
     )
     if producer["sha256"] != consumer["sha256"]:
         conflicts.append("producer/consumer contract mismatch")

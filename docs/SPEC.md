@@ -83,8 +83,8 @@ WorkflowOps/
     INTERVIEW.md               # P6 生成
   services/
     harness/                   # AgentOpsHub 源码快照，保留 backend/src/app
-    supportops/                # supportops-ai 源码快照，保留 app
-    datacopilot/               # DataCopilot 源码快照，保留 backend/app
+    support/                # supportops-ai 源码快照，保留 app
+    analytics/               # DataCopilot 源码快照，保留 backend/app
   contracts/
     business_data/v1/           # 唯一发布源；保持原字节与原语义
     demo_fixture/v1/            # 单独的模拟输入协议，不混入业务 Contract

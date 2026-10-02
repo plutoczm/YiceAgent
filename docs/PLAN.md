@@ -2,7 +2,7 @@
 
 版本：v1.0 | 日期：2026-09-30 | 依据：[SPEC.md](SPEC.md)
 范围：六个执行批次 P1–P6；每批只交付一个可验证增量；不沿用原项目的无限 Phase 扩展。
-当前状态：P1–P4 已于 2026-10-01 验证完成，P5 已于 2026-10-02 验证完成；P6 未执行。实际证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md)、[P3_VALIDATION.md](P3_VALIDATION.md)、[P4_VALIDATION.md](P4_VALIDATION.md) 和 [P5_VALIDATION.md](P5_VALIDATION.md)。P6 的文件、路由及命令仍为实施目标。
+当前状态：P1–P4 已于 2026-10-01 验证完成，P5–P6 已于 2026-10-02 验证完成。P6 24 场景与 AC-01–AC-12 门禁通过，冻结 v1-demo-ready，停止主线。实际证据见 P1–P5_VALIDATION 及 [P6_VALIDATION.md](P6_VALIDATION.md)。
 
 ## 1. 执行约束与进度板
 
@@ -20,7 +20,7 @@
 | P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | COMPLETE | Harness 26、安全 153、真实 HTTP 1、根边界 23 passed；见 P3_VALIDATION |
 | P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | COMPLETE | governed 279 passed/1 skipped；producer 36 passed/1 skipped；真实 delivery 6、reports 1 passed；五报表与独立 oracle 一致，见 P4_VALIDATION |
 | P5 | 一个浏览器工作台 | P4 | COMPLETE | UI 5+真实 HTTP 1；浏览器六剧本完成；启动/停止/权限/新鲜度通过，见 P5_VALIDATION |
-| P6 | 24 场景验证、演示手册、技术取舍与面试说明 | P5 | NOT_STARTED | SPEC AC-01–AC-12 达成，冻结 v1 |
+| P6 | 24 场景验证、演示手册、技术取舍与面试说明 | P5 | COMPLETE | 24 passed，AC-01–AC-12 有证据；必要回归与离线 D5 50 场景通过，2 平台 skip 单列；v1-demo-ready，见 P6_VALIDATION |
 
 每批汇报只包含：改动文件、实际命令/结果、未验证项、剩余批次。失败则修复当前批次或如实保留阻塞，不另建一串子阶段。
 P6 后只修复阻塞演示的缺陷；新协议、部署、检索优化进入非必做清单，不能延长 v1 完成线。
@@ -297,6 +297,12 @@ AC-01–AC-12 均有证据后将进度板标为 COMPLETE，README 标识 `v1-dem
 只在用户要求时创建 Git commit/tag/push；状态名不表示已自动创建 Git tag。
 不再追加 P7、P8 等主线；只将潜在增强记录为不阻塞演示的后续想法。
 
+### P6 实际状态（2026-10-02）
+
+规定 verify --offline、demo-check --all 均 exit 0；24 逻辑场景 passed、0 failed/skip；根 41、Harness 291、SupportOps 219/1 skip、DataCopilot 284/1 skip，真实 HTTP support 1、delivery 6、reports 1、ui 1 passed。既有离线 D5 50/50 通过；计数有重叠，不重复累加。七个改动 Python 文件 lint/format、语法检查、Contract、698 来源保护和 diff 审阅通过。根/SupportOps 新脚本未配置类型检查，未改 Harness typed 源码，未宣称全量 mypy。
+
+保留两轮失败及修复证据：故障后改为只读 PG 核对；修复 Windows 已退出 PID 的身份读取，未知/活进程仍 fail-closed。public 业务行指纹前后相等，测试 schema 0，HTTP 均停止，PG/卷保留；无 live 模型/安装/commit/tag/push。手册、面试说明和完整 AC→test/run 映射见 [P6_VALIDATION.md](P6_VALIDATION.md)。P6 COMPLETE，v1-demo-ready，剩余批次 0，到此停止。历史各阶段的“P6 未开始”保留为当时记录。
+
 ## 8. 每批统一执行模板
 
 将下列模板交给执行器，并把 Pn 替换为这次唯一批次：
@@ -327,3 +333,5 @@ P1 的授权范围仅是安全复制、目录/脚本/自有演示配置，不包
 | 离线、回归、完整演示、技术讲述 | P6 | AC-10/11/12及全部交叉验证 |
 
 技术或路径存在不确定时，以最小源码核对补足，不借此升级目标。新增 API 名称可在首个实现批次冻结，但语义边界不得放宽。
+
+Post-P6 仓库整合：物理服务目录已整理为 `services/harness`、`services/support`、`services/analytics`；原 CLI 标识和 Conda 环境保持兼容。当前运行与历史路径说明见 [Monorepo 指南](MONOREPO.md)；本次仅仓库整合，P1–P6 开发状态不变。

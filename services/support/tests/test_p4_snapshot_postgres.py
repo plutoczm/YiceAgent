@@ -15,7 +15,7 @@ from app.demo.fixtures import validate_url
 from app.store import OrderRow
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "services/supportops/scripts"))
+sys.path.insert(0, str(ROOT / "services/support/scripts"))
 database = importlib.import_module("p3_test_database")
 
 

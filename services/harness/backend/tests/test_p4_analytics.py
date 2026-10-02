@@ -96,10 +96,10 @@ def test_wire_fields_match_source():
     )
     wire_classes = {n.name: n for n in wire.body if isinstance(n, ast.ClassDef)}
     for source in (
-        "services/supportops/app/demo/exports.py",
-        "services/datacopilot/backend/app/application/demo_reports/service.py",
-        "services/datacopilot/backend/app/application/business_analytics/governed_models.py",
-        "services/datacopilot/backend/app/application/business_analytics/managed_models.py",
+        "services/support/app/demo/exports.py",
+        "services/analytics/backend/app/application/demo_reports/service.py",
+        "services/analytics/backend/app/application/business_analytics/governed_models.py",
+        "services/analytics/backend/app/application/business_analytics/managed_models.py",
     ):
         for node in ast.parse((root / source).read_text()).body:
             if isinstance(node, ast.ClassDef) and node.name in wire_classes:

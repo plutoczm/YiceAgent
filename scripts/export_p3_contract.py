@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     source = ast.parse(
-        (ROOT / "services/supportops/app/domain.py").read_text(encoding="utf-8")
+        (ROOT / "services/support/app/domain.py").read_text(encoding="utf-8")
     )
     classes = {
         node.name: node for node in source.body if isinstance(node, ast.ClassDef)

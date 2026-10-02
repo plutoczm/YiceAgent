@@ -8,6 +8,7 @@ from pathlib import Path
 
 import uvicorn
 from demo_process import process_identity
+from service_paths import SERVICE_DIRECTORIES
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,7 +26,11 @@ def main():
         if service == "datacopilot"
         else "app.demo.composition"
     )
-    if not Path(module.__file__).resolve().is_relative_to(ROOT / "services" / service):
+    if (
+        not Path(module.__file__)
+        .resolve()
+        .is_relative_to(ROOT / "services" / SERVICE_DIRECTORIES[service])
+    ):
         raise ValueError("import escaped service snapshot")
     app = module.create_app()
 

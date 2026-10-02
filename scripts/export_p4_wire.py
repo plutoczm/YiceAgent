@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DC = ROOT / "services/datacopilot/backend/app"
+DC = ROOT / "services/analytics/backend/app"
 TARGET = ROOT / "services/harness/backend/src/app/adapters/analytics_dto.py"
 
 
@@ -81,9 +81,7 @@ BusinessFieldClassification = Literal["public", "internal", "confidential", "res
     report = declarations(
         DC / "application/demo_reports/service.py", {"ReportId", "ReportView"}
     )
-    source = declarations(
-        ROOT / "services/supportops/app/demo/exports.py", {"ExportView"}
-    )
+    source = declarations(ROOT / "services/support/app/demo/exports.py", {"ExportView"})
     return (
         header
         + "\n"

@@ -49,7 +49,7 @@ from backend.app.infrastructure.identity.configured_tenant_access import (
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException
 
 ROOT = Path(__file__).resolve().parents[5]
-SERVICE_ROOT = ROOT / "services/datacopilot"
+SERVICE_ROOT = ROOT / "services/analytics"
 PERSONAS = {"customer-a1", "customer-a2", "operator-a", "customer-b1"}
 ISSUER = "workflowops-local-demo"
 

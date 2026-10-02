@@ -10,14 +10,14 @@ ROOT = Path(__file__).resolve().parents[1]
 def check(root=ROOT):
     paths = [
         root / "contracts/business_data/v1/contract.json",
-        root / "services/supportops/contracts/business_data/v1/contract.json",
-        root / "services/datacopilot/contracts/external/business_data/v1/contract.json",
+        root / "services/support/contracts/business_data/v1/contract.json",
+        root / "services/analytics/contracts/external/business_data/v1/contract.json",
     ]
     hashes = [hashlib.sha256(path.read_bytes()).hexdigest() for path in paths]
     acceptance = json.loads(
         (
             root
-            / "services/datacopilot/contracts/external/business_data/v1/acceptance.json"
+            / "services/analytics/contracts/external/business_data/v1/acceptance.json"
         ).read_text(encoding="utf-8")
     )
     if len(set(hashes)) != 1 or acceptance["contract_sha256"] != hashes[0]:

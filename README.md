@@ -7,7 +7,7 @@
 
 ## 当前状态
 
-2026-10-02：**P1–P5 已验证完成：安全导入、模拟数据、固定客服工作流、不可变交付、受控模板报表与统一工作台；P6 未开始。**
+2026-10-02：**v1-demo-ready · P1–P6 已验证完成。** P6 24 逻辑场景通过，AC-01–AC-12 均有证据；必要回归与离线 D5 门禁通过，两个平台 skip 单独记录。见 [P6 验证记录](docs/P6_VALIDATION.md)。状态标识不代表创建 Git tag。
 三服务源码快照、隔离分派、doctor 与 Contract 检查已具备；P3 已通过真实 HTTP 与 PostgreSQL 的确认、审批及人工工单闭环。证据见 [P3 验证记录](docs/P3_VALIDATION.md)。根 Git 为独立仓库；P3 验证与复审后按用户授权创建本地提交，不 push。
 工作名称 WorkflowOps 可在后续统一改名，不影响架构边界。
 
@@ -22,8 +22,8 @@
 | 模块 | 来源 | 主责 |
 |---|---|---|
 | services/harness | AgentOpsHub | 固定 Workflow、入口、权限传递、运行记录 |
-| services/supportops | supportops-ai | 客服业务规则、确认/审批、工单与业务事实 |
-| services/datacopilot | DataCopilot | 模拟数据生成、快照消费、受控 SQL 分析 |
+| services/support | supportops-ai | 客服业务规则、确认/审批、工单与业务事实 |
+| services/analytics | DataCopilot | 模拟数据生成、快照消费、受控 SQL 分析 |
 
 完整 v1 目标：模拟数据 → 客户查询/申请 → 确认或人工接管 → 数据快照 → 运营报表 → 运行记录。
 已实现的 offline 流程不调用 LLM，使用实际 API、业务库、独立校验的快照与实际 DuckDB SQL 结果。P4 实测证据见 [P4 验证记录](docs/P4_VALIDATION.md)。
@@ -33,7 +33,7 @@
 
 P1 安全目录与源码导入 → P2 模拟数据 → P3 固定流程与客服 → P4 交付与报表 → P5 统一工作台 → P6 验证与面试材料。
 完成 Spec 的 AC-01–AC-12 后即冻结演示版，不自动追加平台化阶段。
-P5 到此停止。统一 UI 已完成；P6 全套验收与面试材料须另行指定。
+P6 到此停止，剩余主线批次 0。演示步骤见 [DEMO.md](docs/DEMO.md)，技术取舍与项目讲述见 [INTERVIEW.md](docs/INTERVIEW.md)。
 
 ## 保护原项目
 
@@ -117,4 +117,17 @@ start 先 doctor 检查，冲突报错，不安装/下载/重置数据；stop �
 
 客户视图提供实际订单、带引用咨询、明确确认与工单对话；运营提供真实分派/回复/审批；数据视图提供显式快照刷新及五个 template/v1 报表；运行页提供实际步骤/耗时/错误/关联 ID。身份切换清空页面上下文，服务端 ACL 始终生效。退款申请提交不等于到账，分析不会自动刷新。工作台仅 offline，live 模型未验收。
 
-UI gate 使用独立测试 schema，不重置主演示库。实际浏览器六场景、命令结果、截图和真实 run_id 见 [P5 验证记录](docs/P5_VALIDATION.md)。P6 未执行，项目未标记 v1-demo-ready。
+UI gate 使用独立测试 schema，不重置主演示库。实际浏览器六场景、命令结果、截图和真实 run_id 见 [P5 验证记录](docs/P5_VALIDATION.md)。P6 已完成，项目冻结为 v1-demo-ready；不自动追加后续阶段。
+
+## P6 完整离线验证
+
+先 stop.cmd，再执行：
+
+```text
+conda run -n agentopshub python scripts/dev.py verify --offline
+conda run -n agentopshub python scripts/dev.py demo-check --all
+```
+
+verify 使用隔离 PostgreSQL schema，保留每批退出码、JUnit 和 pass/fail/skip；demo-check 输出 AC 到实际 test/run 的映射，并拒绝已变化源码/手册的旧证据。每轮报告在 ignored .runtime/p6-<UUID>/，最新指针为 .runtime/p6-latest.json。live 模型为 NOT_RUN；浏览器实测沿用 P5 六剧本证据，本轮重跑 HTTP 和 JS 回归。验证不重置主演示库，完成后停止自有 HTTP，保留 PG/卷。
+
+Post-P6 仓库整合：物理服务目录已整理为 `services/harness`、`services/support`、`services/analytics`；原 CLI 标识和 Conda 环境保持兼容。当前运行与历史路径说明见 [Monorepo 指南](docs/MONOREPO.md)；本次仅仓库整合，P1–P6 开发状态不变。

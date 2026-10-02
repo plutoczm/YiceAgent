@@ -10,6 +10,7 @@ from pathlib import Path
 
 from demo_db import CONTAINER, VOLUME, inspect_resource
 from demo_process import process_identity, stop_owned
+from service_paths import SERVICE_DIRECTORIES
 
 ROOT = Path(__file__).resolve().parents[1]
 STATE = ROOT / ".runtime/demo-processes.json"
@@ -126,7 +127,7 @@ def up(port_free, services, test_schema=None):
     try:
         for service in ("supportops", "datacopilot", "harness"):
             environment, source, _, _, port = services[service]
-            cwd = ROOT / "services" / service
+            cwd = ROOT / "services" / SERVICE_DIRECTORIES[service]
             executable = Path("D:/Anaconda3/envs") / environment / "python.exe"
             env = os.environ.copy()
             env.update(
@@ -136,6 +137,10 @@ def up(port_free, services, test_schema=None):
                 PYTHONIOENCODING="utf-8",
                 WORKFLOWOPS_DEMO_CONFIG=str(config_path),
             )
+            if service == "datacopilot":
+                env["DATACOPILOT_LOGGING__FILE_PATH"] = str(
+                    directory / "analytics-framework.log"
+                )
             with (directory / (service + ".log")).open("w", encoding="utf-8") as log:
                 child = subprocess.Popen(
                     [

@@ -7,7 +7,9 @@ from uuid import uuid4
 from demo_runtime import ROOT, STATE, down, up
 
 
-def run(port_free, services, service_process, group="support"):
+def run(
+    port_free, services, service_process, group="support", pytest_args=(), output=None
+):
     restore = STATE.exists()
     schema = "p3_test_" + uuid4().hex
     if restore:
@@ -29,13 +31,18 @@ def run(port_free, services, service_process, group="support"):
                 "pytest",
                 "tests/integration/test_p3_support.py"
                 if group == "support"
+                else "tests/integration/test_demo_v1.py"
+                if group == "v1"
                 else "tests/integration/test_p5_ui.py"
                 if group == "ui"
                 else "tests/integration/test_p4_" + group + ".py",
                 "-q",
+                *pytest_args,
             ],
             cwd=ROOT,
             check=False,
+            stdout=output,
+            stderr=subprocess.STDOUT if output is not None else None,
         ).returncode
     finally:
         down()

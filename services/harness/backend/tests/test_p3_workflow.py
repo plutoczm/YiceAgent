@@ -228,7 +228,7 @@ def test_loopback_target_only():
 
 def test_wire_contract_matches_domain_snapshot():
     root = Path(__file__).resolve().parents[4]
-    original = ast.parse((root / "services/supportops/app/domain.py").read_text(encoding="utf-8"))
+    original = ast.parse((root / "services/support/app/domain.py").read_text(encoding="utf-8"))
     mirror = ast.parse(
         (root / "services/harness/backend/src/app/adapters/supportops_dto.py").read_text(
             encoding="utf-8"

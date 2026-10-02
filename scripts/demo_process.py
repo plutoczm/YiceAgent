@@ -17,6 +17,17 @@ def process_identity(pid):
             return None
         raise OSError("cannot verify process ownership")
     try:
+        kernel.GetExitCodeProcess.argtypes = [
+            wintypes.HANDLE,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        exit_code = wintypes.DWORD()
+        if not kernel.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+            raise OSError("cannot verify process exit state")
+        if (
+            exit_code.value != 259
+        ):  # STILL_ACTIVE; a terminated PID cannot own a listener.
+            return None
         size = wintypes.DWORD(32768)
         buffer = ctypes.create_unicode_buffer(size.value)
         kernel.QueryFullProcessImageNameW.argtypes = [

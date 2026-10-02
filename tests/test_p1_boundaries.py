@@ -2,12 +2,14 @@
 
 import importlib.util
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 
 
 def load(name):
@@ -132,8 +134,8 @@ class Boundaries(unittest.TestCase):
             root = Path(temporary)
             paths = [
                 "contracts/business_data/v1/contract.json",
-                "services/supportops/contracts/business_data/v1/contract.json",
-                "services/datacopilot/contracts/external/business_data/v1/contract.json",
+                "services/support/contracts/business_data/v1/contract.json",
+                "services/analytics/contracts/external/business_data/v1/contract.json",
             ]
             for relative in paths:
                 path = root / relative
@@ -141,7 +143,7 @@ class Boundaries(unittest.TestCase):
                 path.write_bytes(b"{}")
             acceptance = (
                 root
-                / "services/datacopilot/contracts/external/business_data/v1/acceptance.json"
+                / "services/analytics/contracts/external/business_data/v1/acceptance.json"
             )
             acceptance.write_text(
                 json.dumps({"contract_sha256": imports.sha(root / paths[0])})
@@ -164,11 +166,18 @@ class Boundaries(unittest.TestCase):
                 dev.service_process(service, ["-m", "pytest"])
                 args, kwargs = run.call_args
                 self.assertIn(environment, args[0])
-                self.assertEqual(kwargs["cwd"], ROOT / "services" / service)
+                self.assertEqual(
+                    kwargs["cwd"], ROOT / "services" / dev.SERVICE_DIRECTORIES[service]
+                )
                 self.assertEqual(
                     kwargs["env"]["PYTHONPATH"],
                     str((kwargs["cwd"] / source_path).resolve()),
                 )
+                if service == "datacopilot":
+                    self.assertEqual(
+                        kwargs["env"]["DATACOPILOT_LOGGING__FILE_PATH"],
+                        str(ROOT / ".runtime/service-logs/analytics.log"),
+                    )
 
 
 if __name__ == "__main__":

@@ -15,3 +15,14 @@ node_modules/
 *.sqlite*
 *.pem
 *.key
+*.p12
+*.pfx
+*.duckdb
+*.sqlite*-wal
+*.sqlite*-shm
+*.gguf
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bundle

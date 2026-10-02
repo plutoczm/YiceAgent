@@ -9,6 +9,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from service_paths import SERVICE_DIRECTORIES
+
 ROOT = Path(__file__).resolve().parents[1]
 CONDA = Path(os.environ.get("WORKFLOWOPS_CONDA_EXE", "D:/Anaconda3/Scripts/conda.exe"))
 SERVICES = {
@@ -52,7 +54,13 @@ PROBE_MODULES = {
 
 def service_process(service, arguments, capture=False):
     environment, source_path, _, _, _ = SERVICES[service]
-    cwd = ROOT / "services" / service
+    cwd = ROOT / "services" / SERVICE_DIRECTORIES[service]
+    if arguments[:2] == ["-m", "pytest"]:
+        arguments = [
+            *arguments,
+            "-o",
+            f"cache_dir={ROOT / '.runtime/pytest-cache' / SERVICE_DIRECTORIES[service]}",
+        ]
     env = os.environ.copy()
     # Replace inherited PYTHONPATH; suppress bytecode and user site imports.
     env.update(
@@ -61,6 +69,10 @@ def service_process(service, arguments, capture=False):
         PYTHONDONTWRITEBYTECODE="1",
         PYTHONIOENCODING="utf-8",
     )
+    if service == "datacopilot":
+        env["DATACOPILOT_LOGGING__FILE_PATH"] = str(
+            ROOT / ".runtime/service-logs/analytics.log"
+        )
     command = [
         str(CONDA),
         "run",
@@ -92,17 +104,21 @@ def probe_service(service):
             "from pathlib import Path",
             f"package = importlib.import_module({package!r})",
             "origin = str(Path(package.__file__).resolve())",
-            f"expected = Path({str(ROOT / 'services' / service / source_path)!r}).resolve()",
+            f"expected = Path({str(ROOT / 'services' / SERVICE_DIRECTORIES[service] / source_path)!r}).resolve()",
             f"required = {modules!r}",
             "missing = [m for m in required if importlib.util.find_spec(m) is None]",
             "loaded = [importlib.import_module(m) for m in required if m not in missing]",
             f"representative = importlib.import_module({PROBE_MODULES[service]!r})",
             "representative_origin = str(Path(representative.__file__).resolve())",
             "assert Path(origin).is_relative_to(expected), 'import escaped service snapshot'",
-            "assert Path(representative_origin).is_relative_to(expected), "
-            "'submodule escaped snapshot'",
-            "print(json.dumps(dict(executable=sys.executable, version=sys.version.split()[0], "
-            "origin=origin, representative_origin=representative_origin, missing=missing)))",
+            (
+                "assert Path(representative_origin).is_relative_to(expected), "
+                "'submodule escaped snapshot'"
+            ),
+            (
+                "print(json.dumps(dict(executable=sys.executable, version=sys.version.split()[0], "
+                "origin=origin, representative_origin=representative_origin, missing=missing)))"
+            ),
         ]
     )
     result = service_process(service, ["-c", code], capture=True)
@@ -206,8 +222,12 @@ def main():
     commands.add_parser("doctor")
     commands.add_parser("start")
     commands.add_parser("check-contracts")
+    verify = commands.add_parser("verify")
+    verify.add_argument("--offline", action="store_true", required=True)
     ui = commands.add_parser("demo-check")
-    ui.add_argument("--group", choices=["ui"], required=True)
+    choice = ui.add_mutually_exclusive_group(required=True)
+    choice.add_argument("--group", choices=["ui"])
+    choice.add_argument("--all", action="store_true")
     up = commands.add_parser("demo-up")
     up.add_argument("--mode", choices=["offline"], default="offline")
     commands.add_parser("demo-down")
@@ -222,6 +242,14 @@ def main():
     test.add_argument("service", choices=SERVICES)
     test.add_argument("pytest_args", nargs=argparse.REMAINDER)
     args = parser.parse_args()
+    if args.command == "verify":
+        from p6_verify import verify
+
+        return verify()
+    if args.command == "demo-check" and args.all:
+        from p6_verify import acceptance
+
+        return acceptance()
     if args.command == "start":
         from demo_runtime import up
 

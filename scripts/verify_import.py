@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from import_sources import ROOT, safe_path, sha, snapshot
+from service_paths import SERVICE_DIRECTORIES, relocated_path
 
 
 def verify():
@@ -13,7 +14,7 @@ def verify():
     counts = {}
     for item in manifest["files"]:
         source = safe_path(Path(item["source_repo"]), item["source_path"])
-        target = safe_path(ROOT, item["target_path"])
+        target = safe_path(ROOT, relocated_path(item["target_path"]))
         if sha(source) != item["sha256"] or sha(target) != item["sha256"]:
             raise ValueError(f"hash mismatch: {item['target_path']}")
         counts[item["service"]] = counts.get(item["service"], 0) + 1
@@ -21,7 +22,7 @@ def verify():
         if snapshot(Path(before["source_repo"])) != before:
             raise ValueError(f"source Git state changed: {service}")
     for service in manifest["repositories"]:
-        service_root = ROOT / "services" / service
+        service_root = ROOT / "services" / SERVICE_DIRECTORIES[service]
         for path in service_root.rglob("*"):
             if path.name == ".git":
                 raise ValueError("nested Git metadata")
