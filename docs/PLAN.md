@@ -2,7 +2,7 @@
 
 版本：v1.0 | 日期：2026-09-30 | 依据：[SPEC.md](SPEC.md)
 范围：六个执行批次 P1–P6；每批只交付一个可验证增量；不沿用原项目的无限 Phase 扩展。
-当前状态：P1–P4 已于 2026-10-01 验证完成；P5–P6 未执行。实际证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md)、[P3_VALIDATION.md](P3_VALIDATION.md) 与 [P4_VALIDATION.md](P4_VALIDATION.md)。P5–P6 的文件、路由及命令仍为实施目标。
+当前状态：P1–P4 已于 2026-10-01 验证完成，P5 已于 2026-10-02 验证完成；P6 未执行。实际证据见 [P1_VALIDATION.md](P1_VALIDATION.md)、[P2_VALIDATION.md](P2_VALIDATION.md)、[P3_VALIDATION.md](P3_VALIDATION.md)、[P4_VALIDATION.md](P4_VALIDATION.md) 和 [P5_VALIDATION.md](P5_VALIDATION.md)。P6 的文件、路由及命令仍为实施目标。
 
 ## 1. 执行约束与进度板
 
@@ -19,7 +19,7 @@
 | P2 | 可复现模拟输入与 SupportOps 受控导入 | P1 | COMPLETE | fixture 稳定；真实 PostgreSQL 24 订单、no-op/reset/回滚/边界通过；见 P2_VALIDATION |
 | P3 | 固定 Workflow、demo 身份、客服 HTTP 适配与运行记录 | P2 | COMPLETE | Harness 26、安全 153、真实 HTTP 1、根边界 23 passed；见 P3_VALIDATION |
 | P4 | 生产端真实导出→消费端校验→模板 SQL 分析 | P3 | COMPLETE | governed 279 passed/1 skipped；producer 36 passed/1 skipped；真实 delivery 6、reports 1 passed；五报表与独立 oracle 一致，见 P4_VALIDATION |
-| P5 | 一个浏览器工作台 | P4 | NOT_STARTED | 客户/运营/数据/运行视图贯通，不是三个链接 |
+| P5 | 一个浏览器工作台 | P4 | COMPLETE | UI 5+真实 HTTP 1；浏览器六剧本完成；启动/停止/权限/新鲜度通过，见 P5_VALIDATION |
 | P6 | 24 场景验证、演示手册、技术取舍与面试说明 | P5 | NOT_STARTED | SPEC AC-01–AC-12 达成，冻结 v1 |
 
 每批汇报只包含：改动文件、实际命令/结果、未验证项、剩余批次。失败则修复当前批次或如实保留阻塞，不另建一串子阶段。
@@ -225,6 +225,14 @@ HTTP/静态测试验证实际 API 绑定；人工浏览器逐项完成六个剧�
 不能只证明页面返回 200；需实际点击确认、切换角色、回复工单、刷新并看到分析改变。
 覆盖 AC-03 及 AC-04–AC-09 的可见交互。截图仅用模拟数据，不伪造 UI 成功状态。
 回退只停用新静态入口，不破坏服务内既有 UI 或领域 API。
+
+### P5 实际状态（2026-10-02）
+
+规定 `demo-check --group ui` exit 0：5 单测、1 真实 HTTP/PG 跨服务集成；实际浏览器六个剧本完成，截图/DOM/真实 run_id 见 [P5_VALIDATION.md](P5_VALIDATION.md)。Harness workflow 32、SupportOps safety 153、根边界 27、P4 reports 1 passed；本批无 skip。9 Python 文件 lint/format、3 改动源码 strict mypy、JS syntax、Contract、698 文件来源保护及 diff 检查通过。start.cmd/stop.cmd 实测通过；占用 8010 时 doctor 拒绝且未启动。
+
+四个同源视图复用 SupportOps 静态风格和七个固定 workflow；实际工单双向回复、低/高金额确认、服务端权限与运行隐私、坏快照及下游失败可见。高金额 UI 先运营审批再客户确认。业务提交与快照新鲜度独立；刷新前后实际统计变化。运营 detail 复用既有授权列表，不新增领域路由。无新框架/依赖/安装/live 请求/commit/push。测试 schema 遗留 0，主库状态与 P4 一致；自有 HTTP 已停止，PG/卷保留。P5 停止，P6 NOT_STARTED。
+
+P5 审阅修复（2026-10-02）：已确认业务结果与记录失败分别显示，工单回执避免重发；故障备份按测试会话隔离。补充并接入 UI gate 的回归通过（7+5+真实 HTTP 1），Harness 39、根边界 32 passed；实际连续两轮三服务/PG corrupt/repair/finish 通过并保留旧证据。详见 P5_VALIDATION 的审阅修复节。P6 未开始。
 
 ## 7. P6 — 验证、演示手册与面试说明
 

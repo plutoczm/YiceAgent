@@ -29,6 +29,8 @@ def run(port_free, services, service_process, group="support"):
                 "pytest",
                 "tests/integration/test_p3_support.py"
                 if group == "support"
+                else "tests/integration/test_p5_ui.py"
+                if group == "ui"
                 else "tests/integration/test_p4_" + group + ".py",
                 "-q",
             ],

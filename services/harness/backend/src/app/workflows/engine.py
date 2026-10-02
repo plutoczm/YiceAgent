@@ -166,6 +166,8 @@ class WorkflowEngine:
             # SupportOps v1 OperationView.operation_id is PendingActionRow.action_id.
             # Parent association is optional and never supplies this authoritative mapping.
             refs["operation_id"] = payload.action_id
+        if isinstance(payload, Ticket) and payload.ticket_id:
+            refs["ticket_id"] = payload.ticket_id
         record = RunRecord(
             run_id=uuid4().hex,
             parent_run_id=parent,

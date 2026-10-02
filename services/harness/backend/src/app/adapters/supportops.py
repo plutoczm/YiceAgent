@@ -110,6 +110,9 @@ class SupportOpsAdapter:
             return "GET", prefix, None, list[TicketView]
         path = f"{prefix}/{payload.ticket_id}"
         if payload.action == "get":
+            if identity.operator:
+                # The domain has an authorized operator list, no operator detail GET.
+                return "GET", prefix, None, list[TicketView]
             return "GET", path, None, TicketView
         if payload.action == "messages":
             return "GET", path + "/messages", None, list[TicketMessageView]
@@ -161,6 +164,12 @@ class SupportOpsAdapter:
             result = TypeAdapter(model).validate_python(response.json())
         except (ValueError, ValidationError):
             raise DomainFailure(Error.INVALID_RESPONSE, method != "GET") from None
+        if isinstance(payload, Ticket) and payload.action == "get" and identity.operator:
+            result = next(
+                (ticket for ticket in result if ticket.ticket_id == payload.ticket_id), None
+            )
+            if result is None:
+                raise DomainFailure(Error.REJECTED)
         dispatch.result = result
         dispatch.outcome_known = True
         return result

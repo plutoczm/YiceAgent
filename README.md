@@ -7,7 +7,7 @@
 
 ## 当前状态
 
-2026-10-01：**P1–P4 已验证完成：安全导入、模拟数据、固定客服工作流、不可变交付与受控模板报表；P5–P6 未开始。**
+2026-10-02：**P1–P5 已验证完成：安全导入、模拟数据、固定客服工作流、不可变交付、受控模板报表与统一工作台；P6 未开始。**
 三服务源码快照、隔离分派、doctor 与 Contract 检查已具备；P3 已通过真实 HTTP 与 PostgreSQL 的确认、审批及人工工单闭环。证据见 [P3 验证记录](docs/P3_VALIDATION.md)。根 Git 为独立仓库；P3 验证与复审后按用户授权创建本地提交，不 push。
 工作名称 WorkflowOps 可在后续统一改名，不影响架构边界。
 
@@ -33,7 +33,7 @@
 
 P1 安全目录与源码导入 → P2 模拟数据 → P3 固定流程与客服 → P4 交付与报表 → P5 统一工作台 → P6 验证与面试材料。
 完成 Spec 的 AC-01–AC-12 后即冻结演示版，不自动追加平台化阶段。
-P4 到此停止。P5–P6 须另行指定；未实现统一 UI 或 P6 全套演示验收。
+P5 到此停止。统一 UI 已完成；P6 全套验收与面试材料须另行指定。
 
 ## 保护原项目
 
@@ -59,7 +59,7 @@ conda run -n agentopshub python scripts/dev.py test-service supportops --group d
 conda run -n agentopshub python scripts/dev.py test-service datacopilot --group demo-data
 ```
 
-生成器与导入器分别使用 DataCopilot、SupportOps 环境。相同 fixture 返回 no-op；显式 `seed-demo --seed 42 --reset-demo` 仅重置核验归属后的专用演示库。首次准备专用 PostgreSQL 可能需要固定 Docker 镜像；不操作原项目库。运行配置与密码仅存 ignored `.runtime/`，不要将其纳入 Git。当前有 24 个真实导入的模拟订单；已提供 P3 融合 HTTP API，统一 UI 待 P5。完整证据见 [P2 验证记录](docs/P2_VALIDATION.md)。
+生成器与导入器分别使用 DataCopilot、SupportOps 环境。相同 fixture 返回 no-op；显式 `seed-demo --seed 42 --reset-demo` 仅重置核验归属后的专用演示库。首次准备专用 PostgreSQL 可能需要固定 Docker 镜像；不操作原项目库。运行配置与密码仅存 ignored `.runtime/`，不要将其纳入 Git。当前有 24 个真实导入的模拟订单；已提供 P3 融合 HTTP API，统一 UI 已由 P5 提供。完整证据见 [P2 验证记录](docs/P2_VALIDATION.md)。
 
 ## P3 离线 HTTP API
 
@@ -71,7 +71,7 @@ conda run -n agentopshub python scripts/dev.py test-integration --group support
 conda run -n agentopshub python scripts/dev.py demo-down
 ```
 
-前置为已准备并运行的 P2 自有 PostgreSQL。当前启动 Harness `127.0.0.1:8010`、SupportOps `127.0.0.1:8011` 与 DataCopilot `127.0.0.1:8012` 的 offline API；统一 UI 待 P5。不安装依赖或加载模型。停机只停止本次自有 HTTP 进程，保留数据库。集成测试使用独立 PostgreSQL schema，可重复执行，不重置主演示库；需要通过上述测试入口运行，避免直接将集成测试指向主演示库。
+前置为已准备并运行的 P2 自有 PostgreSQL。当前启动 Harness `127.0.0.1:8010`、SupportOps `127.0.0.1:8011` 与 DataCopilot `127.0.0.1:8012` 的 offline API；统一 UI 已由 P5 提供。不安装依赖或加载模型。停机只停止本次自有 HTTP 进程，保留数据库。集成测试使用独立 PostgreSQL schema，可重复执行，不重置主演示库；需要通过上述测试入口运行，避免直接将集成测试指向主演示库。
 
 先向 Harness `POST /api/demo/session` 提交 `{"persona":"customer-a1"}` 并保留 HttpOnly cookie；白名单身份为 customer-a1、customer-a2、operator-a、customer-b1，切换撤销旧 session。这是本地演示身份选择。
 
@@ -101,3 +101,20 @@ conda run -n agentopshub python scripts/dev.py test-integration --group reports
 刷新由运营显式触发；业务提交与分析刷新分别返回各自 run。首次未发布快照时报表明确失败，退款提交后刷新前仍看到旧统计。消费者每个请求固定一个不可变目录，独立校验后执行真实 SQL；只允许报表 ID，不接受租户、路径、SQL、policy 或 as_of。结果显示 template/v1、真实 rows/row_count、snapshot_id、delivery_fingerprint、生成时间、水位、服务端 as_of 和耗时，不返回路径或 SQL。旧快照保留，没有归档/自动清理策略。原 live Text2SQL/JWT 入口保持原样，P4 未调用真实模型。
 
 当前机器契约见 [P4 API schema](contracts/service_api/v1/p4.json)，实测结果、原有 skip 与边界见 [P4 验证记录](docs/P4_VALIDATION.md)。
+
+## P5 单一工作台
+
+前置：已按 P2 准备模拟数据，项目自有 PostgreSQL 健康、三套原 Conda 环境可用。
+
+```text
+start.cmd
+# 浏览器打开 http://127.0.0.1:8010
+stop.cmd
+conda run -n agentopshub python scripts/dev.py demo-check --group ui
+```
+
+start 先 doctor 检查，冲突报错，不安装/下载/重置数据；stop 只停止核验归属的 HTTP 进程，保留 PG/卷。Windows 双击或命令行均可运行薄封装；环境路径沿用既有配置。演示身份选择不是注册登录。
+
+客户视图提供实际订单、带引用咨询、明确确认与工单对话；运营提供真实分派/回复/审批；数据视图提供显式快照刷新及五个 template/v1 报表；运行页提供实际步骤/耗时/错误/关联 ID。身份切换清空页面上下文，服务端 ACL 始终生效。退款申请提交不等于到账，分析不会自动刷新。工作台仅 offline，live 模型未验收。
+
+UI gate 使用独立测试 schema，不重置主演示库。实际浏览器六场景、命令结果、截图和真实 run_id 见 [P5 验证记录](docs/P5_VALIDATION.md)。P6 未执行，项目未标记 v1-demo-ready。

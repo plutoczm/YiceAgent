@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 from app.adapters.analytics import AnalyticsAdapter
 from app.adapters.supportops import SupportOpsAdapter
@@ -18,6 +19,7 @@ from app.runs.store import RunStore
 from app.workflows.engine import WorkflowEngine
 
 ROOT = Path(__file__).resolve().parents[6]
+STATIC = Path(__file__).resolve().parent / "static"
 
 
 def demo_app(
@@ -45,6 +47,14 @@ def demo_app(
         ):
             return JSONResponse({"detail": "local_demo_only"}, status_code=403)
         response: Response = await call_next(request)
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+            "connect-src 'self'; img-src 'self' data:; object-src 'none'; "
+            "base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+        )
         return response
 
     @app.get("/health")
@@ -52,6 +62,13 @@ def demo_app(
         return {"status": "ok", "mode": "offline", "service": "workflowops-harness"}
 
     app.include_router(router)
+    app.mount("/workbench", StaticFiles(directory=STATIC), name="workbench")
+
+    @app.get("/", include_in_schema=False)
+    def workbench() -> FileResponse:
+        """Serve the single same-origin offline workbench."""
+        return FileResponse(STATIC / "index.html")
+
     return app
 
 

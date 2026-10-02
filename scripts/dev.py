@@ -164,15 +164,33 @@ def docker_check():
 
 
 def doctor():
+    from demo_db import CONTAINER, VOLUME, inspect_resource
+
+    ports = {str(port): port_free(port) for port in (8010, 8011, 8012, 55432)}
+    owned_database_ready = False
+    if not ports["55432"]:
+        try:
+            container = inspect_resource("container", CONTAINER)
+            volume = inspect_resource("volume", VOLUME)
+            owned_database_ready = bool(
+                container
+                and volume
+                and container["State"].get("Health", {}).get("Status") == "healthy"
+                and (ROOT / ".runtime/demo-db.json").is_file()
+            )
+        except (OSError, ValueError, subprocess.SubprocessError):
+            owned_database_ready = False
     report = {
         "services": {service: probe_service(service) for service in SERVICES},
-        "ports": {str(port): port_free(port) for port in (8010, 8011, 8012, 55432)},
+        "ports": ports,
+        "owned_database_ready": owned_database_ready,
         "docker": docker_check(),
         "model_components_loaded": False,
     }
     report["passed"] = (
         all(r["passed"] for r in report["services"].values())
-        and all(report["ports"].values())
+        and all(ports[str(port)] for port in (8010, 8011, 8012))
+        and (ports["55432"] or owned_database_ready)
         and report["docker"]["passed"]
     )
     output = ROOT / ".runtime" / "environment-audit.json"
@@ -186,7 +204,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor")
+    commands.add_parser("start")
     commands.add_parser("check-contracts")
+    ui = commands.add_parser("demo-check")
+    ui.add_argument("--group", choices=["ui"], required=True)
     up = commands.add_parser("demo-up")
     up.add_argument("--mode", choices=["offline"], default="offline")
     commands.add_parser("demo-down")
@@ -201,6 +222,36 @@ def main():
     test.add_argument("service", choices=SERVICES)
     test.add_argument("pytest_args", nargs=argparse.REMAINDER)
     args = parser.parse_args()
+    if args.command == "start":
+        from demo_runtime import up
+
+        if doctor():
+            return 1
+        return up(port_free, SERVICES)
+    if args.command == "demo-check":
+        from p3_integration import run
+
+        result = service_process(
+            "harness", ["-m", "pytest", "backend/tests/test_p5_workbench.py", "-q"]
+        )
+        if result.returncode:
+            return result.returncode
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-m",
+                "pytest",
+                "tests/test_p5_browser.py",
+                "tests/test_p5_interactions.py",
+                "-q",
+            ],
+            cwd=ROOT,
+            check=False,
+        )
+        if result.returncode:
+            return result.returncode
+        return run(port_free, SERVICES, service_process, group="ui")
     if args.command == "demo-up":
         from demo_runtime import up
 
