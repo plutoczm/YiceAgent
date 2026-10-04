@@ -1,5 +1,7 @@
 # Post-P6 Monorepo 运行与维护
 
+当前来源退役说明：用户选择自生成数据并授权删除原三个目录及私有历史备份。正常来源验证已改为核对 Monorepo 文件与冻结 manifest 哈希，不再读取原目录；历史审计仅通过显式 --verify-originals 执行。下文的原目录保全描述属于整合时记录，当前退役范围与状态见 [REPOSITORY_RETIREMENT.md](REPOSITORY_RETIREMENT.md)。
+
 WorkflowOps 的 P1–P6 开发及验收已完成；本次是仓库整理，未新增开发阶段或业务功能。用户选择物理目录 Harness / Support / Analytics，并保持三个既有 Conda 环境和内部/CLI 标识兼容。
 
 ## 目录和职责

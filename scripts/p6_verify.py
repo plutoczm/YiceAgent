@@ -16,6 +16,7 @@ from p3_integration import run
 LATEST = ROOT / ".runtime/p6-latest.json"
 SCENARIOS = ROOT / "demo/scenarios/e2e-v1.json"
 CHECK_FILES = (
+    "tests/test_repository_retirement.py",
     "scripts/service_paths.py",
     "scripts/demo_runtime.py",
     "scripts/demo_service.py",
@@ -202,6 +203,7 @@ def verify():
             "tests/test_p5_browser.py",
             "tests/test_p5_interactions.py",
             "tests/test_p6_verify.py",
+            "tests/test_repository_retirement.py",
         ),
     )
     execute(

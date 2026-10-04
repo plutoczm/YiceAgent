@@ -1,5 +1,6 @@
-"""Read-only P1 import acceptance: hashes, source Git state and file boundaries."""
+"""Verify local provenance hashes; original-repository audit is explicit opt-in."""
 
+import argparse
 import json
 from pathlib import Path
 
@@ -7,20 +8,24 @@ from import_sources import ROOT, safe_path, sha, snapshot
 from service_paths import SERVICE_DIRECTORIES, relocated_path
 
 
-def verify():
+def verify(*, verify_originals=False):
     manifest = json.loads(
         (ROOT / "docs/source-manifest.json").read_text(encoding="utf-8")
     )
     counts = {}
     for item in manifest["files"]:
-        source = safe_path(Path(item["source_repo"]), item["source_path"])
         target = safe_path(ROOT, relocated_path(item["target_path"]))
-        if sha(source) != item["sha256"] or sha(target) != item["sha256"]:
+        if sha(target) != item["sha256"]:
             raise ValueError(f"hash mismatch: {item['target_path']}")
+        if verify_originals:
+            source = safe_path(Path(item["source_repo"]), item["source_path"])
+            if sha(source) != item["sha256"]:
+                raise ValueError(f"source hash mismatch: {item['source_path']}")
         counts[item["service"]] = counts.get(item["service"], 0) + 1
-    for service, before in manifest["repositories"].items():
-        if snapshot(Path(before["source_repo"])) != before:
-            raise ValueError(f"source Git state changed: {service}")
+    if verify_originals:
+        for service, before in manifest["repositories"].items():
+            if snapshot(Path(before["source_repo"])) != before:
+                raise ValueError(f"source Git state changed: {service}")
     for service in manifest["repositories"]:
         service_root = ROOT / "services" / SERVICE_DIRECTORIES[service]
         for path in service_root.rglob("*"):
@@ -42,7 +47,11 @@ def verify():
         "passed": True,
         "verified_files": len(manifest["files"]),
         "counts": counts,
-        "source_git_unchanged": True,
+        "provenance_mode": "originals_and_local"
+        if verify_originals
+        else "frozen_manifest_local",
+        "source_git_unchanged": True if verify_originals else None,
+        "original_repositories_checked": verify_originals,
         "nested_git": False,
         "secrets_and_databases_copied": False,
         "root_git_initialized": (ROOT / ".git").exists(),
@@ -54,4 +63,7 @@ def verify():
 
 
 if __name__ == "__main__":
-    verify()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--verify-originals", action="store_true")
+    args = parser.parse_args()
+    verify(verify_originals=args.verify_originals)
