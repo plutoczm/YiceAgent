@@ -1,5 +1,5 @@
 {
-  "status": "PROPOSED_NOT_APPLIED",
+  "status": "ABANDONED_USER_CHOSE_GIT_ONLY_SINGLE_LAYOUT",
   "option": "compatible",
   "code_locations_preserved": [
     "v2/src/workflowops",
@@ -42,5 +42,5 @@
     "preexisting content protection and manifest",
     "read-only database/resource checks"
   ],
-  "awaiting_user_choice": true
+  "awaiting_user_choice": false
 }

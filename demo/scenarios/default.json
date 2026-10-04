@@ -1,9 +1,0 @@
-{
-  "low_refund": "ORD-1001",
-  "high_refund": "ORD-1002",
-  "non_refundable": "ORD-1003",
-  "other_customer": "ORD-1005",
-  "other_tenant": "ORD-2001",
-  "boundary_refund": "ORD-1004",
-  "human_consultation": "Please arrange a human agent for my complaint."
-}

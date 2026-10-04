@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "workflowops-v2"
+version = "0.1.0"
+description = "Local business Agent with explicit context and memory management"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn>=0.34,<1", "pydantic>=2.12,<3",
+  "httpx>=0.28,<1", "sqlalchemy>=2.0.40,<2.1", "psycopg[binary]>=3.2,<4",
+  "langgraph>=1.2.11,<1.3", "qdrant-client>=1.19,<2",
+  "tiktoken>=0.12,<1", "pypdf>=6,<7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.4,<9", "ruff>=0.12,<1", "mypy>=1.17,<2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/workflowops"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+markers = ["integration: isolated real PostgreSQL or Qdrant", "live: real model calls requiring explicit authorization"]
+cache_dir = ".runtime/v2/pytest-cache"
+
+[tool.ruff]
+cache-dir = ".runtime/v2/ruff-cache"
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+cache_dir = ".runtime/v2/mypy-cache"
+python_version = "3.12"
+strict = true
+files = ["src/workflowops/contracts.py", "src/workflowops/config.py", "src/workflowops/rpc.py", "src/workflowops/device.py", "src/workflowops/identity.py", "src/workflowops/business/contracts.py", "src/workflowops/business/models.py", "src/workflowops/business/rules.py", "src/workflowops/business/service.py", "src/workflowops/business/bootstrap.py", "src/workflowops/business/scenarios.py"]
+plugins = ["pydantic.mypy"]

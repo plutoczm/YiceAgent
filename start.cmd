@@ -1,8 +1,8 @@
 @echo off
 cd /d "%~dp0"
-if defined WORKFLOWOPS_CONDA_EXE (
-  "%WORKFLOWOPS_CONDA_EXE%" run --no-capture-output -n agentopshub python -B scripts\dev.py start
-) else (
-  "D:\Anaconda3\Scripts\conda.exe" run --no-capture-output -n agentopshub python -B scripts\dev.py start
+if not exist ".runtime\v2\envs\main\Scripts\python.exe" (
+  echo Project main environment is not installed. See docs\DEVELOPMENT.md.
+  exit /b 1
 )
+".runtime\v2\envs\main\Scripts\python.exe" -B scripts\manage.py up
 exit /b %errorlevel%

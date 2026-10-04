@@ -1,132 +1,64 @@
 # WorkflowOps
 
-**Workflow-first 客服与业务分析工作台 · 实习面试演示项目**
+本机学习与面试演示项目：以电商、外卖订单为场景，构建可解释的业务 Agent，重点展示受控工具、真实 RAG、上下文与记忆管理。
 
-用模拟业务数据串起客户服务、受控退款/工单、快照分析和运行追踪。
-一个产品、一个最终 Git 仓库、三个职责明确的服务；不是三个自治 Agent。
+当前完成基础设施与确定性业务阶段：下单、模拟支付、履约推进、取消、整单退款、确认审批及异常工单。模型接入、RAG、Agent 对话与上下文/记忆属于后续阶段，尚未完成。
 
-## 当前状态
+源码只保留一套当前架构。v1、v2 与后续实现通过 Git 提交、分支和标签保存，不维护版本目录。
 
-2026-10-02：**v1-demo-ready · P1–P6 已验证完成。** P6 24 逻辑场景通过，AC-01–AC-12 均有证据；必要回归与离线 D5 门禁通过，两个平台 skip 单独记录。见 [P6 验证记录](docs/P6_VALIDATION.md)。状态标识不代表创建 Git tag。
-三服务源码快照、隔离分派、doctor 与 Contract 检查已具备；P3 已通过真实 HTTP 与 PostgreSQL 的确认、审批及人工工单闭环。证据见 [P3 验证记录](docs/P3_VALIDATION.md)。根 Git 为独立仓库；P3 验证与复审后按用户授权创建本地提交，不 push。
-工作名称 WorkflowOps 可在后续统一改名，不影响架构边界。
+## 启动
 
-## 阅读顺序
-
-1. [产品与架构 Spec](docs/SPEC.md)：范围、职责、流程、技术取舍、接口与验收。
-2. [可执行 Plan](docs/PLAN.md)：六个批次、目标文件、步骤、未来验证命令与停止条件。
-3. [源码核对记录](docs/SOURCE_AUDIT.md)：三个原仓库状态、环境、关键代码与 Contract 哈希。
-
-## 模块分工
-
-| 模块 | 来源 | 主责 |
-|---|---|---|
-| services/harness | AgentOpsHub | 固定 Workflow、入口、权限传递、运行记录 |
-| services/support | supportops-ai | 客服业务规则、确认/审批、工单与业务事实 |
-| services/analytics | DataCopilot | 模拟数据生成、快照消费、受控 SQL 分析 |
-
-完整 v1 目标：模拟数据 → 客户查询/申请 → 确认或人工接管 → 数据快照 → 运营报表 → 运行记录。
-已实现的 offline 流程不调用 LLM，使用实际 API、业务库、独立校验的快照与实际 DuckDB SQL 结果。P4 实测证据见 [P4 验证记录](docs/P4_VALIDATION.md)。
-已有语言模型能力作为可选 live 路径保留，不把自主规划或新模型下载作为完成条件。
-
-## 实施顺序
-
-P1 安全目录与源码导入 → P2 模拟数据 → P3 固定流程与客服 → P4 交付与报表 → P5 统一工作台 → P6 验证与面试材料。
-完成 Spec 的 AC-01–AC-12 后即冻结演示版，不自动追加平台化阶段。
-P6 到此停止，剩余主线批次 0。演示步骤见 [DEMO.md](docs/DEMO.md)，技术取舍与项目讲述见 [INTERVIEW.md](docs/INTERVIEW.md)。
-
-## 来源记录与原项目退役
-
-三个原项目的有效源码已整理到当前 Monorepo。2026-10-02 用户选择自生成数据，并授权删除三个原目录及私有历史备份；来源 manifest、LICENSE 和当时验收记录保留。当前验证核对本地冻结哈希，不再需要原目录，详见 [退役记录](docs/REPOSITORY_RETIREMENT.md)。
-三个原 Conda 环境、Docker 资源和当前演示数据库保留。历史数据接入已取消；无真实客户/支付、无公网账号系统要求，不 push。
-
-## P1 检查入口
-
-```text
-conda run -n agentopshub python scripts/dev.py doctor
-conda run -n agentopshub python scripts/dev.py check-contracts
-conda run -n agentopshub python -B scripts/verify_import.py
-```
-
-`test-service <harness|supportops|datacopilot> <pytest 参数>` 分别在对应 Conda 环境和服务 cwd 执行。服务历史文档属于原项目上下文，根 docs/PLAN.md 才是当前阶段依据。
-
-## P2 数据准备入口
-
-```text
-conda run -n agentopshub python scripts/dev.py seed-demo --seed 42
-conda run -n agentopshub python scripts/dev.py test-service supportops --group demo-data
-conda run -n agentopshub python scripts/dev.py test-service datacopilot --group demo-data
-```
-
-生成器与导入器分别使用 DataCopilot、SupportOps 环境。相同 fixture 返回 no-op；显式 `seed-demo --seed 42 --reset-demo` 仅重置核验归属后的专用演示库。首次准备专用 PostgreSQL 可能需要固定 Docker 镜像；不操作原项目库。运行配置与密码仅存 ignored `.runtime/`，不要将其纳入 Git。当前有 24 个真实导入的模拟订单；已提供 P3 融合 HTTP API，统一 UI 已由 P5 提供。完整证据见 [P2 验证记录](docs/P2_VALIDATION.md)。
-
-## P3 离线 HTTP API
-
-```text
-conda run -n agentopshub python scripts/dev.py demo-up --mode offline
-conda run -n agentopshub python scripts/dev.py test-service harness --group workflow -q
-conda run -n agentopshub python scripts/dev.py test-service supportops --group safety -o addopts= -q -rs
-conda run -n agentopshub python scripts/dev.py test-integration --group support
-conda run -n agentopshub python scripts/dev.py demo-down
-```
-
-前置为已准备并运行的 P2 自有 PostgreSQL。当前启动 Harness `127.0.0.1:8010`、SupportOps `127.0.0.1:8011` 与 DataCopilot `127.0.0.1:8012` 的 offline API；统一 UI 已由 P5 提供。不安装依赖或加载模型。停机只停止本次自有 HTTP 进程，保留数据库。集成测试使用独立 PostgreSQL schema，可重复执行，不重置主演示库；需要通过上述测试入口运行，避免直接将集成测试指向主演示库。
-
-先向 Harness `POST /api/demo/session` 提交 `{"persona":"customer-a1"}` 并保留 HttpOnly cookie；白名单身份为 customer-a1、customer-a2、operator-a、customer-b1，切换撤销旧 session。这是本地演示身份选择。
-
-再调用 `POST /api/workflows/<workflow_id>/runs`，请求为 `{"payload":{...},"parent_run_id":null}`。已实现五种 workflow：
-
-| workflow_id | payload 示例/动作 |
-|---|---|
-| support_lookup | `{"object_id":"ORD-1001"}`；或 `{"kind":"operation","object_id":"<operation_id>"}` |
-| support_message | `{"action":"refund","conversation_id":"demo-low","order_id":"ORD-1001"}`；action=message 支持 message，action=handoff 创建工单 |
-| support_confirm | `{"action_id":"<pending_action_id>","confirm":true}`；false 取消 |
-| support_review | `{"operation_id":"<operation_id>","decision":"approve","expected_version":1}`；仅运营，版本取实际 operation |
-| ticket_action | action 为 list/get/messages/reply/assign/transition/operation；reply 带 message，transition 带 status，除 list 外带 ticket_id |
-
-返回 run_id、实际 steps、domain_refs、终态和 typed result/error。`GET /api/runs/<run_id>` 返回权限过滤的元数据，不返回消息或结果行。等待确认/审批后本次 run 结束；下一人工动作创建新 run，可关联 parent_run_id。写入未知时核对 domain_refs 中已知 operation_id，不能自动重放。确认请求即使省略 parent_run_id，也按领域契约返回 operation_id=action_id。派发前/只读失败标记 failed；只有写请求已开始且结果不确定时标记 unknown_outcome。已实现机器契约见 [P3 API schema](contracts/service_api/v1/p3.json)，实测证据和当前演示库状态见 [P3 验证记录](docs/P3_VALIDATION.md)。
-
-## P4 快照与模板报表
-
-```text
-conda run -n agentopshub python scripts/dev.py check-contracts
-conda run -n agentopshub python scripts/dev.py test-service datacopilot --group governed -q -rs
-conda run -n agentopshub python scripts/dev.py test-integration --group delivery
-conda run -n agentopshub python scripts/dev.py test-integration --group reports
-```
-
-在 Harness 选择 operator-a 后，调用 `refresh_snapshot`，payload 为 `{}`；再调用 `analytics_report`，payload 为 `{"report_id":"orders_total"}`。另外四个固定 ID 为 refund_requests_by_status、pending_approval_count、tickets_by_status、overdue_open_tickets。原五个客服 workflow 保持可用，当前共七个固定 workflow。
-
-刷新由运营显式触发；业务提交与分析刷新分别返回各自 run。首次未发布快照时报表明确失败，退款提交后刷新前仍看到旧统计。消费者每个请求固定一个不可变目录，独立校验后执行真实 SQL；只允许报表 ID，不接受租户、路径、SQL、policy 或 as_of。结果显示 template/v1、真实 rows/row_count、snapshot_id、delivery_fingerprint、生成时间、水位、服务端 as_of 和耗时，不返回路径或 SQL。旧快照保留，没有归档/自动清理策略。原 live Text2SQL/JWT 入口保持原样，P4 未调用真实模型。
-
-当前机器契约见 [P4 API schema](contracts/service_api/v1/p4.json)，实测结果、原有 skip 与边界见 [P4 验证记录](docs/P4_VALIDATION.md)。
-
-## P5 单一工作台
-
-前置：已按 P2 准备模拟数据，项目自有 PostgreSQL 健康、三套原 Conda 环境可用。
+已安装环境下，在项目根目录运行：
 
 ```text
 start.cmd
-# 浏览器打开 http://127.0.0.1:8010
-stop.cmd
-conda run -n agentopshub python scripts/dev.py demo-check --group ui
 ```
 
-start 先 doctor 检查，冲突报错，不安装/下载/重置数据；stop 只停止核验归属的 HTTP 进程，保留 PG/卷。Windows 双击或命令行均可运行薄封装；环境路径沿用既有配置。演示身份选择不是注册登录。
+打开 [本地工作台](http://127.0.0.1:8020)。停止使用 `stop.cmd`，数据库、模型与演示结果保留。Python 入口为：
 
-客户视图提供实际订单、带引用咨询、明确确认与工单对话；运营提供真实分派/回复/审批；数据视图提供显式快照刷新及五个 template/v1 报表；运行页提供实际步骤/耗时/错误/关联 ID。身份切换清空页面上下文，服务端 ACL 始终生效。退款申请提交不等于到账，分析不会自动刷新。工作台仅 offline，live 模型未验收。
+```powershell
+& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py doctor
+& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py up
+& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py down
+```
 
-UI gate 使用独立测试 schema，不重置主演示库。实际浏览器六场景、命令结果、截图和真实 run_id 见 [P5 验证记录](docs/P5_VALIDATION.md)。P6 已完成，项目冻结为 v1-demo-ready；不自动追加后续阶段。
+既有运行资源仍位于 ignored `.runtime/v2`；保留该路径是为了兼容已安装环境和资源，不用于源码版本管理。
 
-## P6 完整离线验证
-
-先 stop.cmd，再执行：
+## 目录
 
 ```text
-conda run -n agentopshub python scripts/dev.py verify --offline
-conda run -n agentopshub python scripts/dev.py demo-check --all
+WorkflowOps/
+├─ src/workflowops/      Python 应用：HTTP、业务、协议、身份、设备与页面
+├─ tests/               unit/ 与 integration/，共享真实数据库 fixture
+├─ scripts/             manage.py；models/ 与 maintenance/ 工具
+├─ bridge/              Pi Node 桥接依赖与协议入口
+├─ config/              可提交的模型来源元数据；不放账号凭据
+├─ requirements/        主应用、推理依赖及冻结版本
+├─ infra/               本项目 PostgreSQL/Qdrant Compose
+├─ contracts/api/       当前公开业务接口契约
+├─ data/fixtures/       固定模拟商品、订单和 manifest
+├─ docs/                当前 Spec、Plan、演示、架构和验收
+├─ licenses/            复用来源的许可与署名
+├─ .planning/           本次重排的基线、映射与过程记录
+├─ .runtime/            ignored：环境、模型、配置、数据库辅助与运行证据
+├─ pyproject.toml       唯一 Python 项目和测试/lint/type 配置
+└─ start.cmd / stop.cmd 当前工作台的统一入口
 ```
 
-verify 使用隔离 PostgreSQL schema，保留每批退出码、JUnit 和 pass/fail/skip；demo-check 输出 AC 到实际 test/run 的映射，并拒绝已变化源码/手册的旧证据。每轮报告在 ignored .runtime/p6-<UUID>/，最新指针为 .runtime/p6-latest.json。live 模型为 NOT_RUN；浏览器实测沿用 P5 六剧本证据，本轮重跑 HTTP 和 JS 回归。验证不重置主演示库，完成后停止自有 HTTP，保留 PG/卷。
+完整职责与代码阅读路径见 [STRUCTURE](docs/STRUCTURE.md)。
 
-Post-P6 仓库整合：物理服务目录已整理为 `services/harness`、`services/support`、`services/analytics`；原 CLI 标识和 Conda 环境保持兼容。当前运行与历史路径说明见 [Monorepo 指南](docs/MONOREPO.md)；本次仅仓库整合，P1–P6 开发状态不变。
+## 阅读顺序
+
+1. [Spec](docs/SPEC.md)：产品范围、模型/RAG、上下文、业务与安全边界。
+2. [Plan](docs/PLAN.md)：阶段状态与真实验收门禁。
+3. [演示说明](docs/DEMO.md)：客户/运营、确认审批、订单和工单流程。
+4. [开发指南](docs/DEVELOPMENT.md)：启动、测试与工具入口。
+5. [Git 版本管理](docs/VERSIONING.md)：历史版本和后续开发约定。
+
+当前接口仍使用 `/api/v2`，Docker 标识及数据库端口保持兼容。接口版本与源码目录布局是不同职责。
+
+## 验证与范围
+
+历史基础、GPU、业务阶段证据保存在 [validation](docs/validation/README.md)，目录迁移的实际验证见 [layout](docs/validation/layout.md)。真实模型、费用、RAG 效果和长对话验收仍 NOT_RUN，不能由业务测试替代。
+
+v1 的固定工作流、快照分析、原三服务及完整历史验收可通过 `v1.0.0` 查看。来源许可在 `licenses/`，复用语义见 [REUSE](docs/provenance/REUSE.md)。不重置旧数据库，不合并或修改三套旧 Conda，不自动登录、安装、计费或推送。

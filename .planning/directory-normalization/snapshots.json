@@ -1,0 +1,11 @@
+{
+  "v1_tag": "v1.0.0",
+  "v1_commit": "16cf4a4c35b53b1ab9634a634ea4a58dca61c8f7",
+  "phase2_snapshot_commit": "f048f2949c101b2f8b869728d59c4254a6eb2049",
+  "snapshot_files": 889,
+  "snapshot_tree_files": 894,
+  "branch": "codex/directory-normalization",
+  "identity_policy": "reuse prior author via command-local config",
+  "raw_bytes_verified": true,
+  "line_ending_repair": "Initial Git filters normalized text. Reachable commit trees now preserve raw bytes. Only newly created local v1 tag was corrected."
+}

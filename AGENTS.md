@@ -1,193 +1,35 @@
 # WorkflowOps Agent Instructions
 
-## Project Goal
+## Scope and source of truth
 
-WorkflowOps is an internship interview demonstration project.
+WorkflowOps is a local learning and interview demonstration, with one current Python application. Read docs/SPEC.md and docs/PLAN.md for the active requirements and phase. Work one phase at a time; do not claim later phases complete or start them silently.
 
-The goal is not to build a production-scale autonomous multi-agent platform. The goal is to demonstrate sound AI application engineering through a small, coherent, reproducible business workflow.
+The user requires version management through Git commits, branches and tags, rather than parallel v1/v2/legacy source folders. The archived v1 implementation is reachable through v1.0.0; current code is under src/workflowops. Preserve history, licenses and provenance.
 
-Prefer the simplest architecture that clearly demonstrates the required engineering capability.
+Use Python scripts for file automation, particularly Chinese and complex text. Inspect the working tree first and preserve unknown modifications. Do not reset, clean, overwrite unknown work, push or publish without authorization. Local commits/tags require a task that explicitly requests them; the current directory-normalization task includes Git version management.
 
-## Source of Truth
+## Architecture
 
-Use the following documents according to their roles:
+Prefer a small coherent deterministic implementation. LLM output is untrusted. Authorization, tenant/customer isolation, eligibility, approvals, idempotency and durable state transitions belong to deterministic business code.
 
-- `docs/SPEC.md` defines product scope, architecture boundaries, technical rationale, and acceptance criteria.
-- `docs/PLAN.md` defines the implementation phases and validation requirements.
-- `docs/SOURCE_AUDIT.md` records the verified baseline state of the original AgentOpsHub, supportops-ai, and DataCopilot projects.
+Use the unique workflowops namespace. Do not import historical app packages, combine old Conda environments or bypass business service rules. src/workflowops/business owns authoritative local business state. Keep confirmed domain results separate from provisional model text.
 
-Read only the documents relevant to the current task. Do not repeatedly load every document when the task does not require them.
+Main and inference environments remain isolated; Pi handles authentication/protocol only. Existing ignored .runtime/v2 paths and workflowops-v2 Docker resources are compatibility identifiers, not versioned source layouts. Never reset v1 or current business data while changing code layout.
 
-If implementation reality conflicts with the Spec, report the conflict before changing the intended architecture.
+Model access, dependency installation, downloads, migrations and paid calls obey the user's established approval scope. Never read another tool's login, print credentials or include them in model context/logs/Git. No invented model, retrieval, HTTP, database or browser results.
 
-Minor implementation details may be reflected in the Plan, but do not silently change product scope.
+## Workflow
 
-## Architecture Principle
+Before changes: read the relevant phase/spec and affected code, inspect Git, identify reusable behavior and any important tradeoff. Ask for material scope/irreversible/preference decisions; ordinary authorized reversible work can proceed.
 
-This project is workflow-first.
+After changes: run configured Ruff, configured type checks, meaningful unit/integration tests and phase acceptance checks, review the diff, then record actual evidence. Keep failures and skips separate from passes.
 
-If a business process can be represented reliably with deterministic Python code, validation rules, state machines, or a DAG, prefer that over autonomous Agent reasoning.
+Entry points:
+- scripts/manage.py: doctor, up/down, check, baseline, infra-plan and explicit provisioning/replay.
+- scripts/models/: approved download helpers and local accelerator checks.
+- scripts/maintenance/verify_layout.py: immutable historical Git source preservation; --strict also checks frozen layout outputs.
+- start.cmd/stop.cmd: current local workbench, port 8020.
 
-Use LLMs only where semantic understanding or generative capability provides clear value, such as:
+Tests live under tests/unit and tests/integration. Real integration uses the owned database and unique disposable schema; never point cleanup at public or a user-supplied target. Use the main environment for application tests and the inference environment for model inference. Do not install into agentopshub/supportops-ai/datacopilot.
 
-- grounded knowledge answering;
-- natural-language understanding;
-- generating a SQL candidate;
-- optional natural-language explanation of structured results.
-
-Do not delegate the following decisions to an LLM:
-
-- authorization;
-- tenant or customer isolation;
-- refund eligibility;
-- approval decisions;
-- SQL authorization;
-- destructive operations;
-- durable business-state transitions.
-
-LLM output must be treated as untrusted input and validated by deterministic application code.
-
-## Service Boundaries
-
-The three original projects have different responsibilities.
-
-### AgentOpsHub
-
-Target role: overall Harness.
-
-Responsible for:
-
-- workflow orchestration;
-- service invocation;
-- run state;
-- timeout and failure handling;
-- tracing;
-- evaluation integration.
-
-Do not turn it into an unrestricted autonomous supervisor Agent.
-
-### supportops-ai
-
-Target role: customer-support business domain.
-
-Responsible for authoritative operational business state such as:
-
-- orders;
-- tickets;
-- refund or return requests;
-- confirmation;
-- approval;
-- human escalation.
-
-Other services must not bypass its business rules to mutate SupportOps-owned state.
-
-### DataCopilot
-
-Target role: demo-data and governed analytics domain.
-
-Responsible for:
-
-- deterministic synthetic demo data where specified;
-- business-data delivery consumption;
-- validation;
-- governed SQL analysis;
-- optional natural-language-to-SQL candidate generation.
-
-It must not independently maintain a second authoritative copy of SupportOps operational state.
-
-## Environment Boundaries
-
-Do not merge the three existing Python environments merely for convenience.
-
-Use their existing Conda environments unless the Plan explicitly changes this:
-
-- `agentopshub`
-- `supportops-ai`
-- `datacopilot`
-
-Prefer commands such as:
-
-```
-conda run -n agentopshub ...
-conda run -n supportops-ai ...
-conda run -n datacopilot ...
-```
-
-This avoids accidental dependency contamination between services.
-
-## Scope Control
-
-Do not introduce technology solely to make the project appear more sophisticated.
-
-The first interview-demo version does not require:
-
-- autonomous multi-agent negotiation;
-- A2A;
-- ANP;
-- GraphRAG;
-- model fine-tuning;
-- LoRA or QLoRA;
-- Kubernetes;
-- a complex long-term-memory platform;
-- multimodal processing.
-
-RAG, MCP, Docker, Tool Calling, and model-backed features should only be added where required by the Spec or the current Plan phase.
-
-## Implementation Workflow
-
-Work on one Plan phase at a time.
-
-Before modifying code:
-
-1. Read the current phase in `docs/PLAN.md`.
-2. Read the relevant portions of `docs/SPEC.md`.
-3. Inspect the affected existing implementation.
-4. Confirm that the proposed change reuses existing functionality where appropriate.
-
-During implementation:
-
-1. Make the smallest coherent change that satisfies the phase.
-2. Prefer deterministic implementations.
-3. Preserve existing service boundaries.
-4. Add or update tests with implementation changes.
-5. Do not silently work on later Plan phases.
-
-After implementation:
-
-1. Run relevant lint or formatting checks.
-2. Run relevant type checks when configured.
-3. Run unit tests.
-4. Run integration tests required by the phase.
-5. Run the phase-specific acceptance checks from `docs/PLAN.md`.
-6. Review the resulting diff.
-7. Update Plan progress/evidence only after validation succeeds.
-
-Do not mark a phase complete merely because code was written.
-
-## Git Safety
-
-Before substantial changes, inspect the working tree.
-
-Preserve pre-existing uncommitted work.
-
-Do not discard, overwrite, reset, or clean unknown user changes.
-
-Do not push to a remote repository unless explicitly requested.
-
-When a Plan phase has passed its validation gates, prepare a concise summary of:
-
-- files changed;
-- architecture decisions;
-- tests executed;
-- test results;
-- remaining limitations.
-
-A commit may then be created when explicitly requested or when the current task explicitly includes committing.
-
-## Completion Rule
-
-The project is complete when the acceptance criteria defined for P6 in `docs/PLAN.md` and `docs/SPEC.md` pass.
-
-Do not automatically create additional architecture phases after P6.
-
-After P6, prioritize demo reliability, documentation, and interview explainability over additional features.
+The current whole-v2 completion criteria remain those in SPEC and PLAN. Completing the business or layout stage does not complete LLM/RAG/context acceptance. Do not extend the project into unsolicited multi-agent platforms, production authentication, public deployment or additional stages.

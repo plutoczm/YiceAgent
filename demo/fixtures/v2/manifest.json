@@ -1,9 +1,0 @@
-{
-  "format": "synthetic-orders/v2.1",
-  "fixture_hash": "53c3d2769aebe2594440b978f8aed9acc37fc03fc62fd61c2772b2a1a4611627",
-  "seed": 42,
-  "orders": 24,
-  "products": 16,
-  "initial_order_status": "awaiting_payment",
-  "progression": "domain confirmation and operator simulator, not direct terminal inserts"
-}

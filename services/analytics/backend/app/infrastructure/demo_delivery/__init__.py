@@ -1,1 +1,0 @@
-"""Local demo publication resolution."""
