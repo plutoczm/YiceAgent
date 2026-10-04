@@ -1,0 +1,46 @@
+{
+  "status": "PROPOSED_NOT_APPLIED",
+  "option": "compatible",
+  "code_locations_preserved": [
+    "v2/src/workflowops",
+    "services/harness",
+    "services/support",
+    "services/analytics"
+  ],
+  "documents": {
+    "docs/SPEC_V2.md": "docs/v2/SPEC.md",
+    "docs/PLAN_V2.md": "docs/v2/PLAN.md",
+    "docs/DEMO_V2.md": "docs/v2/DEMO.md",
+    "docs/V2_1_VALIDATION.md": "docs/v2/validation/phase-1.md",
+    "docs/V2_2_VALIDATION.md": "docs/v2/validation/phase-2.md",
+    "docs/GPU_VALIDATION.md": "docs/v2/validation/gpu.md"
+  },
+  "tools": {
+    "scripts/v2.py": "scripts/v2/manage.py",
+    "scripts/download_v2_torch.py": "scripts/v2/download_torch.py",
+    "scripts/prepare_v2_models.py": "scripts/v2/prepare_models.py",
+    "scripts/verify_v2_accelerator.py": "scripts/v2/verify_accelerator.py"
+  },
+  "compatibility": "existing CLI and document references remain usable; no environment/model/container moves",
+  "navigation": [
+    "README.md current v2 overview plus v1 navigation",
+    "docs/README.md version index",
+    "docs/v1/README.md legacy index",
+    "docs/v2/README.md current version index",
+    "scripts/README.md entrypoint catalog",
+    "docs/PROJECT_STRUCTURE.md directory responsibilities"
+  ],
+  "new_explicit_launchers": [
+    "start-v2.cmd",
+    "stop-v2.cmd"
+  ],
+  "validation": [
+    "existing v2 tests with real integration",
+    "configured lint/type check",
+    "CLI old/new parity",
+    "documentation links",
+    "preexisting content protection and manifest",
+    "read-only database/resource checks"
+  ],
+  "awaiting_user_choice": true
+}

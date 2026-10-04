@@ -1,0 +1,33 @@
+name: workflowops-v2
+services:
+  postgres:
+    image: postgres:16.13-trixie
+    labels:
+      com.workflowops.owner: workflowops-v2
+    environment:
+      POSTGRES_USER: workflowops_v2
+      POSTGRES_DB: workflowops_v2
+      POSTGRES_PASSWORD: ${WORKFLOWOPS_V2_DB_PASSWORD:?owned runtime password required}
+    ports: ["127.0.0.1:55433:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflowops_v2 -d workflowops_v2"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  qdrant:
+    image: qdrant/qdrant:v1.19.0
+    labels:
+      com.workflowops.owner: workflowops-v2
+    environment:
+      QDRANT__SERVICE__API_KEY: ${WORKFLOWOPS_V2_QDRANT_KEY:?owned runtime key required}
+      QDRANT__TELEMETRY_DISABLED: "true"
+    ports: ["127.0.0.1:6335:6333"]
+    volumes: ["qdrantdata:/qdrant/storage"]
+volumes:
+  pgdata:
+    labels:
+      com.workflowops.owner: workflowops-v2
+  qdrantdata:
+    labels:
+      com.workflowops.owner: workflowops-v2

@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WorkflowOps 业务控制台</title><link rel="stylesheet" href="/static/styles.css"><script src="/static/app.js" defer></script></head>
+<body><header><div><p class="eyebrow">WORKFLOWOPS / V2</p><h1>订单业务控制台</h1><p>模拟数据 · 本地演示 · 固定业务规则</p></div><label>演示身份<select id="persona"><option value="customer-a1">客户 A1</option><option value="customer-a2">客户 A2</option><option value="operator-a">运营 A</option><option value="customer-b1">客户 B1</option><option value="customer-b2">客户 B2</option><option value="operator-b">运营 B</option></select></label><button id="switch">选择身份</button><button id="refresh">刷新数据</button></header>
+<main><p id="identity">请选择演示身份</p><p id="notice" role="status"></p><nav><a href="#catalog">商品与下单</a><a href="#orders">订单与模拟</a><a href="#actions">确认与审批</a><a href="#tickets">异常工单</a></nav>
+<section id="policies"><h2>演示政策</h2><div id="policy-list"></div><p>退款申请提交后等待模拟结果；支付、退款与配送状态分别记录。</p></section>
+<section id="catalog"><h2>商品与下单</h2><p>选择单一商品和数量生成订单草案，确认后才创建订单。</p><div id="product-list" class="grid"></div></section>
+<section id="orders"><h2>订单与模拟</h2><div id="order-list" class="grid"></div></section>
+<section id="actions"><h2>动作确认与审批</h2><p>高金额退款或支付后取消：运营先审批，客户再确认。取消草案不会撤销已提交业务。</p><div id="action-list" class="grid"></div></section>
+<section id="tickets"><h2>异常工单</h2><form id="new-ticket"><label>订单 ID（可选）<input id="ticket-order" maxlength="64"></label><label>问题描述<textarea id="ticket-message" required maxlength="2000"></textarea></label><button type="submit">生成工单草案</button></form><div id="ticket-list" class="grid"></div></section>
+<footer>V2-2 业务阶段 · 本页展示本地模拟业务事实。Agent 对话、知识检索与记忆面板将在后续阶段提供。</footer></main></body></html>
