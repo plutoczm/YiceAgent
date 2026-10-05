@@ -1,0 +1,363 @@
+{
+  "version": "rag-frozen-40/1",
+  "frozen_before_retrieval": true,
+  "hitrate_answer_denominator": 32,
+  "queries": [
+    {
+      "id": "Q01",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "网购订单从付款到送货有什么步骤？",
+      "expected_documents": [
+        "ecommerce-life"
+      ]
+    },
+    {
+      "id": "Q02",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "我点确认支付是不是就算到账了？",
+      "expected_documents": [
+        "ecommerce-life"
+      ]
+    },
+    {
+      "id": "Q03",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "电商商品的总价谁来算？",
+      "expected_documents": [
+        "ecommerce-life"
+      ]
+    },
+    {
+      "id": "Q04",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "手机订单成功付款后下一阶段是什么？",
+      "expected_documents": [
+        "ecommerce-life"
+      ]
+    },
+    {
+      "id": "Q05",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "东西还没出库，我能撤销购买吗？",
+      "expected_documents": [
+        "ecommerce-cancel"
+      ]
+    },
+    {
+      "id": "Q06",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "快递已经发出能直接取消订单吗？",
+      "expected_documents": [
+        "ecommerce-cancel"
+      ]
+    },
+    {
+      "id": "Q07",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "未付款取消会产生退款吗？",
+      "expected_documents": [
+        "ecommerce-cancel"
+      ]
+    },
+    {
+      "id": "Q08",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "付款结果还在等待时能取消吗？",
+      "expected_documents": [
+        "ecommerce-cancel"
+      ]
+    },
+    {
+      "id": "Q09",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "六百元网购退款需要谁同意？",
+      "expected_documents": [
+        "ecommerce-refund"
+      ]
+    },
+    {
+      "id": "Q10",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "电商恰好500块退款需要运营审批吗？",
+      "expected_documents": [
+        "ecommerce-refund"
+      ]
+    },
+    {
+      "id": "Q11",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "能只退电商订单的一半钱吗？",
+      "expected_documents": [
+        "ecommerce-refund"
+      ]
+    },
+    {
+      "id": "Q12",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "订单确认退款申请后什么时候显示模拟已退？",
+      "expected_documents": [
+        "ecommerce-refund"
+      ]
+    },
+    {
+      "id": "Q13",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "餐品从支付到送到家有哪些状态？",
+      "expected_documents": [
+        "food-life"
+      ]
+    },
+    {
+      "id": "Q14",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "客户能直接把外卖改成配送中吗？",
+      "expected_documents": [
+        "food-life"
+      ]
+    },
+    {
+      "id": "Q15",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "这套外卖会自动派骑手吗？",
+      "expected_documents": [
+        "food-life"
+      ]
+    },
+    {
+      "id": "Q16",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "确认外卖支付草案就是商家收到钱了吗？",
+      "expected_documents": [
+        "food-life"
+      ]
+    },
+    {
+      "id": "Q17",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "店家还没有接单，餐品已经支付，能撤销吗？",
+      "expected_documents": [
+        "food-cancel"
+      ]
+    },
+    {
+      "id": "Q18",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "饭已经开始做了，我能直接取消订单吗？",
+      "expected_documents": [
+        "food-cancel"
+      ]
+    },
+    {
+      "id": "Q19",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "外卖已付款取消和退款怎么关联？",
+      "expected_documents": [
+        "food-cancel"
+      ]
+    },
+    {
+      "id": "Q20",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "外卖一百块整的取消要先审批吗？",
+      "expected_documents": [
+        "food-cancel"
+      ]
+    },
+    {
+      "id": "Q21",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "外卖退129元需要什么确认顺序？",
+      "expected_documents": [
+        "food-refund"
+      ]
+    },
+    {
+      "id": "Q22",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "退款餐费是不是会自动取消配送？",
+      "expected_documents": [
+        "food-refund"
+      ]
+    },
+    {
+      "id": "Q23",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "外卖支付未成功可以退钱吗？",
+      "expected_documents": [
+        "food-refund"
+      ]
+    },
+    {
+      "id": "Q24",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "餐费退款失败后怎么办？",
+      "expected_documents": [
+        "food-refund"
+      ]
+    },
+    {
+      "id": "Q25",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "草案多久失效，需要重新报价吗？",
+      "expected_documents": [
+        "actions"
+      ]
+    },
+    {
+      "id": "Q26",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "订单版本改变之前的确认还有效吗？",
+      "expected_documents": [
+        "actions"
+      ]
+    },
+    {
+      "id": "Q27",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "同一个请求ID改参数能再提交吗？",
+      "expected_documents": [
+        "actions"
+      ]
+    },
+    {
+      "id": "Q28",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "页面出现unknown_outcome应怎么处理？",
+      "expected_documents": [
+        "actions"
+      ]
+    },
+    {
+      "id": "Q29",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "已发货不让取消该如何请求人工处理？",
+      "expected_documents": [
+        "tickets"
+      ]
+    },
+    {
+      "id": "Q30",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "创建异常工单需要我确认吗？",
+      "expected_documents": [
+        "tickets"
+      ]
+    },
+    {
+      "id": "Q31",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "其他顾客能看到我的工单吗？",
+      "expected_documents": [
+        "tickets"
+      ]
+    },
+    {
+      "id": "Q32",
+      "kind": "answer",
+      "corpus": "demo-cn",
+      "query": "运营回复工单是不是也要确认草案？",
+      "expected_documents": [
+        "tickets"
+      ]
+    },
+    {
+      "id": "Q33",
+      "kind": "no_answer",
+      "corpus": "demo-cn",
+      "query": "太阳系有多少颗行星？",
+      "expected_documents": []
+    },
+    {
+      "id": "Q34",
+      "kind": "no_answer",
+      "corpus": "demo-cn",
+      "query": "今天北京的气温是多少？",
+      "expected_documents": []
+    },
+    {
+      "id": "Q35",
+      "kind": "no_answer",
+      "corpus": "demo-cn",
+      "query": "法国首都是哪里？",
+      "expected_documents": []
+    },
+    {
+      "id": "Q36",
+      "kind": "no_answer",
+      "corpus": "demo-cn",
+      "query": "介绍一下微积分的基本定理",
+      "expected_documents": []
+    },
+    {
+      "id": "Q37",
+      "kind": "conflict",
+      "corpus": "challenge-cn",
+      "query": "电商发货后能不能取消？",
+      "expected_documents": [
+        "ecommerce-cancel",
+        "conflict-ecommerce"
+      ]
+    },
+    {
+      "id": "Q38",
+      "kind": "conflict",
+      "corpus": "challenge-cn",
+      "query": "已经发货的电商订单还能撤单吗？",
+      "expected_documents": [
+        "ecommerce-cancel",
+        "conflict-ecommerce"
+      ]
+    },
+    {
+      "id": "Q39",
+      "kind": "conflict",
+      "corpus": "challenge-cn",
+      "query": "外卖已经接单还可以取消吗？",
+      "expected_documents": [
+        "food-cancel",
+        "conflict-food"
+      ]
+    },
+    {
+      "id": "Q40",
+      "kind": "conflict",
+      "corpus": "challenge-cn",
+      "query": "餐品接单后但还没制作允许直接取消吗？",
+      "expected_documents": [
+        "food-cancel",
+        "conflict-food"
+      ]
+    }
+  ]
+}

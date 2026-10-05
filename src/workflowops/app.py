@@ -1,5 +1,6 @@
 """Local-only v2 application; domain writes require explicit human commands."""
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -14,8 +15,40 @@ from workflowops.identity import Sessions
 STATIC = Path(__file__).with_name("static")
 
 
-def create_app(business: BusinessService | None = None) -> FastAPI:
-    app = FastAPI(title="WorkflowOps v2", docs_url=None, redoc_url=None)
+def create_app(business: BusinessService | None = None, models=None) -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app):
+        try:
+            yield
+        finally:
+            if models is not None:
+                await models.close()
+
+    app = FastAPI(title="WorkflowOps v2", docs_url=None, redoc_url=None, lifespan=lifespan)
+
+    from workflowops.model_store import ModelError
+
+    @app.exception_handler(ModelError)
+    async def model_error(request: Request, error: ModelError):
+        import re
+
+        code = str(error)
+        if re.fullmatch(r"[a-z][a-z0-9_]{0,63}", code) is None:
+            code = "model_operation_failed"
+        status = (
+            409
+            if code
+            in {
+                "paid_channel_not_enabled",
+                "chatgpt_model_required",
+                "knowledge_not_indexed",
+                "oauth_login_required",
+            }
+            else 504
+            if code in {"provider_timeout", "local_compute_busy"}
+            else 502
+        )
+        return JSONResponse({"error": code}, status_code=status)
 
     @app.middleware("http")
     async def local_boundary(request: Request, call_next):
@@ -55,18 +88,30 @@ def create_app(business: BusinessService | None = None) -> FastAPI:
         return {
             "owner": "workflowops-v2",
             "status": "ok",
-            "phase": "business" if business else "foundation",
+            "phase": "models-rag"
+            if models is not None
+            else "business"
+            if business
+            else "foundation",
             "live_verified": False,
         }
 
-    @app.get("/api/v2/models")
-    def models():
-        return {"channels": ["chatgpt", "deepseek", "qwen"], "readiness": "NOT_RUN"}
+    if models is None:
+
+        @app.get("/api/v2/models")
+        def model_placeholder():
+            return {"channels": ["chatgpt", "deepseek", "qwen"], "readiness": "NOT_RUN"}
 
     if business is not None:
         from workflowops.business.api import router
 
-        app.include_router(router(business, Sessions()))
+        sessions = Sessions()
+        app.include_router(router(business, sessions))
+        if models is not None:
+            from workflowops.models.api import router as model_router
+
+            app.include_router(model_router(models, sessions))
+
         app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
         @app.get("/")

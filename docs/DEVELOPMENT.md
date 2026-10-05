@@ -2,7 +2,7 @@
 
 所有命令从 `D:\Projects\WorkflowOps` 执行。Python 项目配置位于根 `pyproject.toml`，源码为 `src/workflowops`。
 
-当前完成基础与业务阶段。LLM、真实 RAG、上下文与记忆尚未完成。Node 桥接依赖和 BGE 模型已准备，账号未登录。本次重排没有安装或升级依赖。
+当前基础、业务、三模型接入与真实RAG阶段已通过验收。ChatGPT项目OAuth、DeepSeek本机配置和Qwen均已真实验证；上下文、记忆与Agent Loop属于尚未开始的第四阶段。实际结果见validation/models-rag.md。
 
 ## 已安装环境
 
@@ -40,7 +40,7 @@ $env:WORKFLOWOPS_V2_INTEGRATION = "1"
 
 环境变量仅影响当前进程。测试分为 `tests/unit` 与 `tests/integration`；真实集成未开启时会 skip，不能算完整验收。真实测试只在 owned 数据库新建并清理本轮 UUID schema，不删除 public 表或数据。mypy 仅覆盖 pyproject 配置的 11 个核心源码。
 
-静态页面的 JavaScript 语法检查为 `node --check src/workflowops/static/app.js`；当前 Pi 源码桥接尚未实现，不能用 package 的空缺脚本冒充可运行协议。
+静态页面的 JavaScript 语法检查为 `node --check src/workflowops/static/app.js`；Pi源码桥接为bridge/bridge.mjs；语法检查node --check bridge/bridge.mjs，离线回归node --test tests/unit/test_oauth_input.mjs tests/unit/test_oauth_errors.mjs。
 
 历史保护和当前冻结布局：
 
@@ -70,4 +70,16 @@ business-prepare 校验 owner/schema/fixture，固定 seed 42、16 商品/24 初
 | scripts/models/prepare_models.py | 匿名下载固定 BGE-M3/Reranker，owned 存储及哈希 |
 | scripts/models/verify_accelerator.py | GPU/CPU 探测；--models 才实际加载本地模型 |
 
-权重已存在。本次只验证路径/设备探测，不重新下载或重跑完整模型推理。真实模型样本结果见 [GPU 验收](validation/gpu.md)；完整 RAG 和三模型仍 NOT_RUN。模型/账号/计费问题按 [SPEC](SPEC.md)处理。
+权重已存在。本次只验证路径/设备探测，不重新下载或重跑完整模型推理。真实模型样本结果见 [GPU 验收](validation/gpu.md)；完整RAG与三模型基础验收已通过，不能据此宣称长对话/记忆验收完成。模型/账号/计费问题按 [SPEC](SPEC.md)处理。
+
+## 第三阶段模型与知识预览
+
+当前三通道均已通过真实模型/RAG基础验收，实际模型为gpt-6.1-sol、deepseek-flash、qwen3:8b；各通道独立记录，不自动回退。知识与模型运行状态位于两个owned PostgreSQL schema；不会混入业务public表。
+
+在工作台选择运营身份，展开模型与知识的DeepSeek本机配置，隐藏输入Key。用户当前授权总预算15元，后端和持久账本均限制15，未知usage按预留计账。ChatGPT由用户运行scripts/models/account.py login-chatgpt --approved并完成新OAuth链接，不复用其他工具登录。
+
+详细协议、命令、实际结果、局限与待执行项见 [模型与RAG记录](validation/models-rag.md)。独立CLI为scripts/knowledge.py与scripts/models/smoke.py。
+
+普通pytest自动阻止真实模型生成，预算fixture显式关闭付费；不能因本机已保存Key而触发计费。真实模型验收使用scripts/models/smoke.py显式--approved（DeepSeek另加--paid-approved），按当前预算门禁执行，不把普通单测替身计作模型质量。
+
+Node项目子进程沿用现有本机Windows代理，不修改系统设置。1455被其他进程占用时，用户可把完整的新localhost:1455/auth/callback地址只回填到本机同一次登录终端；账号选择页面或旧state会被拒绝并允许重填。仅在项目ignored目录保存OAuth，失败诊断不包含凭据。

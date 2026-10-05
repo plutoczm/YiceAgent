@@ -102,7 +102,9 @@ class GenerationResult(Closed):
 
 class RpcRequest(Closed):
     request_id: UUID = Field(default_factory=uuid4)
-    method: Literal["health", "embed", "rerank", "models", "generate", "login", "cancel"]
+    method: Literal[
+        "health", "embed", "rerank", "tokenize", "models", "generate", "login", "cancel"
+    ]
     payload: dict[str, JsonValue] = Field(default_factory=dict)
 
 

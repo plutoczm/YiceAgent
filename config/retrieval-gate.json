@@ -1,0 +1,8 @@
+{
+  "reranker": "BAAI/bge-reranker-v2-m3",
+  "revision": "953dc6f6f85a1b2dbfca4c34a2796e7dde08d41e",
+  "minimum_score": 0.04012887040153146,
+  "source": "8 separate development queries, midpoint between lowest supported and highest unsupported score",
+  "calibration_sha256": "6c33789455675038f5e3fa2a098aadff2da33f8f4f8e17888f5c0754df904ac8",
+  "not_a_probability": true
+}

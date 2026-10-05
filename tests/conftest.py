@@ -35,3 +35,30 @@ def business():
             assert schema.startswith("v2_test_") and len(schema) == 40
             connection.execute(text('DROP SCHEMA "' + schema + '" CASCADE'))
         control.dispose()
+
+
+@pytest.fixture(autouse=True)
+def ordinary_tests_never_dispatch_live_models(request, monkeypatch):
+    # Paid runtime settings must never turn ordinary tests into live acceptance.
+    if request.node.get_closest_marker("live"):
+        if os.environ.get("WORKFLOWOPS_V2_LIVE") != "1":
+            pytest.skip("explicit_live_model_gate_not_enabled")
+        return
+
+    import httpx
+
+    from workflowops.models.gateway import PiAdapter
+    from workflowops.models.http import HttpAdapter
+
+    original = HttpAdapter.generate
+
+    async def mock_transport_only(self, generation):
+        if not isinstance(self.transport, httpx.MockTransport):
+            raise AssertionError("ordinary_test_live_model_dispatch_blocked")
+        return await original(self, generation)
+
+    async def no_subscription_dispatch(self, *args, **kwargs):
+        raise AssertionError("ordinary_test_subscription_dispatch_blocked")
+
+    monkeypatch.setattr(HttpAdapter, "generate", mock_transport_only)
+    monkeypatch.setattr(PiAdapter, "generate", no_subscription_dispatch)

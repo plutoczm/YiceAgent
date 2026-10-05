@@ -8,10 +8,12 @@
 |---|---|
 | v1.0.0 | 已完成的离线三服务演示及已有来源退役修改；原源码、文档、测试完整保存 |
 | f048f2949c101b2f8b869728d59c4254a6eb2049 | 全面重排前第二阶段实现；889 个基线文件原字节已验证，所有未提交内容先保存 |
-| v2.0.0-p2 | 当前单一架构，已完成基础与双场景业务阶段及目录验证；不是完整 v2 发布 |
+| v2.0.0-p2 | 单一架构、基础与双场景业务阶段及目录验证；不是完整 v2 发布 |
+| v2.0.0-p3 | 三模型与真实GPU RAG基础验收节点；上下文、记忆与完整产品验收仍未完成 |
+| codex/models-rag | 第三阶段工作分支，阶段源码由v2.0.0-p3冻结 |
 | codex/directory-normalization | 本次重排工作分支；main 的原提交未覆盖 |
 
-`v2.0.0-p2` 是本次验证后的本地阶段标签。RAG、三模型、Agent 上下文与记忆尚未完成，不能标成完整 `v2.0.0`。
+`v2.0.0-p2` 保留此前基础与业务节点。`v2.0.0-p3` 冻结已验证的三模型与真实RAG；Agent上下文、记忆和完整场景验收仍未完成，不能标成完整 `v2.0.0`。两者均为本地阶段标签，未推送。
 
 历史 v1 原目录、来源 manifest、原 LICENSE 和 P1–P6 记录在 Git 中。当前保留的 `licenses/` 与 `docs/provenance/` 支持复用署名和追溯。Git 不包含数据库、模型、账号凭据或依赖环境，它们由既有资源管理。
 
@@ -28,7 +30,7 @@ git show v1.0.0:services/support/app/operations.py
 git show f048f2949c101b2f8b869728d59c4254a6eb2049:docs/SPEC_V2.md
 ```
 
-需要实际切换版本时先停止当前工作台并完成或保存工作。历史源码有混合换行和冻结哈希，使用命令局部设置 `git -c core.autocrlf=false switch --detach <tag>` 保留原字节；回到本次实现使用 `git switch codex/directory-normalization`。历史启动入口和环境以该版本文档为准。不要对 Git 切换执行数据库 reset。
+需要实际切换版本时先停止当前工作台并完成或保存工作。历史源码有混合换行和冻结哈希，使用命令局部设置 `git -c core.autocrlf=false switch --detach <tag>` 保留原字节；回到当前第三阶段实现使用 `git switch codex/models-rag`。历史启动入口和环境以该版本文档为准。不要对 Git 切换执行数据库 reset。
 
 ## 后续约定
 

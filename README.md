@@ -2,7 +2,7 @@
 
 本机学习与面试演示项目：以电商、外卖订单为场景，构建可解释的业务 Agent，重点展示受控工具、真实 RAG、上下文与记忆管理。
 
-当前完成基础设施与确定性业务阶段：下单、模拟支付、履约推进、取消、整单退款、确认审批及异常工单。模型接入、RAG、Agent 对话与上下文/记忆属于后续阶段，尚未完成。
+当前完成基础设施与确定性业务阶段：下单、模拟支付、履约推进、取消、整单退款、确认审批及异常工单。第三阶段三模型与真实 RAG 已通过基础验收：ChatGPT gpt-6.1-sol、DeepSeek deepseek-flash、Ollama qwen3:8b，以及 BGE-M3/Qdrant/BGE Reranker 的真实 GPU 检索链路。Agent 对话与上下文/记忆属于后续阶段，尚未完成。
 
 源码只保留一套当前架构。v1、v2 与后续实现通过 Git 提交、分支和标签保存，不维护版本目录。
 
@@ -36,7 +36,7 @@ WorkflowOps/
 ├─ requirements/        主应用、推理依赖及冻结版本
 ├─ infra/               本项目 PostgreSQL/Qdrant Compose
 ├─ contracts/api/       当前公开业务接口契约
-├─ data/fixtures/       固定模拟商品、订单和 manifest
+├─ data/                fixtures 模拟数据；knowledge 版本化资料与冻结查询
 ├─ docs/                当前 Spec、Plan、演示、架构和验收
 ├─ licenses/            复用来源的许可与署名
 ├─ .planning/           本次重排的基线、映射与过程记录
@@ -59,6 +59,6 @@ WorkflowOps/
 
 ## 验证与范围
 
-历史基础、GPU、业务阶段证据保存在 [validation](docs/validation/README.md)，目录迁移的实际验证见 [layout](docs/validation/layout.md)。真实模型、费用、RAG 效果和长对话验收仍 NOT_RUN，不能由业务测试替代。
+历史基础、GPU、业务阶段证据保存在 [validation](docs/validation/README.md)，目录迁移的实际验证见 [layout](docs/validation/layout.md)。三通道模型/RAG基础验收已过；长对话、上下文与记忆尚未完成。各通道实际结果与失败单列于 [模型与RAG记录](docs/validation/models-rag.md)，不能由业务测试替代。
 
 v1 的固定工作流、快照分析、原三服务及完整历史验收可通过 `v1.0.0` 查看。来源许可在 `licenses/`，复用语义见 [REUSE](docs/provenance/REUSE.md)。不重置旧数据库，不合并或修改三套旧 Conda，不自动登录、安装、计费或推送。

@@ -1,0 +1,102 @@
+{
+  "version": "demo-cn/2026-10-04.1",
+  "source_kind": "self-authored-demo-rules",
+  "documents": [
+    {
+      "id": "ecommerce-life",
+      "title": "电商订单与支付",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/ecommerce-life.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "ecommerce-life.md",
+      "sha256": "c638ac5dd8252305d46bb59f2fd62847ec6ba1e53a5ca92dc3ad907cc2042da0",
+      "facts": {
+        "ecommerce.lifecycle": "awaiting_payment-paid-ready_to_ship-shipped-delivered"
+      }
+    },
+    {
+      "id": "ecommerce-cancel",
+      "title": "电商取消边界",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/ecommerce-cancel.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "ecommerce-cancel.md",
+      "sha256": "ee7ef22773bbd987abcab08c4fe9bbe5d972cbb57011faf73c861ce264ea4019",
+      "facts": {
+        "ecommerce.cancel_before": "shipped"
+      }
+    },
+    {
+      "id": "ecommerce-refund",
+      "title": "电商整单退款",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/ecommerce-refund.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "ecommerce-refund.md",
+      "sha256": "d8764572fa40450e98e9627288f1d704e5e70f0b3c7c47faa488d4b2b0319b7c",
+      "facts": {
+        "ecommerce.refund_threshold": "500.00"
+      }
+    },
+    {
+      "id": "food-life",
+      "title": "外卖订单与配送",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/food-life.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "food-life.md",
+      "sha256": "73c3d33fa65671b19c6b6a56d3ba25359506c26d50ce32e2e9636f3c086d94f4",
+      "facts": {
+        "food.lifecycle": "awaiting_payment-paid-accepted-preparing-delivering-delivered"
+      }
+    },
+    {
+      "id": "food-cancel",
+      "title": "外卖取消边界",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/food-cancel.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "food-cancel.md",
+      "sha256": "a709a46fe38f0836a8b24c7653412383fefad87d1be512c54388f6c90a474489",
+      "facts": {
+        "food.cancel_before": "accepted"
+      }
+    },
+    {
+      "id": "food-refund",
+      "title": "外卖整单退款",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/food-refund.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "food-refund.md",
+      "sha256": "1753fbb6ed29ac6237135e03647af79e8dc093d21d8ec05c12e3ab1dadd9bf7c",
+      "facts": {
+        "food.refund_threshold": "100.00"
+      }
+    },
+    {
+      "id": "actions",
+      "title": "动作有效期与幂等",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/actions.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "actions.md",
+      "sha256": "2d24d8b63c7896ca83b2b715f682196694bae0141ae6023707ef99a48015f82d",
+      "facts": {
+        "action.ttl_seconds": "900"
+      }
+    },
+    {
+      "id": "tickets",
+      "title": "异常工单与权限",
+      "version": "demo-business/v2.1",
+      "source": "project:data/knowledge/tickets.md",
+      "license": "WorkflowOps self-authored local demonstration material",
+      "file": "tickets.md",
+      "sha256": "912570552af5f6733953e41aee01b21708b5c82b62f7e8e3f9c4821e5db74dff",
+      "facts": {
+        "ticket.confirm_required": "true"
+      }
+    }
+  ]
+}

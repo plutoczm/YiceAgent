@@ -9,6 +9,7 @@ from workflowops.business.bootstrap import ready
 from workflowops.business.service import BusinessService
 from workflowops.config import Settings
 from workflowops.database import make_engine
+from workflowops.models.api import Services
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
     if not ready(engine):
         engine.dispose()
         raise RuntimeError("business_database_not_prepared")
-    app = create_app(BusinessService(engine))
+    app = create_app(BusinessService(engine), models=Services.create(engine, Settings.load()))
 
     @app.middleware("http")
     async def startup_marker(request, call_next):

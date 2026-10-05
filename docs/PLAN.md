@@ -6,7 +6,7 @@
 |---|---|---|---|
 | V2-1 | 独立应用、配置、PostgreSQL/Qdrant 资源、JSONL/模型协议、启动入口 | COMPLETE | 新环境 23 测试通过；真实 PG/Qdrant、重启/启动停止与文件保护通过；BGE 下载完整性已验证 |
 | V2-2 | 两业务状态机、确认审批、幂等、模拟控制台 | COMPLETE | 83 测试/0 skip；真实 PG 并发、事务、HTTP、剧本与浏览器；原文件/旧环境/v1 数据保护通过 |
-| V2-3 | Pi/DeepSeek/Ollama、真实 BGE/Qdrant/Reranker、资料 | NOT_STARTED | 三真实通道、真实模型索引、40 查询门禁 |
+| V2-3 | Pi/DeepSeek/Ollama、真实 BGE/Qdrant/Reranker、资料 | COMPLETE | 三通道真实政策/意图/工具/草案；119 Python/13 Node；GPU检索重排、持久化与40冻结查询Hit@5目标通过；资源保护通过 |
 | V2-4 | Context Manager、摘要、记忆、Agent Loop | NOT_STARTED | 长对话、跨模型、删除过滤、循环/预算/失败边界 |
 | V2-5 | 工作台、集成验收、演示材料 | NOT_STARTED | 三通道完整剧本、实际浏览器、完整证据 |
 
@@ -18,7 +18,7 @@ v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps
 
 ## 验证入口
 
-当前入口：python scripts/manage.py doctor / check / baseline / infra-plan / up / down；显式 install、infra-up、business-prepare 与 replay-demo 使用授权标志。verify 整体验收编排与 login-chatgpt 尚未实现，留待对应阶段。所有入口必须以未授权动作关闭为默认；凭据只在本地 ignored 配置读取，不输出正文。
+当前入口：python scripts/manage.py doctor / check / baseline / infra-plan / up / down；显式 install、infra-up、business-prepare 与 replay-demo 使用授权标志。verify 整体验收编排尚未实现；第三阶段项目专用 login-chatgpt 入口为 scripts/models/account.py。所有入口必须以未授权动作关闭为默认；凭据只在本地 ignored 配置读取，不输出正文。
 
 ## 进度和证据
 
@@ -51,3 +51,19 @@ v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps
 ## 2026-10-04 目录与版本管理
 
 按用户后续指令，当前源码使用src/workflowops、根pyproject、tests/unit和tests/integration；历史v1/v2快照仅在Git保留，不以版本目录并存。当前文档统一SPEC/PLAN/DEMO，工具为scripts/manage.py及职责子目录。需求和阶段范围不变；没有开始V2-3。路径对应及实际重排验证见STRUCTURE.md、VERSIONING.md、validation/layout.md。
+
+## 第三阶段执行（2026-10-04）
+
+当前分支codex/models-rag。模型协议与真实RAG实现中；用户已批准项目专用OAuth登录及DeepSeek真实验收，DeepSeek/Jev本轮累计上限明确为15元人民币，替代原100元预算。服务端配置与PG预算账本都限制15，未知usage按预留计账，费率需记录来源/确认日期。钥匙只通过本机隐藏输入，OAuth由用户完成，禁止读取旧工具登录。
+
+真实BGE-M3 GPU入库与BGE Reranker GPU推理已执行，40冻结样本初次成功结果32有答案Hit@5=100%、未知4/4、冲突4/4；6正例被证据门槛拒答，回答覆盖率单列。Qwen真实政策引用/意图澄清/原生工具及结果回传通过；三通道整体尚未验收，不标第三阶段COMPLETE，不开始第四阶段。
+
+2026-10-05：DeepSeek真实模型验收PASS。deepseek-flash非思考模式完成政策引用、意图澄清、原生工具与真实PG结果回传、待确认草案；实际浏览器澄清和RAG亦通过。7次调用usage均可知，累计保守估算0.010818元，剩余14.989182元；12张public业务表全行摘要不变，无遗留测试schema。ChatGPT由用户自行完成项目OAuth，目前未就绪。V2-3仍IN_PROGRESS，不进入V2-4。见validation/models-rag.md。
+
+2026-10-05后续：修复ChatGPT模型选择的就地错误提示、登录说明、60秒页面等待/50秒后端截止与取消结算。108测试、Ruff/JS/已配置mypy及浏览器未登录交互通过；Settings和12表数据不变。普通测试继承计费配置的漏洞已隔离，一次误调用按最大预留补记后累计保守费用0.039490元。ChatGPT真实生成仍NOT_RUN，V2-3保持IN_PROGRESS。见validation/chatgpt-selection.md。
+
+2026-10-05后续：项目Node子进程采用既有本机系统代理，实际授权服务只读探测由直连403变为200；OAuth错误记录改为固定分类且不保存凭据。119 Python/13 Node测试、Ruff和已配置mypy通过，工作台重载。真实OAuth交换仍待用户完成，本轮无新计费，V2-3继续IN_PROGRESS。
+
+2026-10-05：V2-3 COMPLETE。用户完成项目OAuth，真实账号目录和gpt-6.1-sol生成验证通过；三模型四项CLI判据全部PASS，ChatGPT与DeepSeek实际浏览器亦通过。真实GPU embedding/重排、Qdrant持久化与租户过滤、40冻结查询Hit@5=32/32（100%）达到85%目标，证据门槛/无答案局限分别保留。119 Python/13 Node、Ruff/已配置mypy通过；最终旧环境/v1/业务表保护复核通过。DeepSeek累计保守0.039490元，ChatGPT9次订阅调用不换算人民币。证据phase3-gates.json及validation/models-rag.md。未commit/push；V2-4–V2-5仍NOT_STARTED，整体未完成。
+
+2026-10-05：用户明确授权保存第三阶段Git版本。当前已验证源码与资料采用本地提交和阶段标签v2.0.0-p3冻结，工作分支codex/models-rag；不推送，不移动v1.0.0/v2.0.0-p2，不包含runtime、依赖、数据库或凭据。第四阶段仍NOT_STARTED。

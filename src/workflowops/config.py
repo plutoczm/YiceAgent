@@ -24,7 +24,12 @@ class Settings(Closed):
     ollama_model: Literal["qwen3:8b"] = "qwen3:8b"
     input_price_cny_per_million: str | None = Field(default=None, pattern=r"^[0-9]+(?:\.[0-9]+)?$")
     output_price_cny_per_million: str | None = Field(default=None, pattern=r"^[0-9]+(?:\.[0-9]+)?$")
-    billing_cap_cny: Literal["100.00"] = "100.00"
+    billing_cap_cny: Literal["15.00"] = "15.00"
+    paid_calls_enabled: bool = False
+    pricing_checked_on: str | None = Field(default=None, pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+    pricing_source: Literal["https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"] | None = (
+        None
+    )
     app_window: Literal[4096, 8192, 16384] = 8192
     inference_device: Literal["auto", "cpu", "cuda:0"] = "auto"
 
@@ -46,6 +51,7 @@ class Settings(Closed):
                 self.input_price_cny_per_million and self.output_price_cny_per_million
             ),
             "billing_cap_cny": self.billing_cap_cny,
+            "paid_calls_enabled": self.paid_calls_enabled,
         }
 
 
