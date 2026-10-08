@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WorkflowOps 业务控制台</title><link rel="stylesheet" href="/static/styles.css"><script src="/static/app.js" defer></script></head>
 <body><header><div><p class="eyebrow">WORKFLOWOPS / V2</p><h1>订单业务控制台</h1><p>模拟数据 · 本地演示 · 固定业务规则</p></div><label>演示身份<select id="persona"><option value="customer-a1">客户 A1</option><option value="customer-a2">客户 A2</option><option value="operator-a">运营 A</option><option value="customer-b1">客户 B1</option><option value="customer-b2">客户 B2</option><option value="operator-b">运营 B</option></select></label><button id="switch">选择身份</button><button id="refresh">刷新数据</button></header>
-<main><p id="identity">请选择演示身份</p><p id="notice" role="status"></p><nav><a href="#catalog">商品与下单</a><a href="#orders">订单与模拟</a><a href="#actions">确认与审批</a><a href="#tickets">异常工单</a><a href="#knowledge">模型与知识</a></nav>
+<main><p id="identity">请选择演示身份</p><p id="notice" role="status"></p><nav><a href="/agent">Agent 会话与记忆</a><a href="#catalog">商品与下单</a><a href="#orders">订单与模拟</a><a href="#actions">确认与审批</a><a href="#tickets">异常工单</a><a href="#knowledge">模型与知识</a></nav>
 <section id="policies"><h2>演示政策</h2><div id="policy-list"></div><p>退款申请提交后等待模拟结果；支付、退款与配送状态分别记录。</p></section>
 <section id="catalog"><h2>商品与下单</h2><p>选择单一商品和数量生成订单草案，确认后才创建订单。</p><div id="product-list" class="grid"></div></section>
 <section id="orders"><h2>订单与模拟</h2><div id="order-list" class="grid"></div></section>
 <section id="actions"><h2>动作确认与审批</h2><p>高金额退款或支付后取消：运营先审批，客户再确认。取消草案不会撤销已提交业务。</p><div id="action-list" class="grid"></div></section>
 <section id="tickets"><h2>异常工单</h2><form id="new-ticket"><label>订单 ID（可选）<input id="ticket-order" maxlength="64"></label><label>问题描述<textarea id="ticket-message" required maxlength="2000"></textarea></label><button type="submit">生成工单草案</button></form><div id="ticket-list" class="grid"></div></section>
 <section id="knowledge"><h2>模型与知识：第三阶段预览</h2>
-<p>真实 BGE-M3 → Qdrant / BM25 → RRF → BGE Reranker；答复只发布校验后的原文引用。Agent 上下文与记忆将在后续阶段实现。</p>
+<p>真实 BGE-M3 → Qdrant / BM25 → RRF → BGE Reranker；答复只发布校验后的原文引用。Agent 上下文与记忆请进入会话入口查看。</p>
 <button id="model-status-refresh">读取模型与索引状态</button><p id="model-status-message" role="status" aria-live="polite"></p><details><summary>查看模型与索引详细信息</summary><pre id="model-status"></pre></details>
 <label>ChatGPT 模型候选<select id="chatgpt-model-picker"></select></label><button id="chatgpt-model-select">选择并验证（使用订阅额度，仅运营）</button>
 <p id="chatgpt-selection-status" role="status" aria-live="polite"></p>
@@ -25,4 +25,4 @@
 <p>密钥只发到本机应用并保存在 ignored 项目配置，不回显。本轮 DeepSeek/Jev 总上限15元，按已核对的峰值输入2元、输出8元/百万token预留。ChatGPT订阅用量单列。</p>
 <form id="deepseek-setup"><label>API Key<input id="deepseek-key" type="password" autocomplete="off" maxlength="500" required></label><button type="submit">保存项目密钥并启用已授权验收</button></form>
 </details></section>
-<footer>当前包含确定性业务和模型/RAG预览；完整Agent对话、上下文和记忆仍未实现。</footer></main></body></html>
+<footer>当前包含业务控制台、真实模型/RAG与第四阶段会话入口；综合验收仍在进行。</footer></main></body></html>

@@ -21,7 +21,13 @@ def main():
     if not ready(engine):
         engine.dispose()
         raise RuntimeError("business_database_not_prepared")
-    app = create_app(BusinessService(engine), models=Services.create(engine, Settings.load()))
+    from workflowops.agent.runtime import AgentService
+
+    business = BusinessService(engine)
+    resources = Services.create(engine, Settings.load())
+    agent = AgentService(business, resources)
+    agent.store.recover()
+    app = create_app(business, models=resources, agent=agent)
 
     @app.middleware("http")
     async def startup_marker(request, call_next):

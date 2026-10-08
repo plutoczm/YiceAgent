@@ -15,12 +15,14 @@ from workflowops.identity import Sessions
 STATIC = Path(__file__).with_name("static")
 
 
-def create_app(business: BusinessService | None = None, models=None) -> FastAPI:
+def create_app(business: BusinessService | None = None, models=None, agent=None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app):
         try:
             yield
         finally:
+            if agent is not None:
+                await agent.close()
             if models is not None:
                 await models.close()
 
@@ -88,7 +90,9 @@ def create_app(business: BusinessService | None = None, models=None) -> FastAPI:
         return {
             "owner": "workflowops-v2",
             "status": "ok",
-            "phase": "models-rag"
+            "phase": "context-memory"
+            if agent is not None
+            else "models-rag"
             if models is not None
             else "business"
             if business
@@ -111,6 +115,15 @@ def create_app(business: BusinessService | None = None, models=None) -> FastAPI:
             from workflowops.models.api import router as model_router
 
             app.include_router(model_router(models, sessions))
+
+        if agent is not None:
+            from workflowops.agent.api import router as agent_router
+
+            app.include_router(agent_router(agent, sessions))
+
+            @app.get("/agent")
+            def agent_console():
+                return FileResponse(STATIC / "agent.html")
 
         app.mount("/static", StaticFiles(directory=STATIC), name="static")
 

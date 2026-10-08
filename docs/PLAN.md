@@ -7,7 +7,7 @@
 | V2-1 | 独立应用、配置、PostgreSQL/Qdrant 资源、JSONL/模型协议、启动入口 | COMPLETE | 新环境 23 测试通过；真实 PG/Qdrant、重启/启动停止与文件保护通过；BGE 下载完整性已验证 |
 | V2-2 | 两业务状态机、确认审批、幂等、模拟控制台 | COMPLETE | 83 测试/0 skip；真实 PG 并发、事务、HTTP、剧本与浏览器；原文件/旧环境/v1 数据保护通过 |
 | V2-3 | Pi/DeepSeek/Ollama、真实 BGE/Qdrant/Reranker、资料 | COMPLETE | 三通道真实政策/意图/工具/草案；119 Python/13 Node；GPU检索重排、持久化与40冻结查询Hit@5目标通过；资源保护通过 |
-| V2-4 | Context Manager、摘要、记忆、Agent Loop | NOT_STARTED | 长对话、跨模型、删除过滤、循环/预算/失败边界 |
+| V2-4 | Context Manager、摘要、记忆、Agent Loop | COMPLETE | 三通道30轮/纠正保留；真实记忆/删除故障/跨模型；149 Python、13 Node、12源码mypy；浏览器与资源保护通过 |
 | V2-5 | 工作台、集成验收、演示材料 | NOT_STARTED | 三通道完整剧本、实际浏览器、完整证据 |
 
 ## 环境和实现范围
@@ -67,3 +67,16 @@ v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps
 2026-10-05：V2-3 COMPLETE。用户完成项目OAuth，真实账号目录和gpt-6.1-sol生成验证通过；三模型四项CLI判据全部PASS，ChatGPT与DeepSeek实际浏览器亦通过。真实GPU embedding/重排、Qdrant持久化与租户过滤、40冻结查询Hit@5=32/32（100%）达到85%目标，证据门槛/无答案局限分别保留。119 Python/13 Node、Ruff/已配置mypy通过；最终旧环境/v1/业务表保护复核通过。DeepSeek累计保守0.039490元，ChatGPT9次订阅调用不换算人民币。证据phase3-gates.json及validation/models-rag.md。未commit/push；V2-4–V2-5仍NOT_STARTED，整体未完成。
 
 2026-10-05：用户明确授权保存第三阶段Git版本。当前已验证源码与资料采用本地提交和阶段标签v2.0.0-p3冻结，工作分支codex/models-rag；不推送，不移动v1.0.0/v2.0.0-p2，不包含runtime、依赖、数据库或凭据。第四阶段仍NOT_STARTED。
+
+## 第四阶段执行（2026-10-05）
+
+用户明确授权开始V2-4，工作分支codex/context-memory，基线06973af/v2.0.0-p3。
+新增独立workflowops_agent schema，不改变public业务表、v1或旧环境。实现原始历史、范围版本摘要、候选确认记忆、权威过滤与受限LangGraph、同源会话入口。
+读取由真实封闭模型意图驱动固定白名单工具；草案可使用原生调用或经校验的结构化模型计划。均记录实际协议来源，不将结构化计划冒充原生tool-call。
+回忆采用模型选来源ID、应用读取原文；政策采用专用Selection引用校验。BGE/Qwen按单次任务释放本项目驻留资源，以支持8GB显存串行运行。
+初始148回归测试通过；后续控制器29相关测试通过，最终回归仍待运行。DeepSeek/ChatGPT30轮均已触发真实摘要并保持15元约束、CTX-B29和英文纠正；Qwen30轮仍运行，真实记忆/跨模型/浏览器和最终保护尚未完成。
+早期schema、语义门禁、CPU/协议断开、摘要窗口试跑失败均保留；不得据两个通道的结果标记整个阶段完成。V2-5仍NOT_STARTED。
+
+2026-10-05：V2-4 COMPLETE。三通道30轮及指定关键事实通过；真实BGE记忆确认、跨会话、修改、删除故障过滤、同会话三模型切换与确认状态保持通过。三通道实际Agent支付草案均待确认且订单不变；浏览器实际确认候选、召回版本2、手动压缩和取消通过。149 Python/0 skip、13 Node、Ruff/format、12源码mypy、JS、diff检查和资源保护通过。累计保守费用0.354200元/15元；ChatGPT单列。失败记录保留。见validation/context-memory.md与phase4-gates.json。未提交/推送，V2-5 NOT_STARTED，整体未完成。
+
+2026-10-08：用户要求Git同步，随后明确选择只保存本地。第四阶段代码与已验证材料通过本地提交和v2.0.0-p4阶段标签保存；不配置远程、不推送。当前复核Ruff、12源码mypy和91个单元测试通过，无新计费调用；第五阶段仍未开始。

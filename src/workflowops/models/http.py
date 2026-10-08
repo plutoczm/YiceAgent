@@ -14,15 +14,16 @@ from workflowops.model_store import ModelError
 
 
 def validate_request(request: GenerationRequest) -> None:
-    # Conservative UTF-8 bound, explicitly an upper estimate, never an exact token count.
-    # Include definitions/schema and reserve 512 for protocol overhead.
+    # Shared cross-provider token estimate, including definitions/schema; reserve 512 for protocol overhead.
     # Do not send recognizable credentials to any model, including local tools.
     secret = re.compile(
         r"(?i)\bsk-[a-z0-9_-]{16,}|(?:api[_ -]?key|password|bearer)\s*[:=]\s*[^\s]{12,}"
     )
     if any(m.content and secret.search(m.content) for m in request.messages):
         raise ModelError("credential_in_model_context")
-    size = len(request.model_dump_json().encode("utf-8"))
+    from workflowops.tokens import estimate
+
+    size = estimate(request)["input_tokens"]
     if size + request.max_output_tokens + 512 > request.context_window:
         raise ModelError("context_capacity_exceeded")
 
@@ -158,7 +159,7 @@ class HttpAdapter:
                     "num_predict": request.max_output_tokens,
                     "temperature": 0,
                 },
-                keep_alive="1m",
+                keep_alive=0,  # Release this request's Qwen residency before the next BGE job.
             )
             if request.output_schema:
                 body["format"] = request.output_schema

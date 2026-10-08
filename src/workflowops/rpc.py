@@ -11,7 +11,9 @@ MAX_LINE = 4 * 1024 * 1024
 
 
 class WorkerError(RuntimeError):
-    pass
+    def __init__(self, code: str, diagnostic: dict[str, Any] | None = None):
+        self.diagnostic = diagnostic or {}
+        super().__init__(code)
 
 
 class JsonlWorker:
@@ -52,7 +54,14 @@ class JsonlWorker:
                     await process.stdin.drain()
                     line = await process.stdout.readline()
                     if not line or len(line) > MAX_LINE:
-                        raise WorkerError("worker_protocol_invalid")
+                        raise WorkerError(
+                            "worker_protocol_invalid",
+                            {
+                                "kind": "eof" if not line else "oversized_response",
+                                "bytes": len(line),
+                                "exit_code": process.returncode,
+                            },
+                        )
                     response = RpcResponse.model_validate_json(line)
                     if response.request_id != request.request_id:
                         raise WorkerError("worker_response_id_mismatch")
@@ -67,7 +76,10 @@ class JsonlWorker:
                 raise
             except (ValueError, json.JSONDecodeError):
                 await self.close()
-                raise WorkerError("worker_protocol_invalid") from None
+                raise WorkerError(
+                    "worker_protocol_invalid",
+                    {"kind": "invalid_json_or_schema", "exit_code": process.returncode},
+                ) from None
 
     async def close(self) -> None:
         process, self.process = self.process, None

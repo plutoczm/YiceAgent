@@ -56,6 +56,8 @@ class Inference:
                 expected = "BAAI/bge-m3" if kind == "embed" else "BAAI/bge-reranker-v2-m3"
                 if not isinstance(result, dict) or result.get("model_id") != expected:
                     raise ModelError("inference_model_mismatch")
+                self.workers.pop(kind, None)
+                await worker.close()  # Release the owned compute job before the next Qwen/BGE job.
                 return result
             except BaseException:
                 self.workers.pop(kind, None)

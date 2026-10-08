@@ -40,5 +40,5 @@ ignore = ["E501"]
 cache_dir = ".runtime/v2/mypy-cache"
 python_version = "3.12"
 strict = true
-files = ["src/workflowops/contracts.py", "src/workflowops/config.py", "src/workflowops/rpc.py", "src/workflowops/device.py", "src/workflowops/identity.py", "src/workflowops/business/contracts.py", "src/workflowops/business/models.py", "src/workflowops/business/rules.py", "src/workflowops/business/service.py", "src/workflowops/business/bootstrap.py", "src/workflowops/business/scenarios.py"]
+files = ["src/workflowops/contracts.py", "src/workflowops/config.py", "src/workflowops/rpc.py", "src/workflowops/device.py", "src/workflowops/identity.py", "src/workflowops/business/contracts.py", "src/workflowops/business/models.py", "src/workflowops/business/rules.py", "src/workflowops/business/service.py", "src/workflowops/business/bootstrap.py", "src/workflowops/business/scenarios.py", "src/workflowops/agent/contracts.py"]
 plugins = ["pydantic.mypy"]
