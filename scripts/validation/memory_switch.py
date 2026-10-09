@@ -29,7 +29,7 @@ from workflowops.model_store import ModelError
 from workflowops.models.api import Services
 
 
-async def execute():
+async def execute(phase=4):
     settings = Settings.load()
     control = make_engine(settings)
     schema = "v2_test_" + uuid4().hex
@@ -49,7 +49,7 @@ async def execute():
         "schema": schema,
         "steps": [],
     }
-    path = RUNTIME / "phase4" / ("memory-switch-" + uuid4().hex[:8] + ".json")
+    path = RUNTIME / ("phase" + str(phase)) / ("memory-switch-" + uuid4().hex[:8] + ".json")
     indexed = []
 
     def record(kind, data):
@@ -307,9 +307,11 @@ async def execute():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--approved", action="store_true")
-    if not parser.parse_args().approved:
+    parser.add_argument("--phase", type=int, choices=[4, 5], default=4)
+    args = parser.parse_args()
+    if not args.approved:
         raise SystemExit("explicit_real_acceptance_approval_required")
-    raise SystemExit(asyncio.run(execute()))
+    raise SystemExit(asyncio.run(execute(args.phase)))
 
 
 if __name__ == "__main__":

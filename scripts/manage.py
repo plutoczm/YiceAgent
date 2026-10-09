@@ -498,6 +498,7 @@ def main():
             "up",
             "down",
             "check",
+            "verify",
             "baseline",
         ],
     )
@@ -553,6 +554,11 @@ def main():
             down()
         elif args.command == "check":
             return check(args.borrow_env)
+        elif args.command == "verify":
+            return subprocess.call(
+                [str(MAIN_PYTHON), "-B", str(ROOT / "scripts/validation/verify.py"), "checks"],
+                cwd=ROOT,
+            )
         else:
             return check_baseline()
         return 0

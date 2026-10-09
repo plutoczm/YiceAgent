@@ -90,7 +90,7 @@ def create_app(business: BusinessService | None = None, models=None, agent=None)
         return {
             "owner": "workflowops-v2",
             "status": "ok",
-            "phase": "context-memory"
+            "phase": "workbench"
             if agent is not None
             else "models-rag"
             if models is not None
@@ -121,9 +121,9 @@ def create_app(business: BusinessService | None = None, models=None, agent=None)
 
             app.include_router(agent_router(agent, sessions))
 
-            @app.get("/agent")
-            def agent_console():
-                return FileResponse(STATIC / "agent.html")
+        @app.get("/agent")
+        def agent_console():
+            return FileResponse(STATIC / "index.html")
 
         app.mount("/static", StaticFiles(directory=STATIC), name="static")
 

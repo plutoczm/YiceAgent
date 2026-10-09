@@ -1,0 +1,16 @@
+# Progress
+Working tree/active requirements inspected. User confirmed replacement option. Baseline frontend/backend/config/test/guides/frozen artifacts preserved. Read handlers, protocol cases and real PG test scope. Existing provider call approval is cumulative15CNY; no new budget authorized.
+
+Implemented loop.py and direct Execution handler wiring, removed framework imports/declared packages without touching installed environments. Initial25 loop unit checks PASS and mypy13 PASS. Ruff flagged import sorting/unused import/old generic syntax; corrected toPython3.12 type parameters. Added realPG loop trace test, metadata-only UI timeline labels and hard-stop feedback.
+
+First full configured check:183passed/1failed. Failure was an existing HTTP test assuming a finished task still exists in active registry; immediate self-built callbacks finish before duplicate request response. Changed test to inspect durable run after optional active-task wait, and added completed-run replay invariant. Failure artifacts saved; original phase5 reports restored. No scheduling sleep added to mask the race.
+
+Second configured check PASS185Python/18Node/13mypy/79format/history889. Focused initial live batch live-1f726df9:9of12pass; DeepSeek policy worker EOF, ChatGPT draft/final feedback provider_request_failed. DeepSeek and Qwen multi-observation6step/2tool loops passed, ChatGPT policy passed. Failure raw reports retained. Retesting only failed cases, no provider substitution; budgetbefore1.351542, peak2/8rates verified official source2026-10-09, existing checkeddate2026-10-08 stillvalid.
+
+Documentation updated to self-built runtime, keeping historical datedLangGraph records. Caught basename collision in baseline docs/README versus rootREADME; restored exact root original bytes verified against initial SHA and moved docs baseline toseparate prefix. Live failed-only rechecks running; provider request failures and worker EOF preserved, cause not proven.
+
+Focused live summaryPASS12cases after3 same-input/provider rechecks; originalfailures preserved. Budget cumulative1.382392/15, delta0.030850 upperestimate. Actual Qwen browser run67c603da showed6transition/4model/2tool; cancelc1ad restored controls. Business11table original rows and counts unchanged, schema leftovers0. Source/prompts/protocol adapters otherwise retained. Scope not full30repeat; current change acceptance and legacy history separated. Design/reference docs updated.
+
+Final source review confirmed six expected frozen-source changes and three new code/test/validation files. All68 prior artifacts hash-identical. Final Ruff/79format/13mypy/agentJS/diff PASS. Amendment freezes100 artifacts/120sources, explicitly flags legacy runtime gates and full current30turn/business reacceptanceNOT_RUN. Frozen evidence integrityPASS, no new model calls; planCOMPLETE. No install/uninstall, data migration, commit/tag/push.
+
+2026-10-09 user authorized saving the current local Git version. Snapshot includes the completed phase5/UI changes and handwritten runtime on codex/workbench-acceptance, tagged v2.0.0-p5-react. Prior tags retained; no remote/push, installs, paid calls or database changes. Version documentation records acceptance scope and ignored runtime artifacts.

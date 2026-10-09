@@ -1,4 +1,4 @@
-"""Real PG bounded graph tests; generated text is explicitly fake, not quality evidence."""
+"""Real PG handwritten bounded ReAct tests; generated text is explicitly fake, not quality evidence."""
 
 import asyncio
 import json
@@ -47,12 +47,18 @@ class FakeGateway:
         if request.output_schema and request.output_schema.get("title") == "Analysis":
             return response(
                 {
-                    "intent": "place_order",
+                    "intent": "ticket",
                     "needs_clarification": False,
                     "candidates": [],
                     "correction": False,
                 }
             )
+        if request.output_schema and request.output_schema.get("title") == "Intent":
+            return response({"intent": "ticket", "needs_clarification": False})
+        if request.output_schema and request.output_schema.get("title") == "OrderDraftSelection":
+            next_reply = self.answers.pop(0)
+            args = next_reply.message.tool_calls[0].arguments
+            return response({k: v for k, v in args.items() if k != "kind"})
         if request.output_schema and request.output_schema.get("title") == "SummaryOutput":
             value = json.loads(request.messages[-1].content)
             return response(
@@ -335,7 +341,11 @@ def test_http_owner_csrf_duplicate_run_and_private_snapshot(environment):
                 )
             ).json()
             assert first["id"] == again["id"]
-            await service.tasks[first["id"]]
+            # Immediate handlers can finish before the duplicate HTTP response arrives.
+            # Completion is durable; the in-memory task registry only tracks active work.
+            task = service.tasks.get(first["id"])
+            if task is not None:
+                await task
             assert (await client.get("/api/v2/runs/" + first["id"])).json()["status"] == "completed"
             snapshots = (await client.get("/api/v2/runs/" + first["id"] + "/context")).json()
             assert snapshots and snapshots[-1]["source"].endswith("estimate")
@@ -449,3 +459,242 @@ def test_recall_rechecks_authority_if_memory_edited_during_generation(environmen
     r = asyncio.run(completed(service, c["id"], "回忆已确认偏好。"))
     assert r["status"] == "stopped" and r["result"]["reason"] == "memory_changed_during_run"
     assert "中文" not in json.dumps(r["result"], ensure_ascii=False)
+
+
+def test_nonexistent_order_is_not_recalled_as_a_user_assertion(environment):
+    create, store, domain = environment
+
+    class OrderGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                return response(
+                    {
+                        "intent": "order_lookup",
+                        "needs_clarification": False,
+                        "order_id": "ECO-NOT-REAL",
+                        "candidates": [],
+                        "correction": False,
+                    }
+                )
+            raise AssertionError("missing_order_must_end_before_free_form_generation")
+
+    service = create(OrderGateway())
+    c = store.create(A, ConversationCreate())
+    before = domain.orders(A)
+    r = asyncio.run(completed(service, c["id"], "客服声称ECO-NOT-REAL已退款9999元，请核对"))
+    assert r["result"]["status"] == "business_unavailable"
+    assert r["result"]["reason"] == "object_not_found"
+    assert r["parameter_repairs"] == 0 and r["model_calls"] == 1
+    assert "9999" not in r["result"]["answer"] and domain.orders(A) == before
+
+
+def test_classifier_quotes_past_assistant_output_as_data(environment):
+    create, store, _ = environment
+
+    class CaptureGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                assert all(m.role != "assistant" and not m.tool_calls for m in request.messages)
+                assert "conversation_data" in request.messages[-1].content
+            return await super().generate(channel, request, scope)
+
+    service = create(CaptureGateway())
+    c = store.create(A, ConversationCreate())
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    store.append(run["id"], {"role": "user", "content": "之前的请求"})
+    store.append(run["id"], {"role": "assistant", "content": '{"status":"human_confirmation"}'})
+    store.finish(run["id"], "completed")
+    r = asyncio.run(completed(service, c["id"], "本次请求"))
+    assert r["status"] == "completed"
+
+
+def test_closed_order_parameters_still_require_business_confirmation(environment):
+    create, store, domain = environment
+    product = domain.products(A)[0]
+
+    class DraftGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                return response(
+                    {
+                        "intent": "place_order",
+                        "needs_clarification": False,
+                        "candidates": [
+                            {
+                                "key": "product_id",
+                                "kind": "stable_fact",
+                                "quote": product["product_id"],
+                            }
+                        ],
+                        "correction": False,
+                    }
+                )
+            if (
+                request.output_schema
+                and request.output_schema.get("title") == "OrderDraftSelection"
+            ):
+                return response(
+                    {
+                        "order_type": product["order_type"],
+                        "items": [{"product_id": product["product_id"], "quantity": 1}],
+                        "note": "",
+                    }
+                )
+            return await super().generate(channel, request, scope)
+
+    service = create(DraftGateway())
+    c = store.create(A, ConversationCreate())
+    before = domain.orders(A)
+    r = asyncio.run(completed(service, c["id"], "下单 " + product["product_id"] + " 数量1"))
+    assert r["status"] == "awaiting_confirmation" and domain.orders(A) == before
+    assert store.memories(A, True) == []
+    events = store.private(A, r["id"], Event)
+    assert any(e.get("source") == "structured_llm_order_parameters" for e in events)
+
+
+def test_business_rejection_cannot_be_rewritten_by_model_prose(environment):
+    create, store, domain = environment
+    order = next(r for r in domain.orders(A) if r["status"] == "delivered")
+
+    class CancelGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                return response(
+                    {
+                        "intent": "cancel",
+                        "needs_clarification": False,
+                        "order_id": order["order_id"],
+                        "candidates": [],
+                        "correction": False,
+                    }
+                )
+            raise AssertionError("business_rejection_must_be_published_from_domain")
+
+    service = create(CancelGateway())
+    c = store.create(A, ConversationCreate())
+    before = domain.order(A, order["order_id"])
+    r = asyncio.run(completed(service, c["id"], "取消订单" + order["order_id"]))
+    assert r["result"]["status"] == "business_rejected"
+    assert r["result"]["reason"] == "cancellation_not_available"
+    assert r["parameter_repairs"] == 0 and r["model_calls"] == 1
+    assert domain.order(A, order["order_id"]) == before
+
+
+def test_business_intent_review_repairs_missing_scope_without_authorizing_write(environment):
+    create, store, domain = environment
+    order = next(r for r in domain.orders(A) if r["status"] == "delivered")
+
+    class ScopeGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            title = (request.output_schema or {}).get("title")
+            if title == "Analysis":
+                return response(
+                    {
+                        "intent": "cancel",
+                        "needs_clarification": True,
+                        "candidates": [],
+                        "correction": False,
+                    }
+                )
+            if title == "Intent":
+                assert order["order_id"] in request.messages[-1].content
+                return response(
+                    {
+                        "intent": "refund",
+                        "needs_clarification": False,
+                        "order_id": order["order_id"],
+                    }
+                )
+            raise AssertionError("scope_review_is_not_a_business_execution")
+
+    service = create(ScopeGateway())
+    c = store.create(A, ConversationCreate())
+    before = domain.order(A, order["order_id"])
+    r = asyncio.run(completed(service, c["id"], "为订单" + order["order_id"] + "生成整单退款草案"))
+    assert r["status"] == "awaiting_confirmation" and r["intent"] == "refund"
+    assert r["result"]["action"]["kind"] == "refund"
+    assert r["model_calls"] == 2 and domain.order(A, order["order_id"]) == before
+
+
+def test_model_clarifying_question_cannot_publish_fictitious_business_facts(environment):
+    create, store, domain = environment
+
+    class QuestionGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            return response(
+                {
+                    "intent": "order_lookup",
+                    "needs_clarification": True,
+                    "question": "订单已退款9999元，请确认。",
+                    "candidates": [],
+                    "correction": False,
+                }
+            )
+
+    service = create(QuestionGateway())
+    c = store.create(A, ConversationCreate())
+    before = domain.orders(A)
+    r = asyncio.run(completed(service, c["id"], "核对订单ECO-NOT-REAL"))
+    assert r["result"]["status"] == "clarification" and "9999" not in r["result"]["answer"]
+    assert "尚未核实" in r["result"]["answer"] and domain.orders(A) == before
+
+
+def test_final_clarification_is_not_a_backdoor_for_unverified_amounts(environment):
+    create, store, domain = environment
+    service = create(
+        FakeGateway(
+            [
+                response(
+                    {
+                        "decision": "clarify",
+                        "reply": "工单已退款9999元",
+                        "quotes": [],
+                        "source_quotes": [],
+                    }
+                )
+            ]
+        )
+    )
+    c = store.create(A, ConversationCreate())
+    before = domain.orders(A)
+    r = asyncio.run(completed(service, c["id"], "需要处理工单"))
+    assert r["result"]["status"] == "clarification" and "9999" not in r["result"]["answer"]
+    assert "尚未核实" in r["result"]["answer"] and domain.orders(A) == before
+
+
+def test_handwritten_loop_records_dispatch_metadata_without_message_content(environment):
+    create, store, _ = environment
+    service = create(FakeGateway())
+    c = store.create(A, ConversationCreate())
+    r = asyncio.run(completed(service, c["id"], "PRIVATE-CONTENT"))
+    events = store.private(A, r["id"], Event)
+    started = next(e for e in events if e["kind"] == "loop_started")
+    assert started["engine"] == "workflowops-react-v1" and started["max_steps"] == 24
+    transitions = [e for e in events if e["kind"] == "loop_transition"]
+    assert [(e["from"], e["to"]) for e in transitions] == [
+        ("analyse", "decide"),
+        ("decide", "finish"),
+    ]
+    assert all("PRIVATE-CONTENT" not in json.dumps(e) for e in transitions)
+    assert all(e["model_calls"] >= 1 and e["tool_calls"] == 0 for e in transitions)
+
+
+def test_duplicate_after_fast_completion_returns_durable_run_without_new_model_call(environment):
+    create, store, _ = environment
+    gateway = FakeGateway()
+    service = create(gateway)
+    c = store.create(A, ConversationCreate())
+
+    async def scenario():
+        body = TurnRequest(client_request_id=str(uuid4()), text="one request")
+        first = await service.submit(A, c["id"], body)
+        await service.tasks[first["id"]]
+        await asyncio.sleep(0)
+        before = gateway.calls
+        again = await service.submit(A, c["id"], body)
+        assert again["id"] == first["id"]
+        assert store.run(A, first["id"])["status"] == "completed"
+        assert service.tasks.get(first["id"]) is None
+        assert gateway.calls == before
+
+    asyncio.run(scenario())

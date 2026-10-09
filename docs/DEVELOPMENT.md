@@ -1,85 +1,51 @@
-# 开发与运行指南
+# 开发与运行
 
-所有命令从 `D:\Projects\WorkflowOps` 执行。Python 项目配置位于根 `pyproject.toml`，源码为 `src/workflowops`。
+当前源码为src/workflowops，一套应用通过Git提交、分支和标签管理。阶段和结果以PLAN及validation为准。main和inference环境隔离；旧Conda不安装或升级。
 
-当前基础、业务、三模型接入与真实RAG阶段已通过验收。ChatGPT项目OAuth、DeepSeek本机配置和Qwen均已真实验证；上下文、记忆与Agent Loop属于尚未开始的第四阶段。实际结果见validation/models-rag.md。
+## 已安装资源
 
-## 已安装环境
+- main：.runtime/v2/envs/main，应用与测试。
+- inference：.runtime/v2/envs/inference，Torch 2.14.1+cu130，BGE GPU优先、明确CPU回退。
+- Pi：bridge/node_modules，锁定依赖与JSONL协议。
+- PostgreSQL：127.0.0.1:55433，workflowops_v2。
+- Qdrant：127.0.0.1:6335；Ollama：11434，qwen3:8b。
+- 权重与凭据：ignored .runtime/v2。源码config只放非秘密来源配置。
 
-- main：`.runtime/v2/envs/main`，应用、检查与测试。
-- inference：`.runtime/v2/envs/inference`，PyTorch 2.14.1+cu130，BGE GPU 优先与明确 CPU 回退。
-- Pi：`bridge/node_modules`；安装清单在 `bridge/package.json` 和 lock。
-- PostgreSQL：`127.0.0.1:55433`，owned 库 `workflowops_v2`。
-- Qdrant：`127.0.0.1:6335`，资源声明在 `infra/compose.yml`。
-- 权重：`.runtime/v2/models`；非秘密来源配置在 `config/model-sources.json`。
-- 密码/API key/OAuth 状态：只在 ignored runtime，禁止放入 `config/` 或 Git。
+启动Docker Desktop及Ollama，再启动已有项目容器。根start.cmd启动8020回环HTTP；stop.cmd只停HTTP。启动不安装、迁移或重置。应用重启会清除临时演示登录，需重新选身份；私有历史与业务数据持久保留。
 
-已有 main 环境的 editable 链接已随迁移修正到根 `src`。三套旧 Conda 保持不变，历史版本使用其自身说明。
-
-## 统一入口
+## 检查入口
 
 ```powershell
 & ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py doctor
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py up
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py down
+& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py verify
+& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/validation/verify.py evidence
 ```
 
-也可以运行根 `start.cmd / stop.cmd`。当前工作台为 `http://127.0.0.1:8020`；旧 v1 的 8010/8011/8012 入口在 Git 历史，不作为当前启动方式。
+verify checks编排Ruff/format、配置的13源码mypy、全部Python/真实owned PG集成、Node认证、JS语法、历史源码和diff检查；skip会使完整检查失败。普通pytest自动阻止真实模型调用。每个业务fixture只创建并清理本轮UUID schema，public与v1不能作为清理目标。
 
-up 不安装、不初始化、不重置；已有进程或端口冲突会拒绝。down 核验进程归属后只停止 HTTP，保留模型、数据库、卷和演示结果。
+evidence核对冻结证据及行为源码的SHA-256。源码改变或ignored证据缺失时不能沿用整体PASS。它不发起新模型调用；将仓库复制到其他机器后，需重新配置并执行验收，不应伪造旧本地记录。
 
-## 测试与检查
+## 真实验收与授权
 
-```powershell
-$env:WORKFLOWOPS_V2_INTEGRATION = "1"
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py check
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B -m ruff check src tests scripts
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B -m ruff format --check src tests scripts
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B -m mypy
-```
+scripts/validation/verify.py live --approved顺序调用：
 
-环境变量仅影响当前进程。测试分为 `tests/unit` 与 `tests/integration`；真实集成未开启时会 skip，不能算完整验收。真实测试只在 owned 数据库新建并清理本轮 UUID schema，不删除 public 表或数据。mypy 仅覆盖 pyproject 配置的 11 个核心源码。
+1. business_agent.py：三通道电商/外卖下单、支付、查询、履约、退款、审批取消、工单。
+2. adversarial.py：明确标识的注入证据fixture、缺证据/冲突、伪造引用及不存在订单；不能冒充检索指标。
+3. context_memory.py --phase 5 --turns 30：每通道长期对话、原始约束、纠正、工具结果、压缩。
+4. memory_switch.py --phase 5：真实BGE/Qdrant记忆确认、跨会话、版本修改、向量删除故障、同会话三通道切换。
 
-静态页面的 JavaScript 语法检查为 `node --check src/workflowops/static/app.js`；Pi源码桥接为bridge/bridge.mjs；语法检查node --check bridge/bridge.mjs，离线回归node --test tests/unit/test_oauth_input.mjs tests/unit/test_oauth_errors.mjs。
+模型调用遵守项目预算：DeepSeek/Jev累计15元，可靠费率日期必需，未知usage按预留；ChatGPT订阅单列。项目OAuth由用户操作，不读取其他工具登录。禁止用未知模型名称冒充接入。
 
-历史保护和当前冻结布局：
+既有RAG检索基准为scripts/knowledge.py benchmark --approved；版本化资料和40冻结输入在data/knowledge。重新验证需保留前次原始证据。GPU任务用本项目跨进程串行租约，单次BGE/Qwen结束释放项目驻留，避免8GB显存竞争。Ollama请求采用num_batch=64降低提示词处理缓冲区，num_ctx仍等于应用窗口，不静默缩小上下文；该参数见[官方Runner结构](https://github.com/ollama/ollama/blob/main/api/types.go)。内存不足或模型加载失败仍明确停止。
 
-```powershell
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py baseline
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/maintenance/verify_layout.py --strict
-```
+## 维护边界
 
-## 显式本地业务写入
+资料导入HTTP只接受内置demo-cn，由运营及CSRF保护；新增资料必须记录文件版本、来源、许可、哈希，建立并验证新索引后切换。不能混查embedding空间。
 
-业务初始化已完成，通常无需再次执行：
+scripts/manage.py business-prepare --approved校验已有owner和fixture；replay-demo --approved每次新增一轮4订单，不清空历史。main/inference/Pi安装、下载、登录、迁移及用户级设置仍是独立授权事项。
 
-```powershell
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py business-prepare --approved
-& ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py replay-demo --approved
-```
+scripts/maintenance/verify_layout.py验证889个历史Git文件；--strict只核对当时的迁移输出，后续合法源码变更后不再是当前功能门禁。版本标签和历史来源不得移动或覆盖。没有远程仓库配置时只做已明确授权的本地提交和阶段标签。
 
-business-prepare 校验 owner/schema/fixture，固定 seed 42、16 商品/24 初始订单，相同版本为 no_op。replay-demo 每次新增 4 个订单并保存一轮两类送达退款、高额取消退款结果，不清空旧结果。页面操作亦属模拟业务，先草案后确认，必要时先运营审批。
+## 自研循环验收
 
-安装/下载/新资源创建保持独立授权门禁。依赖清单位于 `requirements/main.lock.txt`、`inference.lock.txt`、`inference-cpu.lock.txt` 与 `inference.txt`；不要混入旧环境。
-
-## 模型工具
-
-| 文件 | 作用 |
-|---|---|
-| scripts/models/download_torch.py | 下载锁定 CUDA wheel，官方 SHA-256 必须通过 |
-| scripts/models/prepare_models.py | 匿名下载固定 BGE-M3/Reranker，owned 存储及哈希 |
-| scripts/models/verify_accelerator.py | GPU/CPU 探测；--models 才实际加载本地模型 |
-
-权重已存在。本次只验证路径/设备探测，不重新下载或重跑完整模型推理。真实模型样本结果见 [GPU 验收](validation/gpu.md)；完整RAG与三模型基础验收已通过，不能据此宣称长对话/记忆验收完成。模型/账号/计费问题按 [SPEC](SPEC.md)处理。
-
-## 第三阶段模型与知识预览
-
-当前三通道均已通过真实模型/RAG基础验收，实际模型为gpt-6.1-sol、deepseek-flash、qwen3:8b；各通道独立记录，不自动回退。知识与模型运行状态位于两个owned PostgreSQL schema；不会混入业务public表。
-
-在工作台选择运营身份，展开模型与知识的DeepSeek本机配置，隐藏输入Key。用户当前授权总预算15元，后端和持久账本均限制15，未知usage按预留计账。ChatGPT由用户运行scripts/models/account.py login-chatgpt --approved并完成新OAuth链接，不复用其他工具登录。
-
-详细协议、命令、实际结果、局限与待执行项见 [模型与RAG记录](validation/models-rag.md)。独立CLI为scripts/knowledge.py与scripts/models/smoke.py。
-
-普通pytest自动阻止真实模型生成，预算fixture显式关闭付费；不能因本机已保存Key而触发计费。真实模型验收使用scripts/models/smoke.py显式--approved（DeepSeek另加--paid-approved），按当前预算门禁执行，不把普通单测替身计作模型质量。
-
-Node项目子进程沿用现有本机Windows代理，不修改系统设置。1455被其他进程占用时，用户可把完整的新localhost:1455/auth/callback地址只回填到本机同一次登录终端；账号选择页面或旧state会被拒绝并允许重填。仅在项目ignored目录保存OAuth，失败诊断不包含凭据。
+当前运行器不导入LangGraph/LangChain；主依赖声明已移除相关框架，旧环境不卸载。普通检查包含test_react_loop及真实PG控制器。小范围真实调用为scripts/validation/react_loop.py --approved --channel all；可用--case单列失败重测，费用沿用原累计15元门禁。见[运行器设计](REACT_RUNTIME.md)。

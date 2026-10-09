@@ -303,6 +303,24 @@ class AgentStore:
         self._conversation(s, actor, r.conversation_id)
         return r
 
+    def runs(self, actor, cid=None):
+        with Session(self.engine) as s:
+            if cid is not None:
+                self._conversation(s, actor, cid)
+            query = (
+                select(Run)
+                .join(Conversation, Run.conversation_id == Conversation.id)
+                .where(
+                    Conversation.tenant == actor.tenant_id,
+                    Conversation.subject == actor.subject,
+                )
+            )
+            if cid is not None:
+                query = query.where(Run.conversation_id == cid)
+            return [
+                self.run_view(r) for r in s.scalars(query.order_by(Run.created.desc()).limit(100))
+            ]
+
     def run(self, actor, rid):
         with Session(self.engine) as s:
             return self.run_view(self._run(s, actor, rid))

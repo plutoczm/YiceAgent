@@ -8,7 +8,7 @@
 | V2-2 | 两业务状态机、确认审批、幂等、模拟控制台 | COMPLETE | 83 测试/0 skip；真实 PG 并发、事务、HTTP、剧本与浏览器；原文件/旧环境/v1 数据保护通过 |
 | V2-3 | Pi/DeepSeek/Ollama、真实 BGE/Qdrant/Reranker、资料 | COMPLETE | 三通道真实政策/意图/工具/草案；119 Python/13 Node；GPU检索重排、持久化与40冻结查询Hit@5目标通过；资源保护通过 |
 | V2-4 | Context Manager、摘要、记忆、Agent Loop | COMPLETE | 三通道30轮/纠正保留；真实记忆/删除故障/跨模型；149 Python、13 Node、12源码mypy；浏览器与资源保护通过 |
-| V2-5 | 工作台、集成验收、演示材料 | NOT_STARTED | 三通道完整剧本、实际浏览器、完整证据 |
+| V2-5 | 工作台、集成验收、演示材料 | COMPLETE | 158 Python/13 Node；三通道12业务剧本及新30轮；真实记忆/切换；13类浏览器；冻结证据与资源保护 |
 
 ## 环境和实现范围
 
@@ -18,7 +18,7 @@ v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps
 
 ## 验证入口
 
-当前入口：python scripts/manage.py doctor / check / baseline / infra-plan / up / down；显式 install、infra-up、business-prepare 与 replay-demo 使用授权标志。verify 整体验收编排尚未实现；第三阶段项目专用 login-chatgpt 入口为 scripts/models/account.py。所有入口必须以未授权动作关闭为默认；凭据只在本地 ignored 配置读取，不输出正文。
+当前入口：python scripts/manage.py doctor / check / baseline / infra-plan / up / down；显式 install、infra-up、business-prepare 与 replay-demo 使用授权标志。verify 整体验收编排已实现于scripts/validation/verify.py，manage.py verify运行普通检查；第三阶段项目专用 login-chatgpt 入口为 scripts/models/account.py。所有入口必须以未授权动作关闭为默认；凭据只在本地 ignored 配置读取，不输出正文。
 
 ## 进度和证据
 
@@ -80,3 +80,32 @@ v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps
 2026-10-05：V2-4 COMPLETE。三通道30轮及指定关键事实通过；真实BGE记忆确认、跨会话、修改、删除故障过滤、同会话三模型切换与确认状态保持通过。三通道实际Agent支付草案均待确认且订单不变；浏览器实际确认候选、召回版本2、手动压缩和取消通过。149 Python/0 skip、13 Node、Ruff/format、12源码mypy、JS、diff检查和资源保护通过。累计保守费用0.354200元/15元；ChatGPT单列。失败记录保留。见validation/context-memory.md与phase4-gates.json。未提交/推送，V2-5 NOT_STARTED，整体未完成。
 
 2026-10-08：用户要求Git同步，随后明确选择只保存本地。第四阶段代码与已验证材料通过本地提交和v2.0.0-p4阶段标签保存；不配置远程、不推送。当前复核Ruff、12源码mypy和91个单元测试通过，无新计费调用；第五阶段仍未开始。
+
+
+## 第五阶段执行与整体完成（2026-10-08）
+
+V2-5 COMPLETE。五视图工作台、共享身份/加载门禁、run与上下文恢复、受控资料导入及验收编排完成。三通道12个双业务剧本、各30轮/摘要v4/指定事实保留、真实记忆与同会话三通道切换、对抗资料和虚构订单均通过；13类实际浏览器与PG核对通过。158 Python/0skip、13Node、Ruff/76format、配置12源码mypy、889历史源码及diff通过。Qdrant实际重启保持索引；public原行与三套旧环境保持，零遗留测试schema。v1本阶段未操作，当前逻辑十表复核NOT_RUN，历史证据保留。累计保守1.351542元/15元，ChatGPT单列。原始失败全部保留。见validation/workbench.md与acceptance-manifest.json。
+
+五个核心阶段完成；Jev可选NOT_RUN，不增设新阶段。工作区在codex/workbench-acceptance，p4标签保持；未提交、未推送、未配置远程。后续保存Git版本须用户明确选择。
+
+## 2026-10-09 用户要求的界面补充
+
+现有五视图美化、响应式、上下文展示与会话选择同步完成，普通回归和实际浏览器通过。属于第五阶段后的 UI 补充，不增设阶段；旧真实调用证据保留，新 UI 记录单列。Jev 工程评估建议保持可选，中文意图对照实验尚未实施（NOT_RUN）。无新增依赖、登录、计费、提交或推送。见[界面美化与 Jev 评估](validation/ui-polish.md)。
+
+## 2026-10-09 明亮界面与控件整改
+
+按用户反馈替换深绿主题为浅色蓝紫工作台，并修复空状态按钮、旧上下文残留、重复命令、下拉候选、反馈和输入校验。158 Python/18 Node、实际浏览器26检查点与原业务行保护通过；本次有1次本地Qwen运行取消及真实检索，无新增计费调用。未执行按钮单列，原第五阶段与上一版UI证据保留，不增加阶段或提交版本。详见[明亮界面/控件整改](validation/ui-refresh.md)。
+
+## 2026-10-09 正式产品界面文案
+
+用户明确选择只完成正式产品界面。导航、账户、会话、规则与设置用语已统一，保留测试环境标识及原文出处，未启动生产能力改造。158 Python/18 Node、实际五视图与手机检查通过，原数据与历史证据保留，无计费、安装、提交或推送。见[正式产品界面](validation/product-interface.md)。
+
+## 2026-10-09 用户授权自研 ReAct 替换
+
+用户明确选择替换LangGraph。运行器与状态更新协议、自主调度、24步防护和元信息Trace已实现；185Python/18Node/13源码mypy与框架导入屏蔽通过。首批真实调用9/12成功，三个失败以同代码/通道/输入重测后全部通过；当前本次运行器替换COMPLETE。旧LangGraph完整30轮仍为历史，不伪装为新引擎调用。未增加平台/多Agent/生产认证，未卸载环境或提交推送。见[自研设计](REACT_RUNTIME.md)。
+
+实际新引擎范围：185Python/18Node，三通道各4项真实模型场景，浏览器6迁移/4模型/2工具与取消；累计保守1.382392元/15元，11表原行与数量保持，无遗留临时schema。详细失败、范围与证据见[自研运行器验证](validation/react-runtime.md)。未执行Git提交/推送或生产能力扩展。
+
+## 2026-10-09 本地 Git 版本
+
+用户明确授权保存当前本地版本。第五阶段、后续界面完善与自研 ReAct 变更在 codex/workbench-acceptance 分支统一提交，并使用 v2.0.0-p5-react 标签冻结。不移动旧标签，不配置远程或推送，不改变验收范围。版本说明见 [VERSIONING.md](VERSIONING.md)。

@@ -30,6 +30,10 @@ class Query(Closed):
     channel: Literal["qwen", "deepseek", "chatgpt"] = "qwen"
 
 
+class CorpusImport(Closed):
+    corpus: Literal["demo-cn"] = "demo-cn"
+
+
 class ModelChoice(Closed):
     model_id: str = Field(min_length=1, max_length=128, pattern=r"^[a-zA-Z0-9_.:-]+$")
 
@@ -205,8 +209,8 @@ def router(resources: Services, sessions: Sessions) -> APIRouter:
         if not actor.operator:
             scoped.pop("conservative_used_or_reserved_cny", None)
         return {
-            "phase": "models-rag",
-            "acceptance": "IN_PROGRESS",
+            "phase": "workbench",
+            "acceptance": "readiness_only",
             "channels": [
                 ollama,
                 {
@@ -229,6 +233,12 @@ def router(resources: Services, sessions: Sessions) -> APIRouter:
     @api.get("/knowledge")
     def knowledge(actor: Actor):
         return resources.retrieval.store.status(actor)
+
+    @api.post("/knowledge/import")
+    async def import_knowledge(body: CorpusImport, actor: Actor):
+        if not actor.operator:
+            raise HTTPException(403, "operator_required")
+        return await resources.retrieval.import_corpus(body.corpus)
 
     @api.post("/knowledge/search")
     async def search(body: Query, actor: Actor):

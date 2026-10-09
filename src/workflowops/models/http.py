@@ -156,6 +156,7 @@ class HttpAdapter:
                 think=False,
                 options={
                     "num_ctx": request.context_window,
+                    "num_batch": 64,  # Lower prompt-processing buffers on an 8GB GPU.
                     "num_predict": request.max_output_tokens,
                     "temperature": 0,
                 },

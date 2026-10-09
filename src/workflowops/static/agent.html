@@ -1,13 +1,2 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WorkflowOps · 上下文与记忆</title><link rel="stylesheet" href="/static/styles.css"><script src="/static/agent.js" defer></script></head>
-<body><header><div><p class="eyebrow">WORKFLOWOPS / CONTEXT & MEMORY</p><h1>Agent 会话与记忆</h1><p>模型理解 · 可核对证据 · 原始历史保留</p></div><a href="/">订单与模拟控制台</a></header>
-<main><p id="agent-notice" role="status" aria-live="polite">请选择演示身份。</p>
-<section><h2>会话</h2><div class="controls"><label>身份<select id="agent-persona"><option value="customer-a1">客户 A1</option><option value="customer-a2">客户 A2</option><option value="customer-b1">客户 B1</option><option value="customer-b2">客户 B2</option><option value="operator-a">运营 A</option></select></label><button id="agent-login">选择身份</button>
-<label>模型<select id="agent-channel"><option value="qwen">Qwen</option><option value="deepseek">DeepSeek</option><option value="chatgpt">ChatGPT</option></select></label>
-<label>应用窗口<select id="agent-window"><option value="4096">4096</option><option value="8192" selected>8192</option><option value="16384">16384</option></select></label>
-<button id="conversation-new">新会话</button><label>历史会话<select id="conversation-picker"></select></label><button id="conversation-open">打开</button><button id="conversation-config">保存模型与窗口</button></div>
-<p>模型切换只发生在完整 turn 之间；不会自动切换到其他通道。DeepSeek/Jev 累计上限15元，ChatGPT订阅用量单列。</p>
-<div id="agent-messages"></div><form id="agent-form"><label>当前请求<textarea id="agent-text" required maxlength="20000" placeholder="例如：我偏好中文；查一下订单；电商已发货还能取消吗？"></textarea></label><button id="agent-send" type="submit">发送</button><button id="agent-cancel" type="button">取消当前运行</button><button id="agent-compress" type="button">手动整理上下文</button></form><p id="agent-stream" role="status" aria-live="polite"></p><div id="agent-action"></div></section>
-<section><h2>本轮上下文</h2><p>输入估算包含消息、工具定义与输出格式。显示估算来源、实际usage和校准系数，不展示模型内部思维。</p><div id="context-panel"></div><details><summary>查看本用户的上下文快照</summary><pre id="context-raw"></pre></details><details><summary>运行步骤与用量</summary><pre id="run-events"></pre></details></section>
-<section><h2>长期记忆</h2><p>模型仅提出候选，确认后才跨会话使用。修改、过期或删除立即影响权威状态；向量索引故障会明确显示。</p><button id="memory-refresh">刷新记忆</button><div id="memory-candidates" class="grid"></div><div id="memory-records" class="grid"></div></section>
-<footer>第四阶段入口。业务动作仍须客户确认和必要的运营审批；订单事实每轮重新查询。</footer></main></body></html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=/#chat"><title>WorkflowOps 工作台</title></head><body><p><a href="/#chat">进入统一 Agent 工作台</a></p></body></html>

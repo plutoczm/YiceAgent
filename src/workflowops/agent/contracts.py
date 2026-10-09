@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import Field, JsonValue
 
-from workflowops.business.contracts import Command, ObjectId
+from workflowops.business.contracts import CartItem, Command, ObjectId
 from workflowops.contracts import Closed
 from workflowops.models.gateway import Intent
 
@@ -73,6 +73,12 @@ class IntentChoice(Closed):
 
 class RecallSelection(Closed):
     source_ids: list[str] = Field(max_length=5)
+
+
+class OrderDraftSelection(Closed):
+    order_type: Literal["ecommerce", "food"]
+    items: list[CartItem] = Field(min_length=1, max_length=10)
+    note: str = Field(default="", max_length=200)
 
 
 class PlannedTool(Closed):

@@ -54,6 +54,7 @@ def router(service, sessions):
             "messages": service.store.history(actor, cid),
             "summary": service.store.summary(actor, cid),
             "action_states": service.actions(actor, cid),
+            "latest_run": next(iter(service.store.runs(actor, cid)), None),
         }
 
     @api.post("/conversations/{cid}/config")
@@ -74,6 +75,10 @@ def router(service, sessions):
     @api.post("/conversations/{cid}/confirm")
     async def confirm(cid: str, body: ActionConfirmation, actor: Actor):
         return await service.confirm_action(actor, cid, body)
+
+    @api.get("/runs")
+    def runs(actor: Actor, conversation_id: str | None = None):
+        return service.store.runs(actor, conversation_id)
 
     @api.get("/runs/{rid}")
     def run(rid: str, actor: Actor):

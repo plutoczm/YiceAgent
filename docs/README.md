@@ -8,7 +8,10 @@
 | [PLAN](PLAN.md) | 当前阶段状态与执行顺序 |
 | [STRUCTURE](STRUCTURE.md) | 目录职责与代码阅读路径 |
 | [DEVELOPMENT](DEVELOPMENT.md) | 环境、启动与检查命令 |
-| [DEMO](DEMO.md) | 手动业务演示 |
+| [DEMO](DEMO.md) | 五视图、业务、上下文与记忆演示 |
+| [INTERVIEW](INTERVIEW.md) | 面试介绍、设计取舍与证据讲解 |
 | [VERSIONING](VERSIONING.md) | Git 分支/提交/标签与历史版本 |
 | [validation](validation/README.md) | 实际验收结果、失败/skip 与范围 |
 | [provenance/REUSE](provenance/REUSE.md) | 旧代码语义来源与本实现验证 |
+
+- [自研 ReAct 运行器](REACT_RUNTIME.md)：状态机、预算、取消、工具反馈和可复现实证。

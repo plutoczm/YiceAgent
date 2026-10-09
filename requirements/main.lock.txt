@@ -21,13 +21,6 @@ idna==3.20
 iniconfig==2.3.0
 jsonpatch==1.33
 jsonpointer==3.1.1
-langchain-core==1.6.6
-langchain-protocol==0.0.19
-langgraph==1.2.12
-langgraph-checkpoint==4.2.0
-langgraph-prebuilt==1.1.0
-langgraph-sdk==0.4.5
-langsmith==0.14.3
 librt==0.16.0
 mypy==1.20.2
 mypy_extensions==1.1.0

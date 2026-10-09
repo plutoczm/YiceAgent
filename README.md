@@ -2,7 +2,7 @@
 
 本机学习与面试演示项目：以电商、外卖订单为场景，构建可解释的业务 Agent，重点展示受控工具、真实 RAG、上下文与记忆管理。
 
-当前完成基础设施与确定性业务阶段：下单、模拟支付、履约推进、取消、整单退款、确认审批及异常工单。第三阶段三模型与真实 RAG 已通过基础验收：ChatGPT gpt-6.1-sol、DeepSeek deepseek-flash、Ollama qwen3:8b，以及 BGE-M3/Qdrant/BGE Reranker 的真实 GPU 检索链路。第四阶段上下文、摘要、确认式长期记忆和受限Agent Loop已验收；第五阶段综合工作台和整体验收待实施。
+当前完成基础设施与确定性业务阶段：下单、模拟支付、履约推进、取消、整单退款、确认审批及异常工单。第三阶段三模型与真实 RAG 已通过基础验收：ChatGPT gpt-6.1-sol、DeepSeek deepseek-flash、Ollama qwen3:8b，以及 BGE-M3/Qdrant/BGE Reranker 的真实 GPU 检索链路。第五阶段已完成五视图工作台和整体验收：三通道完整双业务剧本、各30轮与压缩、真实记忆/切换及实际浏览器验证通过。158 Python/13 Node检查通过，完整边界与失败见[整体验收](docs/validation/workbench.md)。
 
 源码只保留一套当前架构。v1、v2 与后续实现通过 Git 提交、分支和标签保存，不维护版本目录。
 
@@ -14,7 +14,7 @@
 start.cmd
 ```
 
-打开 [本地工作台](http://127.0.0.1:8020) 或 [Agent会话与记忆](http://127.0.0.1:8020/agent)。停止使用 `stop.cmd`，数据库、模型与演示结果保留。Python 入口为：
+打开 [本地工作台](http://127.0.0.1:8020) 或 [同一工作台的兼容入口](http://127.0.0.1:8020/agent)。停止使用 `stop.cmd`，数据库、模型与演示结果保留。Python 入口为：
 
 ```powershell
 & ".\.runtime\v2\envs\main\Scripts\python.exe" -B scripts/manage.py doctor
@@ -59,8 +59,12 @@ WorkflowOps/
 
 ## 验证与范围
 
-历史基础、GPU、业务阶段证据保存在 [validation](docs/validation/README.md)，目录迁移的实际验证见 [layout](docs/validation/layout.md)。三通道模型/RAG基础验收已过；长对话、上下文与记忆尚未完成。各通道实际结果与失败单列于 [模型与RAG记录](docs/validation/models-rag.md)，不能由业务测试替代。
+历史基础、GPU、业务阶段证据保存在 [validation](docs/validation/README.md)，目录迁移的实际验证见 [layout](docs/validation/layout.md)。五个核心阶段均已验收；Jev仍为可选NOT_RUN。各通道实际结果与失败单列于 [模型与RAG记录](docs/validation/models-rag.md)，不能由业务测试替代。
 
 v1 的固定工作流、快照分析、原三服务及完整历史验收可通过 `v1.0.0` 查看。来源许可在 `licenses/`，复用语义见 [REUSE](docs/provenance/REUSE.md)。不重置旧数据库，不合并或修改三套旧 Conda，不自动登录、安装、计费或推送。
 
 上下文与记忆的操作步骤见[CONTEXT_MEMORY](docs/CONTEXT_MEMORY.md)，第四阶段证据见[验收记录](docs/validation/context-memory.md)。
+
+## 自研 Agent 内核
+
+当前Agent由Python手写受限ReAct状态机调度，核心模块为agent/loop.py、runtime.py、tools.py、context.py与memory.py。已替换LangGraph编排，保留原业务权威校验与真实模型/RAG。设计和面试讲解见[REACT_RUNTIME](docs/REACT_RUNTIME.md)，本次验证状态以[自研运行器记录](docs/validation/react-runtime.md)为准；旧整体验收不能冒充当前引擎的新调用。

@@ -1,0 +1,4 @@
+# Findings
+LangGraph only schedules three local functions analyse/choose/execute. All prompts, token accounting, RAG, memory, tools, repairs, authorization and lifecycle logic are already application code. Replace scheduler/runtime.context rather than rewrite these proven components.
+New loop uses immutable per-run state, a closed update contract, explicit ANALYSE/DECIDE/ACT/FINISH phases, max24 handler steps, context deadline checks before and after awaits, ordinary asyncio cancellation propagation, and metadata-only transitions. Consumed tool responses clear after ACT. Final/response conflicts, empty tool calls, unknown control fields and invalid phase outputs fail closed. Existing6model/8tool/1repair/10minute caps stay authoritative.
+Remove framework imports and declared framework dependencies, preserving installed environment and old licenses/history. No arbitrary checkpoint replay or private thought parsing.

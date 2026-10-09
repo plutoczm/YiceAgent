@@ -1,19 +1,23 @@
-"""Single-owner LangGraph runs; models propose, deterministic services authorize."""
+"""Single-owner handwritten ReAct runs; models propose, business services authorize."""
 
 import asyncio
 import re
 import time
 from dataclasses import dataclass, field
-from typing import TypedDict
 from uuid import uuid4
 
 import httpx
-from langgraph.graph import END, START, StateGraph
-from langgraph.runtime import Runtime
 from pydantic import ValidationError
 
 from workflowops.agent.context import ContextManager, serial
-from workflowops.agent.contracts import Analysis, IntentChoice, RecallSelection, StepOutput
+from workflowops.agent.contracts import (
+    Analysis,
+    IntentChoice,
+    OrderDraftSelection,
+    RecallSelection,
+    StepOutput,
+)
+from workflowops.agent.loop import ENGINE_ID, LoopState, ReActLoop, Transition
 from workflowops.agent.memory import MemoryIndex, model_view
 from workflowops.agent.store import AgentStore, Event, Result
 from workflowops.agent.tools import LoopGuard, Tools
@@ -25,9 +29,9 @@ from workflowops.contracts import Message, ToolCall
 from workflowops.knowledge.answer import Quote, Selection, publish
 from workflowops.knowledge.vector import Vectors
 from workflowops.model_store import ModelError, ModelStore
-from workflowops.models.gateway import Gateway
+from workflowops.models.gateway import Gateway, Intent
 from workflowops.rpc import WorkerError
-from workflowops.tokens import estimate
+from workflowops.tokens import count_text, estimate
 
 FINAL_INSTRUCTIONS = (
     "需要工具时调用白名单工具。用户表示纠正或偏好时先记录，不要调用业务写入。"
@@ -98,6 +102,27 @@ class Execution:
                 "summary_version": prior.get("summary_version"),
                 "included_message_ids": selected,
                 "omitted": prior.get("omitted", []),
+                "components": [
+                    {
+                        "role": m.role,
+                        "estimated_tokens": count_text(
+                            serial(m.model_dump(mode="json")), self.factor
+                        ),
+                    }
+                    for m in request.messages
+                ]
+                + [
+                    {
+                        "role": "tool_definitions",
+                        "estimated_tokens": count_text(
+                            serial([t.model_dump(mode="json") for t in request.tools]), self.factor
+                        ),
+                    },
+                    {
+                        "role": "output_schema",
+                        "estimated_tokens": count_text(serial(request.output_schema), self.factor),
+                    },
+                ],
                 "messages": [m.model_dump(mode="json") for m in request.messages],
                 "tools": [t.model_dump(mode="json") for t in request.tools],
                 "output_schema": request.output_schema,
@@ -167,14 +192,7 @@ class Execution:
         return result
 
 
-class GraphState(TypedDict, total=False):
-    response: object
-    finished: bool
-    result: dict
-
-
-async def analyse(state: GraphState, runtime: Runtime[Execution]):
-    e = runtime.context
+async def analyse(state: LoopState, e: Execution):
     store = e.service.store
     e.tools = Tools(e.service, e.actor, e.run, LoopGuard())
     # Fresh authority for confirmation; do not quote an old action status from conversation.
@@ -208,8 +226,24 @@ async def analyse(state: GraphState, runtime: Runtime[Execution]):
         instructions="只识别标有current_request的本次请求，不分类旧历史。输出schema JSON。偏好、记住、纠正、回忆约束属于memory；演示政策问题属于knowledge；带明确订单ID的查询属于order_lookup。只有实际业务操作缺少订单/商品/范围才needs_clarification=true，偏好和规则问答不需要订单ID。"
         "候选仅摘录当前用户明确陈述的偏好或稳定信息，quote逐字原文，key为稳定英文属性名。"
         "不保存订单状态、模型推测或凭据。只有本次请求明确纠正时correction=true，不能复制旧历史候选。"
-        "例：电商已发货能否取消、请引用规则 -> knowledge,false；查询ECO-A-01 -> order_lookup,false,order_id=ECO-A-01；我偏好中文 -> memory,false；取消我的订单但没ID -> cancel,true；以下无关练习材料，无需操作或复述 -> clarify,false。",
+        "取消订单并关联整单退款属于cancel，只有单独退款才refund；下单、支付和工单的本次参数不是长期稳定信息，candidates应为空。"
+        "例：电商已发货能否取消、请引用规则 -> knowledge,false；查询ECO-A-01 -> order_lookup,false,order_id=ECO-A-01；我偏好中文 -> memory,false；取消我的订单但没ID -> cancel,true；以下无关练习材料，无需操作或复述 -> clarify,false。"
+        'JSON格式示例（不是当前请求的分类）：{"intent":"order_lookup","needs_clarification":false,"order_id":"ECO-A-01","question":null,"candidates":[],"correction":false}。必须输出非空JSON对象。',
     )
+    # Classification is a separate structured task. Quote past assistant/tool
+    # outputs as data instead of presenting other output schemas as few-shot answers.
+    req.messages = [
+        req.messages[0],
+        Message(
+            role="user",
+            content=serial(
+                {
+                    "conversation_data": [m.model_dump(mode="json") for m in req.messages[1:]],
+                    "task": "Classify only current_request. Return a non-empty JSON object matching Analysis.",
+                }
+            ),
+        ),
+    ]
     result = await e.generate(req, "intent")
     e.analysis = Analysis.model_validate_json(result.message.content or "")
     current_text = next(
@@ -223,20 +257,21 @@ async def analyse(state: GraphState, runtime: Runtime[Execution]):
             w in current_text for w in ("回忆", "最早", "最新纠正", "学习代号", "已确认长期记忆")
         )
     ) or "草案" in current_text:
+        review_type = Intent if "草案" in current_text else IntentChoice
         review = e.service.context.request(
             [
                 Message(
                     role="system",
-                    content="只选择意图类别，不需要知道事实值，也不回答或追问。memory=回忆本会话用户早前说过的约束、预算、代号、偏好、纠正或长期记忆。knowledge=查询业务文档政策规则。order_lookup=只查具体模拟订单状态。生成支付草案是pay；生成取消草案是cancel；申请整单退款草案是refund；下单草案是place_order；工单草案是ticket。草案不执行，等待确认，不会改变业务状态，但意图仍属于对应动作，不能选order_lookup。根据早前对话或纠正核对个人信息属于memory，不能因未看到具体值而选clarify。JSON only.",
+                    content='识别本次请求的意图及操作范围，不回答或执行。生成草案不需要用户先审批或确认，不因业务资格未知而澄清；已给订单ID则order_id逐字提取，needs_clarification=false。确实缺少商品、数量、订单或范围才true，question说明缺项。memory=回忆本会话用户早前说过的约束、预算、代号、偏好、纠正或长期记忆。knowledge=查询业务文档政策规则。order_lookup=只查具体模拟订单状态。生成支付草案是pay；生成取消草案是cancel；申请整单退款草案是refund；下单草案是place_order；工单草案是ticket。取消及关联整单退款是一项取消动作，应选cancel；单独整单退款而不取消则选refund。EXAMPLE JSON: 取消及关联退款 -> {"intent":"cancel"}；生成整单退款草案 -> {"intent":"refund"}。草案不执行，等待确认，不会改变业务状态，但意图仍属于对应动作，不能选order_lookup。根据早前对话或纠正核对个人信息属于memory，不能因未看到具体值而选clarify。JSON only.',
                 ),
                 Message(role="user", content=current_text),
             ],
             e.run["context_window"],
-            schema=IntentChoice.model_json_schema(),
+            schema=review_type.model_json_schema(),
             output=512,
         )
         checked = await e.generate(review, "intent_review")
-        revised = IntentChoice.model_validate_json(checked.message.content or "")
+        revised = review_type.model_validate_json(checked.message.content or "")
         store.add_private(
             Event,
             e.run["id"],
@@ -272,7 +307,7 @@ async def analyse(state: GraphState, runtime: Runtime[Execution]):
         store.invalidate_candidates(e.actor, e.run["conversation_id"])
         store.update_run(e.run["id"], correction_message_id=user["id"])
     candidate_count = 0
-    for candidate in e.analysis.candidates:
+    for candidate in e.analysis.candidates if e.analysis.intent == "memory" else []:
         try:
             store.candidate(
                 e.actor,
@@ -294,7 +329,7 @@ async def analyse(state: GraphState, runtime: Runtime[Execution]):
             "finished": True,
             "result": {
                 "status": "clarification",
-                "answer": e.analysis.question or "请补充具体订单、商品和操作范围。",
+                "answer": "请补充或核对具体订单、商品和操作范围。本轮尚未核实业务事实或执行业务操作。",
             },
         }
     if (
@@ -363,8 +398,7 @@ async def analyse(state: GraphState, runtime: Runtime[Execution]):
     return {"finished": False}
 
 
-async def choose(state: GraphState, runtime: Runtime[Execution]):
-    e = runtime.context
+async def choose(state: LoopState, e: Execution):
     e.check()
     if e.analysis.intent == "clarify":
         return {
@@ -458,6 +492,40 @@ async def choose(state: GraphState, runtime: Runtime[Execution]):
         response = await e.generate(req, "grounded_answer")
         selection = Selection.model_validate_json(response.message.content or "")
         return {"finished": True, "result": publish(selection, retrieved["evidence"])}
+    if e.analysis.intent == "place_order":
+        req = await e.service.context.assemble(
+            e.actor,
+            e.run,
+            schema=OrderDraftSelection.model_json_schema(),
+            memories=e.memories,
+            actions=e.actions,
+            generate_summary=e.generate,
+            factor=e.factor,
+            instructions="只提取本次current_request的下单参数，输出OrderDraftSelection JSON。order_type必填为ecommerce或food；items每项必须包含product_id和整数quantity；note只取用户本次备注。不要从旧历史复制商品，不生成业务事实或确认。商品合法性、归属和价格随后由业务服务校验。只生成待确认草案，不能以自然语言代替工具执行。",
+        )
+        response = await e.generate(req, "order_draft_parameters")
+        selected = OrderDraftSelection.model_validate_json(response.message.content or "")
+        message = Message(
+            role="assistant",
+            tool_calls=[
+                ToolCall(
+                    id="plan-" + uuid4().hex,
+                    name="propose_action",
+                    arguments={"kind": "place_order", **selected.model_dump(mode="json")},
+                )
+            ],
+        )
+        e.service.store.append(e.run["id"], message.model_dump(mode="json"))
+        e.service.store.add_private(
+            Event,
+            e.run["id"],
+            {
+                "kind": "tool_plan_validated",
+                "source": "structured_llm_order_parameters",
+                "tool": "propose_action",
+            },
+        )
+        return {"response": message, "finished": False}
     req = await e.service.context.assemble(
         e.actor,
         e.run,
@@ -555,7 +623,7 @@ async def choose(state: GraphState, runtime: Runtime[Execution]):
             "answer": "已读取本轮业务结果。",
             "business": e.tools.structured,
         }
-    elif output.source_quotes:
+    elif output.source_quotes and e.analysis.intent == "memory":
         history = {r["id"]: r for r in e.service.store.history(e.actor, e.run["conversation_id"])}
         sources = {**history, **{m["id"]: {"content": m["text"]} for m in e.memories}}
         quotes = []
@@ -576,14 +644,17 @@ async def choose(state: GraphState, runtime: Runtime[Execution]):
     else:
         result = {
             "status": "clarification" if output.decision == "clarify" else "acknowledged",
-            "answer": output.reply,
+            "answer": "请补充或核对具体订单、商品和操作范围。本轮尚未核实业务事实或执行业务操作。"
+            if output.decision == "clarify"
+            else output.reply,
         }
     return {"finished": True, "result": result}
 
 
-async def execute(state: GraphState, runtime: Runtime[Execution]):
-    e = runtime.context
-    for call in state["response"].tool_calls:
+async def execute(state: LoopState, e: Execution):
+    if state.response is None:
+        raise ModelError("agent_transition_invalid")
+    for call in state.response.tool_calls:
         e.check()
         if e.tool_calls >= 8:
             raise ModelError("tool_call_budget_exceeded")
@@ -591,6 +662,11 @@ async def execute(state: GraphState, runtime: Runtime[Execution]):
         e.service.store.update_run(e.run["id"], tool_calls=e.tool_calls)
         try:
             value = await e.tools.execute(call)
+        except BusinessError as error:
+            if isinstance(error, UnknownOutcome):
+                raise
+            value = {"error": error.code, "can_create_ticket": True}
+            e.tools.guard.after(value)
         except (ValidationError, ValueError):
             if e.repairs >= 1:
                 raise ModelError("tool_argument_repair_exhausted") from None
@@ -605,11 +681,6 @@ async def execute(state: GraphState, runtime: Runtime[Execution]):
                 e.run["id"],
                 {"kind": "tool_validation_failed", "tool": call.name, "repair": e.repairs},
             )
-        except BusinessError as error:
-            if isinstance(error, UnknownOutcome):
-                raise
-            value = {"error": error.code, "can_create_ticket": True}
-            e.tools.guard.after(value)
         e.service.store.append(
             e.run["id"],
             Message(role="tool", tool_call_id=call.id, content=serial(value)).model_dump(
@@ -627,6 +698,26 @@ async def execute(state: GraphState, runtime: Runtime[Execution]):
                 "error": value.get("error"),
             },
         )
+        if call.name == "propose_action" and value.get("can_create_ticket"):
+            return {
+                "finished": True,
+                "result": {
+                    "status": "business_rejected",
+                    "reason": value["error"],
+                    "answer": "业务服务未允许该动作："
+                    + value["error"]
+                    + "。本轮没有提交业务，可核对订单或提出异常工单草案。",
+                },
+            }
+        if call.name == "read_order" and value.get("error") == "object_not_found":
+            return {
+                "finished": True,
+                "result": {
+                    "status": "business_unavailable",
+                    "reason": "object_not_found",
+                    "answer": "当前身份无法读取该订单，不能核实支付或退款。请核对订单编号或创建异常工单。",
+                },
+            }
     if e.tools.recalled_memories is not None:
         e.memories = e.tools.recalled_memories
     if e.analysis.intent == "order_lookup" and e.tools.structured:
@@ -650,20 +741,6 @@ async def execute(state: GraphState, runtime: Runtime[Execution]):
     return {"finished": False}
 
 
-def graph():
-    builder = StateGraph(GraphState, context_schema=Execution)
-    builder.add_node("analyse", analyse)
-    builder.add_node("choose", choose)
-    builder.add_node("execute", execute)
-    builder.add_edge(START, "analyse")
-    builder.add_conditional_edges(
-        "analyse", lambda s: END if s["finished"] else "execute" if s.get("response") else "choose"
-    )
-    builder.add_conditional_edges("choose", lambda s: END if s["finished"] else "execute")
-    builder.add_conditional_edges("execute", lambda s: END if s["finished"] else "choose")
-    return builder.compile()
-
-
 class AgentService:
     def __init__(self, business, resources, store=None, gateway_factory=None):
         self.business, self.resources = business, resources
@@ -673,7 +750,7 @@ class AgentService:
         self.gateway_factory = gateway_factory or (
             lambda: Gateway(Settings.load(), ModelStore(resources.engine), resources.inference)
         )
-        self.graph = graph()
+        self.loop = ReActLoop(analyse, choose, execute)
         self.tasks = {}
 
     def actions(self, actor, cid):
@@ -737,8 +814,32 @@ class AgentService:
         try:
             async with asyncio.timeout(600):
                 await self.capabilities(run["channel"], run["context_window"])
-                state = await self.graph.ainvoke({}, context=e, config={"recursion_limit": 24})
-                result = state["result"]
+                self.store.add_private(
+                    Event,
+                    run["id"],
+                    {"kind": "loop_started", "engine": ENGINE_ID, "max_steps": self.loop.max_steps},
+                )
+
+                def observed(transition: Transition):
+                    self.store.add_private(
+                        Event,
+                        run["id"],
+                        {
+                            "kind": "loop_transition",
+                            "engine": ENGINE_ID,
+                            "step": transition.step,
+                            "from": transition.previous.value,
+                            "to": transition.following.value,
+                            "reason": transition.reason,
+                            "model_calls": e.model_calls,
+                            "tool_calls": e.tool_calls,
+                        },
+                    )
+
+                state = await self.loop.run(e, observe=observed)
+                if state.result is None:
+                    raise ModelError("agent_transition_invalid")
+                result = state.result
                 status = "awaiting_confirmation" if result.get("action") else "completed"
                 if not manual:
                     self.store.append(

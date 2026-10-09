@@ -1,0 +1,2 @@
+# Findings
+User explicitly selected UI-only scope. Replace product-owned demonstration/learning/interview wording with account, business, policy, knowledge and settings terms. Existing user messages, evidence quotations, document versions/licenses and raw diagnostic metadata remain authoritative and unchanged. Fixed fixture product/conversation names may have display aliases; never rewrite DB or source evidence. Current payments remain test events, disclosed by a unified test-environment badge and footer. No relevant memory hits.

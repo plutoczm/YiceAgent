@@ -1,0 +1,6 @@
+# Progress
+Inspected working tree and active project scope; previous uncommitted work/evidence preserved. Located owned static text plus seeded product and conversation names. UI-only preference confirmed through async question.
+
+Formal navigation/account/status/corpus labels completed. Browser B1 five default views show no owned demonstration/learning/interview/simulation wording. Created one empty business conversation f1b31f5b to verify the new title. Product display alias智能手机 leaves original SKU/data intact. No provider calls or business writes. Configured regression running; static UI-only scope confirmed.
+
+COMPLETE: five default views checked in actual browser; owned visible terms cleaned, new business conversationf1b31f5b, intelligent-phone display alias and original provenance kept. Desktop/mobile screenshots inspected; mobile375/375 and test badge visible all5views. Configured158Python/18Node/Ruff/mypy12/history889 PASS; finalJS4/DOM84unique/diff PASS. Archived prior manifest/frontend/guides; original phase5 reports restored; current evidence integrity PASS. Preserved existing raw messages, data and sources. No paid call, credentials, dependencies, migration, deployment, commit or push.

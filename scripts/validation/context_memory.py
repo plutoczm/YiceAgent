@@ -1,4 +1,4 @@
-"""Explicit real-model V2-4 acceptance. Separate PG fixture; metadata progress only."""
+"""Explicit real-model context/memory acceptance. Separate PG fixture; metadata progress only."""
 
 import argparse
 import asyncio
@@ -21,7 +21,7 @@ from workflowops.models.api import Services
 A = PERSONAS["customer-a1"]
 
 
-async def execute(channel, count):
+async def execute(channel, count, phase=4):
     settings = Settings.load()
     control = make_engine(settings)
     schema = "v2_test_" + uuid4().hex
@@ -43,7 +43,7 @@ async def execute(channel, count):
         "cases": [],
         "long_30_turns": "NOT_RUN",
     }
-    path = RUNTIME / "phase4" / ("live-" + channel + "-" + uuid4().hex[:8] + ".json")
+    path = RUNTIME / ("phase" + str(phase)) / ("live-" + channel + "-" + uuid4().hex[:8] + ".json")
 
     def save():
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -181,10 +181,11 @@ def main():
     p.add_argument("--channel", required=True, choices=["qwen", "deepseek", "chatgpt"])
     p.add_argument("--turns", type=int, default=5, choices=[1, 3, 5, 30])
     p.add_argument("--approved", action="store_true")
+    p.add_argument("--phase", type=int, choices=[4, 5], default=4)
     a = p.parse_args()
     if not a.approved:
         raise SystemExit("explicit_real_call_approval_required")
-    raise SystemExit(asyncio.run(execute(a.channel, a.turns)))
+    raise SystemExit(asyncio.run(execute(a.channel, a.turns, a.phase)))
 
 
 if __name__ == "__main__":
