@@ -12,8 +12,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from workflowops.app import create_app
-from workflowops.business.models import Ticket
+from yice_agent.app import create_app
+from yice_agent.business.models import Ticket
 
 pytestmark = pytest.mark.integration
 
@@ -21,7 +21,7 @@ pytestmark = pytest.mark.integration
 def login(client, persona):
     response = client.post("/api/v2/demo/session", json={"persona": persona})
     assert response.status_code == 200
-    client.headers["X-WorkflowOps-CSRF"] = response.json()["csrf_token"]
+    client.headers["X-Yice-Agent-CSRF"] = response.json()["csrf_token"]
     return response
 
 
@@ -38,7 +38,7 @@ def test_cookie_csrf_closed_payload_and_switch_acl(business):
             "HttpOnly" in response.headers["set-cookie"]
             and "SameSite=strict" in response.headers["set-cookie"]
         )
-        old = client.cookies.get("workflowops_v2_session")
+        old = client.cookies.get("yice_agent_session")
         assert client.get("/api/v2/orders/ECO-A-01").status_code == 200
         assert client.get("/api/v2/orders/ECO-A-02").status_code == 404
         assert client.get("/api/v2/orders/ECO-B-01").status_code == 404
@@ -50,7 +50,7 @@ def test_cookie_csrf_closed_payload_and_switch_acl(business):
             client.post(
                 "/api/v2/actions",
                 json=request(kind="create_ticket", order_id=None, message="help"),
-                headers={"X-WorkflowOps-CSRF": ""},
+                headers={"X-Yice-Agent-CSRF": ""},
             ).status_code
             == 403
         )
@@ -58,7 +58,7 @@ def test_cookie_csrf_closed_payload_and_switch_acl(business):
         assert client.get("/api/v2/orders/ECO-A-01").status_code == 404
         assert client.get("/api/v2/orders/ECO-B-01").status_code == 200
         with TestClient(client.app) as previous:
-            previous.cookies.set("workflowops_v2_session", old)
+            previous.cookies.set("yice_agent_session", old)
             assert previous.get("/api/v2/orders").status_code == 401
 
 

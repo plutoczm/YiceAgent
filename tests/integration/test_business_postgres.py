@@ -9,9 +9,9 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from workflowops.business.bootstrap import ready, seed
-from workflowops.business.contracts import DRAFT, Approval, Confirmation, SimulationEvent
-from workflowops.business.models import (
+from yice_agent.business.bootstrap import ready, seed
+from yice_agent.business.contracts import DRAFT, Approval, Confirmation, SimulationEvent
+from yice_agent.business.models import (
     Action,
     Audit,
     Event,
@@ -20,9 +20,9 @@ from workflowops.business.models import (
     Receipt,
     Ticket,
 )
-from workflowops.business.rules import BusinessError, Policy
-from workflowops.business.service import UnknownOutcome
-from workflowops.identity import PERSONAS
+from yice_agent.business.rules import BusinessError, Policy
+from yice_agent.business.service import UnknownOutcome
+from yice_agent.identity import PERSONAS
 
 pytestmark = pytest.mark.integration
 A = PERSONAS["customer-a1"]

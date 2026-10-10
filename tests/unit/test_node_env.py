@@ -2,7 +2,7 @@
 
 import pytest
 
-from workflowops.models import node_env
+from yice_agent.models import node_env
 
 
 @pytest.mark.parametrize(

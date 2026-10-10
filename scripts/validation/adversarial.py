@@ -12,18 +12,18 @@ from uuid import uuid4
 
 from sqlalchemy import text
 
-from workflowops.agent.contracts import ConversationCreate, TurnRequest
-from workflowops.agent.runtime import AgentService
-from workflowops.agent.store import AgentStore, Base, Event
-from workflowops.business.bootstrap import provision, seed
-from workflowops.business.service import BusinessService
-from workflowops.config import OWNER, RUNTIME, Settings
-from workflowops.database import make_engine
-from workflowops.identity import PERSONAS
-from workflowops.knowledge.answer import Selection, answer, publish
-from workflowops.model_store import ModelError, ModelStore
-from workflowops.models.api import Services
-from workflowops.models.gateway import Gateway
+from yice_agent.agent.contracts import ConversationCreate, TurnRequest
+from yice_agent.agent.runtime import AgentService
+from yice_agent.agent.store import AgentStore, Base, Event
+from yice_agent.business.bootstrap import provision, seed
+from yice_agent.business.service import BusinessService
+from yice_agent.config import OWNER, RUNTIME, Settings
+from yice_agent.database import make_engine
+from yice_agent.identity import PERSONAS
+from yice_agent.knowledge.answer import Selection, answer, publish
+from yice_agent.model_store import ModelError, ModelStore
+from yice_agent.models.api import Services
+from yice_agent.models.gateway import Gateway
 
 A = PERSONAS["customer-a1"]
 

@@ -6,7 +6,7 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Session
 
-from workflowops.agent.contracts import (
+from yice_agent.agent.contracts import (
     CandidateInput,
     ConversationConfig,
     ConversationCreate,
@@ -14,11 +14,11 @@ from workflowops.agent.contracts import (
     MemoryDelete,
     MemoryEdit,
 )
-from workflowops.agent.store import AgentStore, Base, Memory
-from workflowops.config import Settings
-from workflowops.database import make_engine
-from workflowops.identity import PERSONAS
-from workflowops.model_store import ModelError
+from yice_agent.agent.store import AgentStore, Base, Memory
+from yice_agent.config import Settings
+from yice_agent.database import make_engine
+from yice_agent.identity import PERSONAS
+from yice_agent.model_store import ModelError
 
 pytestmark = pytest.mark.integration
 
@@ -144,7 +144,7 @@ def test_memory_expiry_source_and_correction_invalidates_candidate(agent_store):
     )
     from datetime import timedelta
 
-    from workflowops.agent.store import now
+    from yice_agent.agent.store import now
 
     with Session(s.engine) as sess, sess.begin():
         sess.get(Memory, m["id"]).expires = now() - timedelta(seconds=1)
@@ -161,3 +161,51 @@ def test_restart_recovers_without_replay_and_raw_history_is_durable(agent_store)
     assert fresh.run(A, run["id"])["status"] == "interrupted"
     assert fresh.history(A, c["id"])[0]["content"] == "原始请求"
     assert fresh.conversation(A, c["id"])["active_run"] is None
+
+
+def test_task_state_versions_survive_reload_and_owner_filtered(agent_store):
+    from yice_agent.agent.task_state import TaskProposal
+
+    store = agent_store
+    c = make(store)
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    store.append(run["id"], {"role": "user", "content": "预算200元，不要自动支付。"})
+    first = store.sync_task_state(A, run["id"])
+    store.finish(run["id"], "completed")
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    message = store.append(run["id"], {"role": "user", "content": "纠正：预算改为100元。"})
+    second = store.sync_task_state(A, run["id"])
+    same = store.sync_task_state(
+        A, run["id"], [TaskProposal(key="budget_cny", quote="100元")], message["id"]
+    )
+    assert same.version == second.version
+    reloaded = AgentStore(store.engine)
+    assert reloaded.task_state(A, c["id"]) == second
+    assert [v["version"] for v in reloaded.task_states(A, c["id"])] == [
+        first.version,
+        second.version,
+    ]
+    assert any(f.value == "200" and f.status == "superseded" for f in second.facts)
+    for actor in (B, OTHER):
+        with pytest.raises(ModelError):
+            reloaded.task_states(actor, c["id"])
+        with pytest.raises(ModelError):
+            reloaded.sync_task_state(actor, run["id"])
+
+
+def test_task_state_sync_concurrency_and_invalid_patch_zero_new_versions(agent_store):
+    from yice_agent.agent.task_state import TaskProposal
+
+    store = agent_store
+    c = make(store)
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    message = store.append(run["id"], {"role": "user", "content": "预算100元。"})
+    with ThreadPoolExecutor(4) as pool:
+        states = list(pool.map(lambda _: store.sync_task_state(A, run["id"]), range(4)))
+    assert all(state.version == 1 for state in states)
+    assert len(store.task_states(A, c["id"])) == 1
+    with pytest.raises(ModelError, match="task_state_source_invalid"):
+        store.sync_task_state(
+            A, run["id"], [TaskProposal(key="budget", quote="500元")], message["id"]
+        )
+    assert len(store.task_states(A, c["id"])) == 1

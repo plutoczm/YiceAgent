@@ -23,9 +23,7 @@ def checks():
     output = RUNTIME / "phase5"
     output.mkdir(parents=True, exist_ok=True)
     env = os.environ.copy()
-    env.update(
-        WORKFLOWOPS_V2_INTEGRATION="1", PYTHONDONTWRITEBYTECODE="1", PYTHONIOENCODING="utf-8"
-    )
+    env.update(YICE_AGENT_INTEGRATION="1", PYTHONDONTWRITEBYTECODE="1", PYTHONIOENCODING="utf-8")
     commands = [
         ("ruff", [sys.executable, "-B", "-m", "ruff", "check", "src", "tests", "scripts"]),
         (
@@ -60,7 +58,7 @@ def checks():
     ]
     commands += [
         (str(p.relative_to(ROOT)), ["node", "--check", str(p)])
-        for p in sorted((ROOT / "src/workflowops/static").glob("*.js"))
+        for p in sorted((ROOT / "src/yice_agent/static").glob("*.js"))
     ]
     rows = [{"check": name, "exit_code": call(args, env)} for name, args in commands]
     xml = ElementTree.parse(output / "tests.xml")

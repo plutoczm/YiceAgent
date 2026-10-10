@@ -7,13 +7,13 @@ import httpx
 import pytest
 from sqlalchemy import create_engine, inspect, select
 
-from workflowops.config import Settings
-from workflowops.database import check_database, initialize_database, make_engine, owner_table
+from yice_agent.config import Settings
+from yice_agent.database import check_database, initialize_database, make_engine, owner_table
 
 pytestmark = [
     pytest.mark.integration,
     pytest.mark.skipif(
-        os.environ.get("WORKFLOWOPS_V2_INTEGRATION") != "1",
+        os.environ.get("YICE_AGENT_INTEGRATION") != "1",
         reason="explicit_owned_integration_gate_not_enabled",
     ),
 ]
@@ -31,7 +31,7 @@ def test_real_postgres_ownership_and_idempotent_initialize():
             ]
             tables = set(inspect(connection).get_table_names())
             if "business_version" in tables:
-                from workflowops.business.models import Base
+                from yice_agent.business.models import Base
 
                 assert tables == set(Base.metadata.tables) | {"schema_owner"}
             else:

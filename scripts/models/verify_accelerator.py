@@ -12,7 +12,7 @@ from time import perf_counter
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
-from workflowops.device import run_read_only_inference, safe_report  # noqa: E402
+from yice_agent.device import run_read_only_inference, safe_report  # noqa: E402
 
 MODELS = ("BAAI/bge-m3", "BAAI/bge-reranker-v2-m3")
 STORAGE = ROOT / ".runtime/v2/models"

@@ -1,4 +1,4 @@
-"""Owned WorkflowOps v2 bootstrap. Mutations require an explicit approved flag."""
+"""Owned 忆策 Agent bootstrap. Mutations require an explicit approved flag."""
 
 import argparse
 import json
@@ -13,7 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src"
 sys.path.insert(0, str(SOURCE))
-from workflowops.config import CONFIG, OWNER, RUNTIME, Settings, initialize_settings  # noqa: E402
+from yice_agent.config import CONFIG, OWNER, RUNTIME, Settings, initialize_settings  # noqa: E402
 
 MAIN_PYTHON = RUNTIME / "envs/main/Scripts/python.exe"
 INFERENCE_PYTHON = RUNTIME / "envs/inference/Scripts/python.exe"
@@ -217,8 +217,8 @@ def infra_up(approved):
     initialize_settings()
     settings = Settings.load()
     env = os.environ.copy()
-    env["WORKFLOWOPS_V2_DB_PASSWORD"] = settings.database_password.get_secret_value()
-    env["WORKFLOWOPS_V2_QDRANT_KEY"] = settings.qdrant_key.get_secret_value()
+    env["YICE_AGENT_DB_PASSWORD"] = settings.database_password.get_secret_value()
+    env["YICE_AGENT_QDRANT_KEY"] = settings.qdrant_key.get_secret_value()
     docker("compose", "--project-name", OWNER, "-f", str(COMPOSE), "up", "-d", env=env)
     deadline = time.monotonic() + 60
     while time.monotonic() < deadline:
@@ -232,7 +232,7 @@ def infra_up(approved):
     if not MAIN_PYTHON.is_file():
         raise RuntimeError("v2_environment_missing")
     env["PYTHONPATH"] = str(SOURCE)
-    command = "from workflowops.config import Settings; from workflowops.database import make_engine,initialize_database; e=make_engine(Settings.load()); initialize_database(e); e.dispose()"
+    command = "from yice_agent.config import Settings; from yice_agent.database import make_engine,initialize_database; e=make_engine(Settings.load()); initialize_database(e); e.dispose()"
     subprocess.run([str(MAIN_PYTHON), "-B", "-c", command], env=env, check=True)
     print("Owned v2 PostgreSQL initialized; Qdrant allocated; v1 resources retained")
 
@@ -371,7 +371,7 @@ def up():
 
     if not MAIN_PYTHON.is_file() or not CONFIG.is_file():
         raise RuntimeError("v2_environment_or_configuration_missing")
-    from workflowops.database import check_database, make_engine
+    from yice_agent.database import check_database, make_engine
 
     engine = make_engine(Settings.load())
     try:
@@ -391,11 +391,11 @@ def up():
         PYTHONNOUSERSITE="1",
         PYTHONDONTWRITEBYTECODE="1",
         PYTHONIOENCODING="utf-8",
-        WORKFLOWOPS_V2_STARTUP_MARKER=marker,
+        YICE_AGENT_STARTUP_MARKER=marker,
     )
     with (RUNTIME / "app.log").open("a", encoding="utf-8") as log:
         child = subprocess.Popen(
-            [str(MAIN_PYTHON), "-B", "-m", "workflowops.server"],
+            [str(MAIN_PYTHON), "-B", "-m", "yice_agent.server"],
             cwd=ROOT,
             env=env,
             stdout=log,
@@ -416,8 +416,8 @@ def up():
                 raise RuntimeError("v2_app_start_failed")
             try:
                 with opener.open("http://127.0.0.1:8020/health", timeout=1) as response:
-                    if response.headers.get("X-WorkflowOps-V2-Startup") == marker:
-                        print("WorkflowOps v2: http://127.0.0.1:8020")
+                    if response.headers.get("X-Yice-Agent-V2-Startup") == marker:
+                        print("忆策 Agent: http://127.0.0.1:8020")
                         return
             except OSError:
                 pass
@@ -449,8 +449,8 @@ def down():
 def business_prepare(approved):
     approval_required(approved)
     inventory()
-    from workflowops.business.bootstrap import prepare
-    from workflowops.database import make_engine
+    from yice_agent.business.bootstrap import prepare
+    from yice_agent.database import make_engine
 
     engine = make_engine(Settings.load())
     try:
@@ -462,9 +462,9 @@ def business_prepare(approved):
 
 def business_replay(approved):
     approval_required(approved)
-    from workflowops.business.scenarios import replay
-    from workflowops.business.service import BusinessService
-    from workflowops.database import make_engine
+    from yice_agent.business.scenarios import replay
+    from yice_agent.business.service import BusinessService
+    from yice_agent.database import make_engine
 
     engine = make_engine(Settings.load())
     try:

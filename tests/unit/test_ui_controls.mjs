@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {conversationControls} from "../../src/workflowops/static/ui-controls.js";
+import {conversationControls} from "../../src/yice_agent/static/ui-controls.js";
 
 test("before identity selection no conversation or execution control is actionable",()=>{
  const state=conversationControls();

@@ -1,4 +1,4 @@
-# WorkflowOps v2 实施计划
+# 忆策 Agent 实施计划
 
 依据：[SPEC.md](SPEC.md)。本计划是用户显式授权的 v2 改造，不改变 v1 P1–P6 历史记录。用户要求实施全部 v2；阶段按顺序推进，前阶段门禁通过后再进入下一阶段。
 
@@ -12,7 +12,7 @@
 
 ## 环境和实现范围
 
-v2 代码使用 src/workflowops 命名空间，工作根目录仍为 WorkflowOps。主应用与 BGE 推理各建专用环境；旧 Conda 不安装或升级。初期静态/契约验证可借用已有解释器，必须标为临时验证。新专用 PostgreSQL 与 Qdrant 不连接 v1 库。Pi Node 桥接只负责模型与认证。
+当前代码使用 src/yice_agent 命名空间，工作根目录为 D:/Projects/YiceAgent。主应用与 BGE 推理各建专用环境；旧 Conda 不安装或升级。初期静态/契约验证可借用已有解释器，必须标为临时验证。新专用 PostgreSQL 与 Qdrant 不连接 v1 库。Pi Node 桥接只负责模型与认证。
 
 安装、下载、登录、迁移和计费调用按 Spec 的授权门禁处理。未具备条件不标 COMPLETE，也不把 mock 当真实能力。不提交、不推送、不删除旧代码或资源。
 
@@ -109,3 +109,14 @@ V2-5 COMPLETE。五视图工作台、共享身份/加载门禁、run与上下文
 ## 2026-10-09 本地 Git 版本
 
 用户明确授权保存当前本地版本。第五阶段、后续界面完善与自研 ReAct 变更在 codex/workbench-acceptance 分支统一提交，并使用 v2.0.0-p5-react 标签冻结。不移动旧标签，不配置远程或推送，不改变验收范围。版本说明见 [VERSIONING.md](VERSIONING.md)。
+
+## 2026-10-10 上下文结构化任务状态改进
+
+用户选择改进第一项。已实现带原文来源与生命周期的会话任务状态、版本保存、模型候选及规则保护、有效摘要投影、当前值回忆和面板。阶段状态 IN_PROGRESS：初次配置检查204Python/18Node/14mypy通过；复核补充摘要局部失效保护，当前单测17项通过；真实模型与最终浏览器仍待验证。无安装、迁移、索引重建或Git提交。方案见 [TASK_STATE.md](TASK_STATE.md)。完整30轮及策略对比不属于本项。
+
+2026-10-10：结构化任务状态改进 COMPLETE（本项范围）。215Python/18Node/14mypy、三通道每通道3实际turn＋1压缩通过；固定6轮历史单列，不冒充真实30轮。真实浏览器估算3718→2852、状态v4/摘要v1及用户切换通过；12表原行和数量一致、零遗留schema。费用保守累计1.455794/15元，失败全部保留。见 [任务状态验证](validation/task-state.md)。未提交/推送；完整长对话和策略对比仍未启动。
+
+## 2026-10-10 用户授权项目更名
+
+名称为忆策 Agent，当前目录 D:/Projects/YiceAgent，包名 yice_agent。应用/runtime 已迁移，现有数据库、索引、凭据、历史与未提交改进保留。按用户确认，旧 Codex 项目锁定的 Git 元数据暂时通过同一份 Git 指针共享；收尾命令见 PROJECT_RENAME.md。属于命名与路径迁移，不增设产品阶段，不提交或推送；更名门禁通过：215Python/18Node/14mypy、启动停止、真实GPU检索、浏览器及29表/3collection保护。Git元数据物理收尾仍PENDING；见 validation/project-rename.md。更名未执行真实LLM生成。
+历史记录中的旧名称按其时间保留。

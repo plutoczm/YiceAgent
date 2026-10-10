@@ -7,9 +7,9 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from workflowops.business.contracts import DRAFT, Confirmation
-from workflowops.business.rules import BusinessError, Policy, clean_text, validate_order_action
-from workflowops.identity import Sessions
+from yice_agent.business.contracts import DRAFT, Confirmation
+from yice_agent.business.rules import BusinessError, Policy, clean_text, validate_order_action
+from yice_agent.identity import Sessions
 
 
 @pytest.mark.parametrize(
@@ -106,7 +106,7 @@ def test_switch_revokes_old_session_and_changes_csrf():
 
 
 def test_money_does_not_render_nan_or_silently_round_more_than_cents():
-    from workflowops.business.rules import money
+    from yice_agent.business.rules import money
 
     for value in [Decimal("NaN"), Decimal("Infinity"), Decimal("1.001")]:
         with pytest.raises(BusinessError, match="invalid_business_amount"):

@@ -1,4 +1,8 @@
-# WorkflowOps
+# 忆策 Agent
+
+GitHub：[plutoczm/YiceAgent](https://github.com/plutoczm/YiceAgent) · 默认分支 main。
+
+基于自研 ReAct、RAG 与上下文管理的业务智能体。当前目录为 D:/Projects/YiceAgent，Python 包为 yice_agent。迁移与 Git 收尾见 [项目更名说明](docs/PROJECT_RENAME.md)。
 
 本机学习与面试演示项目：以电商、外卖订单为场景，构建可解释的业务 Agent，重点展示受控工具、真实 RAG、上下文与记忆管理。
 
@@ -27,8 +31,8 @@ start.cmd
 ## 目录
 
 ```text
-WorkflowOps/
-├─ src/workflowops/      Python 应用：HTTP、业务、协议、身份、设备与页面
+YiceAgent/
+├─ src/yice_agent/      Python 应用：HTTP、业务、协议、身份、设备与页面
 ├─ tests/               unit/ 与 integration/，共享真实数据库 fixture
 ├─ scripts/             manage.py；models/ 与 maintenance/ 工具
 ├─ bridge/              Pi Node 桥接依赖与协议入口
@@ -68,3 +72,5 @@ v1 的固定工作流、快照分析、原三服务及完整历史验收可通�
 ## 自研 Agent 内核
 
 当前Agent由Python手写受限ReAct状态机调度，核心模块为agent/loop.py、runtime.py、tools.py、context.py与memory.py。已替换LangGraph编排，保留原业务权威校验与真实模型/RAG。设计和面试讲解见[REACT_RUNTIME](docs/REACT_RUNTIME.md)，本次验证状态以[自研运行器记录](docs/validation/react-runtime.md)为准；旧整体验收不能冒充当前引擎的新调用。
+
+会话内结构化目标、有效约束、纠正与待解决事项见 [TASK_STATE](docs/TASK_STATE.md)。本次验证215Python/18Node及三通道聚焦流程；实际范围、失败与合成历史区分见 [任务状态记录](docs/validation/task-state.md)。

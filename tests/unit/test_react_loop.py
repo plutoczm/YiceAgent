@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from workflowops.agent.loop import LoopState, Phase, ReActLoop, Transition
-from workflowops.contracts import Message, ToolCall
-from workflowops.model_store import ModelError
+from yice_agent.agent.loop import LoopState, Phase, ReActLoop, Transition
+from yice_agent.contracts import Message, ToolCall
+from yice_agent.model_store import ModelError
 
 
 @dataclass
@@ -215,9 +215,9 @@ class Forbidden(importlib.abc.MetaPathFinder):
         if fullname.split(".")[0] in {"langgraph", "langchain", "langchain_core", "langchain_protocol", "langsmith"}:
             raise AssertionError("agent_framework_imported")
 sys.meta_path.insert(0, Forbidden())
-from workflowops.app import create_app
-from workflowops.agent.runtime import AgentService
-from workflowops.agent.loop import ReActLoop
+from yice_agent.app import create_app
+from yice_agent.agent.runtime import AgentService
+from yice_agent.agent.loop import ReActLoop
 print("framework_independent")
 """
     env = os.environ.copy()

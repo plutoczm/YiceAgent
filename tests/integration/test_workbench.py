@@ -5,22 +5,22 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from workflowops.app import create_app
-from workflowops.config import Settings
-from workflowops.identity import PERSONAS
-from workflowops.models.api import Services
+from yice_agent.app import create_app
+from yice_agent.config import Settings
+from yice_agent.identity import PERSONAS
+from yice_agent.models.api import Services
 
 pytestmark = pytest.mark.integration
 
 
 def session(client, name):
     r = client.post("/api/v2/demo/session", json={"persona": name})
-    client.headers["X-WorkflowOps-CSRF"] = r.json()["csrf_token"]
+    client.headers["X-Yice-Agent-CSRF"] = r.json()["csrf_token"]
 
 
 def test_run_list_filters_subject_and_recovers_latest_manual_run(business):
-    from workflowops.agent.store import AgentStore, Base
-    from workflowops.database import make_engine
+    from yice_agent.agent.store import AgentStore, Base
+    from yice_agent.database import make_engine
 
     domain, schema = business
     raw = make_engine(Settings.load(), schema)
@@ -28,7 +28,7 @@ def test_run_list_filters_subject_and_recovers_latest_manual_run(business):
     with engine.begin() as conn:
         Base.metadata.create_all(conn)
     agent_store = AgentStore(engine)
-    from workflowops.agent.contracts import ConversationCreate
+    from yice_agent.agent.contracts import ConversationCreate
 
     s = agent_store
     a = PERSONAS["customer-a1"]
@@ -67,7 +67,7 @@ def test_workbench_routes_and_import_acl(business, monkeypatch):
             client.post("/api/v2/knowledge/import", json={"corpus": "demo-cn"}).json()["status"]
             == "no_op"
         )
-        client.headers.pop("X-WorkflowOps-CSRF")
+        client.headers.pop("X-Yice-Agent-CSRF")
         assert (
             client.post("/api/v2/knowledge/import", json={"corpus": "demo-cn"}).status_code == 403
         )

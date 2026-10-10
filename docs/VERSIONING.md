@@ -12,7 +12,10 @@
 | v2.0.0-p3 | 三模型与真实GPU RAG基础验收节点；上下文、记忆与完整产品验收仍未完成 |
 | v2.0.0-p4 | 上下文预算/摘要、确认式记忆、受限Agent循环及三通道30轮验收节点；完整v2验收仍待第五阶段 |
 | v2.0.0-p5-react | 第五阶段工作台、界面完善与自研 ReAct 当前快照；新引擎通过 12 项针对性真实模型场景，旧 30 轮验收保留为历史 |
-| codex/workbench-acceptance | 当前工作分支，由 v2.0.0-p5-react 保存本地版本 |
+| codex/workbench-acceptance | 第五阶段与自研 ReAct 工作分支，由 v2.0.0-p5-react 保存历史节点 |
+| codex/task-state-context | 会话任务状态改进及忆策 Agent 更名工作分支 |
+| main | GitHub 同步采用的当前默认分支，保留完整历史 |
+
 | codex/context-memory | 第四阶段工作分支，阶段源码由v2.0.0-p4冻结 |
 | codex/models-rag | 第三阶段工作分支，阶段源码由v2.0.0-p3冻结 |
 | codex/directory-normalization | 本次重排工作分支；main 的原提交未覆盖 |
@@ -62,3 +65,9 @@ git show f048f2949c101b2f8b869728d59c4254a6eb2049:docs/SPEC_V2.md
 验收依据为历史基线加本次运行器变更验收：185 Python、18 Node、13 源码 mypy，以及三通道共 12 项真实模型场景；完整新引擎 30 轮及双业务剧本未整套重跑，详见 [运行器验证](validation/react-runtime.md)。标签表示可还原的源码节点，不声明生产上线能力或新的完整模型质量验收。冻结清单中的 committed/pushed 是验收记录生成时状态，实际版本归属以 Git 标签为准。
 
 当前源码、文档、测试与规划记录纳入 Git。私有原始调用记录、截图、数据库、凭据、模型和环境仍存于本机 ignored 资源；清单只保存路径和哈希。单独克隆仓库不会自动获得这些运行资源。已验收 SVG 通过路径级换行属性保留原字节，其他源码继续遵循既有 LF 规则。
+
+## 2026-10-10 GitHub 同步
+
+用户授权同步当前忆策 Agent 到已存在的公开仓库 [plutoczm/YiceAgent](https://github.com/plutoczm/YiceAgent)。当前任务状态改进与目录/命名迁移保存为新提交，main仅允许从其原节点快进到当前代码；远程为origin，推送main和五个已有阶段标签，禁止force或上传refs/codex。旧版本通过原提交和标签还原，不复制源码目录。提交使用已确认的GitHub noreply身份，仅在命令进程内设置，不修改用户级Git配置。
+
+上传前检查当前文件和可达版本历史，凭据/数据库/环境/模型仍在ignored资源中。原模型验收范围保持；本次不执行新模型调用或宣称新生产能力。Git元数据物理搬迁仍按此前用户选择延后，共享Git指针不影响正常提交与同步。实际同步结果以remote main和标签查询为准。

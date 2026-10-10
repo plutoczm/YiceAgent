@@ -12,8 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from workflowops.config import CONFIG, Settings  # noqa: E402
-from workflowops.models.node_env import node_environment  # noqa: E402
+from yice_agent.config import CONFIG, Settings  # noqa: E402
+from yice_agent.models.node_env import node_environment  # noqa: E402
 
 
 def update(changes):

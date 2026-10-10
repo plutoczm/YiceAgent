@@ -7,4 +7,4 @@
 *.gif binary
 *.zip binary
 # Preserve the already-validated SVG bytes used by the frozen source manifest.
-src/workflowops/static/chevron.svg -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+src/yice_agent/static/chevron.svg -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

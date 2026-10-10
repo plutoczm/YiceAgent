@@ -10,9 +10,9 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from workflowops.config import Settings
-from workflowops.contracts import GenerationRequest, Message, RpcRequest, RpcResponse, ToolCall
-from workflowops.rpc import JsonlWorker, WorkerError
+from yice_agent.config import Settings
+from yice_agent.contracts import GenerationRequest, Message, RpcRequest, RpcResponse, ToolCall
+from yice_agent.rpc import JsonlWorker, WorkerError
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("v2_bootstrap", ROOT / "scripts/manage.py")

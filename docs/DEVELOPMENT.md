@@ -1,6 +1,6 @@
 # 开发与运行
 
-当前源码为src/workflowops，一套应用通过Git提交、分支和标签管理。阶段和结果以PLAN及validation为准。main和inference环境隔离；旧Conda不安装或升级。
+当前源码为src/yice_agent，一套应用通过Git提交、分支和标签管理。阶段和结果以PLAN及validation为准。main和inference环境隔离；旧Conda不安装或升级。
 
 ## 已安装资源
 
@@ -49,3 +49,7 @@ scripts/maintenance/verify_layout.py验证889个历史Git文件；--strict只核
 ## 自研循环验收
 
 当前运行器不导入LangGraph/LangChain；主依赖声明已移除相关框架，旧环境不卸载。普通检查包含test_react_loop及真实PG控制器。小范围真实调用为scripts/validation/react_loop.py --approved --channel all；可用--case单列失败重测，费用沿用原累计15元门禁。见[运行器设计](REACT_RUNTIME.md)。
+
+## 项目更名后的运行
+
+当前根目录为 D:/Projects/YiceAgent，命名及临时共享 Git 元数据的收尾见 [PROJECT_RENAME.md](PROJECT_RENAME.md)。旧容器/database/owner 标识为兼容数据资源，不表示存在另一套源码。

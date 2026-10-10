@@ -6,11 +6,11 @@
 
 | 目录/文件 | 内容 | 放置原则 |
 |---|---|---|
-| src/workflowops | 唯一 Python 应用包 | 业务规则、协议、服务组合在此；保持 workflowops 命名空间 |
-| src/workflowops/business | 订单/支付/退款/工单、草案/审批/回执、固定模拟 | 真实业务事实与权限由确定性服务处理 |
-| src/workflowops/agent | 会话、预算、摘要、记忆、自研受限ReAct运行器和私有API | 不绕过业务权限、确认或费用门禁 |
+| src/yice_agent | 唯一 Python 应用包 | 业务规则、协议、服务组合在此；保持 yice_agent 命名空间 |
+| src/yice_agent/business | 订单/支付/退款/工单、草案/审批/回执、固定模拟 | 真实业务事实与权限由确定性服务处理 |
+| src/yice_agent/agent | 会话、预算、摘要、记忆、自研受限ReAct运行器和私有API | 不绕过业务权限、确认或费用门禁 |
 | scripts/validation | 显式授权的真实模型/记忆验收 | 假模型控制器测试与真实模型结果分开 |
-| src/workflowops/static | 同源 HTML/CSS/JavaScript 控制台 | 页面不自行决定金额、归属或审批结果 |
+| src/yice_agent/static | 同源 HTML/CSS/JavaScript 控制台 | 页面不自行决定金额、归属或审批结果 |
 | tests/unit | 协议、输入校验、金额/规则、设备、Git 保护测试 | 快速确定性检查 |
 | tests/integration | PostgreSQL、真实 HTTP、模拟剧本与资源检查 | 显式集成开关，隔离 UUID schema |
 | scripts/manage.py | 当前启动、停止、检查与显式初始化/剧本 | 统一命令入口，安装与写资源保留授权门禁 |
@@ -35,7 +35,7 @@
 ## 应用包
 
 ```text
-src/workflowops/
+src/yice_agent/
 ├─ app.py / server.py    FastAPI 组合、同源保护与回环监听
 ├─ config.py             项目根/受控资源与秘密安全报告
 ├─ identity.py           固定演示身份与会话

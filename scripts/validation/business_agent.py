@@ -12,17 +12,17 @@ from uuid import uuid4
 
 from sqlalchemy import text
 
-from workflowops.agent.contracts import ActionConfirmation, ConversationCreate, TurnRequest
-from workflowops.agent.runtime import AgentService
-from workflowops.agent.store import AgentStore, Base, Event, Result
-from workflowops.business.bootstrap import provision, seed
-from workflowops.business.contracts import DRAFT, Approval, Confirmation, SimulationEvent
-from workflowops.business.service import BusinessError, BusinessService
-from workflowops.config import OWNER, RUNTIME, Settings
-from workflowops.database import make_engine
-from workflowops.identity import PERSONAS
-from workflowops.model_store import ModelStore
-from workflowops.models.api import Services
+from yice_agent.agent.contracts import ActionConfirmation, ConversationCreate, TurnRequest
+from yice_agent.agent.runtime import AgentService
+from yice_agent.agent.store import AgentStore, Base, Event, Result
+from yice_agent.business.bootstrap import provision, seed
+from yice_agent.business.contracts import DRAFT, Approval, Confirmation, SimulationEvent
+from yice_agent.business.service import BusinessError, BusinessService
+from yice_agent.config import OWNER, RUNTIME, Settings
+from yice_agent.database import make_engine
+from yice_agent.identity import PERSONAS
+from yice_agent.model_store import ModelStore
+from yice_agent.models.api import Services
 
 A = PERSONAS["customer-a1"]
 OP = PERSONAS["operator-a"]

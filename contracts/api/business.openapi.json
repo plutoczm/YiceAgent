@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "WorkflowOps v2",
+    "title": "忆策 Agent",
     "version": "0.1.0"
   },
   "paths": {

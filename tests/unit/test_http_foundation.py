@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 
-from workflowops.app import create_app
+from yice_agent.app import create_app
 
 
 def test_health_explicitly_reports_unverified_live():

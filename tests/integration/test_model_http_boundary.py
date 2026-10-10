@@ -3,21 +3,21 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from workflowops.app import create_app
-from workflowops.models.api import Services
+from yice_agent.app import create_app
+from yice_agent.models.api import Services
 
 pytestmark = pytest.mark.integration
 
 
 def session(client, name):
     response = client.post("/api/v2/demo/session", json={"persona": name})
-    client.headers["X-WorkflowOps-CSRF"] = response.json()["csrf_token"]
+    client.headers["X-Yice-Agent-CSRF"] = response.json()["csrf_token"]
 
 
 def test_credential_configuration_requires_human_operator_and_hides_input(business, monkeypatch):
     service, _ = business
-    import workflowops.models.api as model_api
-    from workflowops.config import Settings
+    import yice_agent.models.api as model_api
+    from yice_agent.config import Settings
 
     resources = Services.create(service.engine, Settings.load())
     writes = []
@@ -37,13 +37,13 @@ def test_credential_configuration_requires_human_operator_and_hides_input(busine
         result = client.post("/api/v2/models/deepseek/configure", json=private)
         assert result.status_code == 200 and "SYNTHETIC" not in result.text
         assert len(writes) == 1
-        client.headers.pop("X-WorkflowOps-CSRF")
+        client.headers.pop("X-Yice-Agent-CSRF")
         assert client.post("/api/v2/models/deepseek/configure", json=private).status_code == 403
 
 
 def test_knowledge_query_cannot_inject_scope_or_tool_target(business):
     service, _ = business
-    from workflowops.config import Settings
+    from yice_agent.config import Settings
 
     resources = Services.create(service.engine, Settings.load())
     with TestClient(create_app(service, models=resources)) as client:
@@ -67,9 +67,9 @@ def test_chatgpt_selection_failure_is_bounded_and_never_saves_config(
     import asyncio
     import hashlib
 
-    import workflowops.models.api as model_api
-    import workflowops.models.gateway as gateway
-    from workflowops.config import CONFIG, Settings
+    import yice_agent.models.api as model_api
+    import yice_agent.models.gateway as gateway
+    from yice_agent.config import CONFIG, Settings
 
     service, _ = business
     resources = Services.create(service.engine, Settings.load())
@@ -122,10 +122,10 @@ def test_cancelled_chatgpt_selection_settles_as_cancelled_and_closes_worker(busi
     import asyncio
     import hashlib
 
-    import workflowops.models.api as model_api
-    import workflowops.models.gateway as gateway
-    from workflowops.config import CONFIG, Settings
-    from workflowops.identity import PERSONAS, Sessions
+    import yice_agent.models.api as model_api
+    import yice_agent.models.gateway as gateway
+    from yice_agent.config import CONFIG, Settings
+    from yice_agent.identity import PERSONAS, Sessions
 
     service, _ = business
     resources = Services.create(service.engine, Settings.load())

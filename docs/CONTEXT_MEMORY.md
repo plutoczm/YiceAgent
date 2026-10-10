@@ -17,3 +17,5 @@
 - scripts/validation/context_memory.py --channel deepseek --turns 30 --approved：真实长会话。
 - scripts/validation/memory_switch.py --approved：记忆生命周期和跨模型。
 - scripts/validation/agent_drafts.py --approved：三通道草案。
+
+结构化任务状态及有效/失效信息的生命周期见 [TASK_STATE.md](TASK_STATE.md)。当前会话状态与所选历史调用采用的状态版本分别显示，原消息仍可核对。

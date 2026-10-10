@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: workflowops_v2
       POSTGRES_DB: workflowops_v2
-      POSTGRES_PASSWORD: ${WORKFLOWOPS_V2_DB_PASSWORD:?owned runtime password required}
+      POSTGRES_PASSWORD: ${YICE_AGENT_DB_PASSWORD:?owned runtime password required}
     ports: ["127.0.0.1:55433:5432"]
     volumes: ["pgdata:/var/lib/postgresql/data"]
     healthcheck:
@@ -20,7 +20,7 @@ services:
     labels:
       com.workflowops.owner: workflowops-v2
     environment:
-      QDRANT__SERVICE__API_KEY: ${WORKFLOWOPS_V2_QDRANT_KEY:?owned runtime key required}
+      QDRANT__SERVICE__API_KEY: ${YICE_AGENT_QDRANT_KEY:?owned runtime key required}
       QDRANT__TELEMETRY_DISABLED: "true"
     ports: ["127.0.0.1:6335:6333"]
     volumes: ["qdrantdata:/qdrant/storage"]

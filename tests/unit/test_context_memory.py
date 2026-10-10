@@ -2,14 +2,14 @@
 
 import pytest
 
-from workflowops.agent.context import canonical, groups, protected, validate_summary
-from workflowops.agent.contracts import ConversationCreate, MemoryEdit, SummaryOutput, TurnRequest
-from workflowops.agent.store import safe_memory
-from workflowops.agent.tools import LoopGuard
-from workflowops.contracts import GenerationRequest, Message, ToolCall
-from workflowops.model_store import ModelError
-from workflowops.models.http import validate_request
-from workflowops.tokens import estimate
+from yice_agent.agent.context import canonical, groups, protected, validate_summary
+from yice_agent.agent.contracts import ConversationCreate, MemoryEdit, SummaryOutput, TurnRequest
+from yice_agent.agent.store import safe_memory
+from yice_agent.agent.tools import LoopGuard
+from yice_agent.contracts import GenerationRequest, Message, ToolCall
+from yice_agent.model_store import ModelError
+from yice_agent.models.http import validate_request
+from yice_agent.tokens import estimate
 
 
 def test_estimator_includes_schema_tools_and_is_explicitly_estimated():

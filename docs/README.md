@@ -15,3 +15,5 @@
 | [provenance/REUSE](provenance/REUSE.md) | 旧代码语义来源与本实现验证 |
 
 - [自研 ReAct 运行器](REACT_RUNTIME.md)：状态机、预算、取消、工具反馈和可复现实证。
+
+- [结构化任务状态](TASK_STATE.md)：会话目标、有效约束、纠正、来源与生命周期。

@@ -2,7 +2,7 @@
 
 import pytest
 
-from workflowops.device import MIN_FREE_VRAM_BYTES, Accelerator, DeviceUnavailable, choose_device
+from yice_agent.device import MIN_FREE_VRAM_BYTES, Accelerator, DeviceUnavailable, choose_device
 
 
 def available(**values):
@@ -48,7 +48,7 @@ def test_auto_gpu_oom_retries_read_only_once_on_cpu(monkeypatch):
     import sys
     from types import ModuleType, SimpleNamespace
 
-    from workflowops.device import run_read_only_inference
+    from yice_agent.device import run_read_only_inference
 
     class OOM(RuntimeError):
         pass
@@ -75,7 +75,7 @@ def test_forced_gpu_oom_does_not_hide_failure(monkeypatch):
     import sys
     from types import ModuleType, SimpleNamespace
 
-    from workflowops.device import run_read_only_inference
+    from yice_agent.device import run_read_only_inference
 
     class OOM(RuntimeError):
         pass
@@ -94,7 +94,7 @@ def test_forced_gpu_oom_does_not_hide_failure(monkeypatch):
 def test_default_settings_gpu_preference():
     from pydantic import ValidationError
 
-    from workflowops.config import Settings
+    from yice_agent.config import Settings
 
     value = Settings(database_password="d" * 48, qdrant_key="q" * 48)
     assert value.inference_device == "auto"

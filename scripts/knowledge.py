@@ -9,17 +9,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from workflowops.config import RUNTIME, Settings  # noqa: E402
-from workflowops.database import make_engine  # noqa: E402
-from workflowops.identity import PERSONAS  # noqa: E402
-from workflowops.inference import Inference  # noqa: E402
-from workflowops.knowledge.retrieval import Retrieval  # noqa: E402
-from workflowops.knowledge.store import Store  # noqa: E402
-from workflowops.knowledge.store import prepare as prepare_knowledge  # noqa: E402
-from workflowops.knowledge.vector import Vectors  # noqa: E402
-from workflowops.model_store import ModelStore  # noqa: E402
-from workflowops.model_store import prepare as prepare_models  # noqa: E402
-from workflowops.models.gateway import Gateway  # noqa: E402
+from yice_agent.config import RUNTIME, Settings  # noqa: E402
+from yice_agent.database import make_engine  # noqa: E402
+from yice_agent.identity import PERSONAS  # noqa: E402
+from yice_agent.inference import Inference  # noqa: E402
+from yice_agent.knowledge.retrieval import Retrieval  # noqa: E402
+from yice_agent.knowledge.store import Store  # noqa: E402
+from yice_agent.knowledge.store import prepare as prepare_knowledge  # noqa: E402
+from yice_agent.knowledge.vector import Vectors  # noqa: E402
+from yice_agent.model_store import ModelStore  # noqa: E402
+from yice_agent.model_store import prepare as prepare_models  # noqa: E402
+from yice_agent.models.gateway import Gateway  # noqa: E402
 
 
 async def run(args):
@@ -42,7 +42,7 @@ async def run(args):
         elif args.command == "search":
             result = await retrieval.search(PERSONAS["customer-a1"], args.query)
         elif args.command == "ask":
-            from workflowops.knowledge.answer import answer
+            from yice_agent.knowledge.answer import answer
 
             retrieved = await retrieval.search(PERSONAS["customer-a1"], args.query)
             gateway = Gateway(settings, ModelStore(engine), inference)
@@ -142,8 +142,8 @@ def main():
         # Categorized failures only; never output user text/provider/credential exception bodies.
         import re
 
-        from workflowops.model_store import ModelError
-        from workflowops.rpc import WorkerError
+        from yice_agent.model_store import ModelError
+        from yice_agent.rpc import WorkerError
 
         code = (
             str(exc)

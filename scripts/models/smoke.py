@@ -14,20 +14,20 @@ from uuid import uuid4  # noqa: E402
 from pydantic import Field  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 
-from workflowops.business.bootstrap import provision, seed  # noqa: E402
-from workflowops.business.contracts import DRAFT  # noqa: E402
-from workflowops.business.service import BusinessService  # noqa: E402
-from workflowops.config import RUNTIME, Settings  # noqa: E402
-from workflowops.contracts import Closed, GenerationRequest, Message, ToolDefinition  # noqa: E402
-from workflowops.database import make_engine  # noqa: E402
-from workflowops.identity import PERSONAS  # noqa: E402
-from workflowops.inference import Inference  # noqa: E402
-from workflowops.knowledge.answer import answer  # noqa: E402
-from workflowops.knowledge.retrieval import Retrieval  # noqa: E402
-from workflowops.knowledge.store import Store  # noqa: E402
-from workflowops.knowledge.vector import Vectors  # noqa: E402
-from workflowops.model_store import ModelStore  # noqa: E402
-from workflowops.models.gateway import Gateway, Intent  # noqa: E402
+from yice_agent.business.bootstrap import provision, seed  # noqa: E402
+from yice_agent.business.contracts import DRAFT  # noqa: E402
+from yice_agent.business.service import BusinessService  # noqa: E402
+from yice_agent.config import RUNTIME, Settings  # noqa: E402
+from yice_agent.contracts import Closed, GenerationRequest, Message, ToolDefinition  # noqa: E402
+from yice_agent.database import make_engine  # noqa: E402
+from yice_agent.identity import PERSONAS  # noqa: E402
+from yice_agent.inference import Inference  # noqa: E402
+from yice_agent.knowledge.answer import answer  # noqa: E402
+from yice_agent.knowledge.retrieval import Retrieval  # noqa: E402
+from yice_agent.knowledge.store import Store  # noqa: E402
+from yice_agent.knowledge.vector import Vectors  # noqa: E402
+from yice_agent.model_store import ModelStore  # noqa: E402
+from yice_agent.models.gateway import Gateway, Intent  # noqa: E402
 
 
 class Lookup(Closed):

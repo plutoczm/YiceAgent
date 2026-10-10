@@ -9,11 +9,11 @@ from zoneinfo import ZoneInfo
 import pytest
 from sqlalchemy.orm import Session
 
-from workflowops.config import Settings
-from workflowops.contracts import GenerationRequest, Message, Usage
-from workflowops.database import make_engine
-from workflowops.model_store import Base, Call, ModelError, ModelStore
-from workflowops.models.gateway import Gateway
+from yice_agent.config import Settings
+from yice_agent.contracts import GenerationRequest, Message, Usage
+from yice_agent.database import make_engine
+from yice_agent.model_store import Base, Call, ModelError, ModelStore
+from yice_agent.models.gateway import Gateway
 
 pytestmark = pytest.mark.integration
 

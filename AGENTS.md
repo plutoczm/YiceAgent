@@ -1,10 +1,10 @@
-# WorkflowOps Agent Instructions
+# 忆策 Agent Agent Instructions
 
 ## Scope and source of truth
 
-WorkflowOps is a local learning and interview demonstration, with one current Python application. Read docs/SPEC.md and docs/PLAN.md for the active requirements and phase. Work one phase at a time; do not claim later phases complete or start them silently.
+忆策 Agent is a local learning and interview demonstration, with one current Python application. Read docs/SPEC.md and docs/PLAN.md for the active requirements and phase. Work one phase at a time; do not claim later phases complete or start them silently.
 
-The user requires version management through Git commits, branches and tags, rather than parallel v1/v2/legacy source folders. The archived v1 implementation is reachable through v1.0.0; current code is under src/workflowops. Preserve history, licenses and provenance.
+The user requires version management through Git commits, branches and tags, rather than parallel v1/v2/legacy source folders. The archived v1 implementation is reachable through v1.0.0; current code is under src/yice_agent. Preserve history, licenses and provenance.
 
 Use Python scripts for file automation, particularly Chinese and complex text. Inspect the working tree first and preserve unknown modifications. Do not reset, clean, overwrite unknown work, push or publish without authorization. Local commits/tags require a task that explicitly requests them; the current directory-normalization task includes Git version management.
 
@@ -12,7 +12,7 @@ Use Python scripts for file automation, particularly Chinese and complex text. I
 
 Prefer a small coherent deterministic implementation. LLM output is untrusted. Authorization, tenant/customer isolation, eligibility, approvals, idempotency and durable state transitions belong to deterministic business code.
 
-Use the unique workflowops namespace. Do not import historical app packages, combine old Conda environments or bypass business service rules. src/workflowops/business owns authoritative local business state. Keep confirmed domain results separate from provisional model text.
+Use the unique yice_agent namespace. Do not import historical app packages, combine old Conda environments or bypass business service rules. src/yice_agent/business owns authoritative local business state. Keep confirmed domain results separate from provisional model text.
 
 Main and inference environments remain isolated; Pi handles authentication/protocol only. Existing ignored .runtime/v2 paths and workflowops-v2 Docker resources are compatibility identifiers, not versioned source layouts. Never reset v1 or current business data while changing code layout.
 

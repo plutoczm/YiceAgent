@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27,<2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "workflowops-v2"
+name = "yice-agent"
 version = "0.1.0"
 description = "Local business Agent with explicit context and memory management"
 requires-python = ">=3.12,<3.13"
@@ -18,7 +18,7 @@ dependencies = [
 dev = ["pytest>=8.4,<9", "ruff>=0.12,<1", "mypy>=1.17,<2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/workflowops"]
+packages = ["src/yice_agent"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -40,5 +40,5 @@ ignore = ["E501"]
 cache_dir = ".runtime/v2/mypy-cache"
 python_version = "3.12"
 strict = true
-files = ["src/workflowops/contracts.py", "src/workflowops/config.py", "src/workflowops/rpc.py", "src/workflowops/device.py", "src/workflowops/identity.py", "src/workflowops/business/contracts.py", "src/workflowops/business/models.py", "src/workflowops/business/rules.py", "src/workflowops/business/service.py", "src/workflowops/business/bootstrap.py", "src/workflowops/business/scenarios.py", "src/workflowops/agent/contracts.py", "src/workflowops/agent/loop.py"]
+files = ["src/yice_agent/contracts.py", "src/yice_agent/config.py", "src/yice_agent/rpc.py", "src/yice_agent/device.py", "src/yice_agent/identity.py", "src/yice_agent/business/contracts.py", "src/yice_agent/business/models.py", "src/yice_agent/business/rules.py", "src/yice_agent/business/service.py", "src/yice_agent/business/bootstrap.py", "src/yice_agent/business/scenarios.py", "src/yice_agent/agent/contracts.py", "src/yice_agent/agent/loop.py", "src/yice_agent/agent/task_state.py"]
 plugins = ["pydantic.mypy"]

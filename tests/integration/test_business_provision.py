@@ -4,10 +4,10 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from workflowops.business.bootstrap import provision
-from workflowops.business.models import Version
-from workflowops.business.rules import BusinessError
-from workflowops.business.scenarios import replay
+from yice_agent.business.bootstrap import provision
+from yice_agent.business.models import Version
+from yice_agent.business.rules import BusinessError
+from yice_agent.business.scenarios import replay
 
 pytestmark = pytest.mark.integration
 

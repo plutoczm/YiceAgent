@@ -2,9 +2,9 @@
 
 import argparse
 
-from workflowops.agent.store import prepare
-from workflowops.config import Settings
-from workflowops.database import make_engine
+from yice_agent.agent.store import prepare
+from yice_agent.config import Settings
+from yice_agent.database import make_engine
 
 
 def main():

@@ -7,13 +7,13 @@ from uuid import uuid4
 
 import pytest
 
-from workflowops.agent.contracts import ConversationCreate, TurnRequest
-from workflowops.agent.runtime import AgentService
-from workflowops.agent.store import AgentStore, Base, Event, Snapshot
-from workflowops.config import Settings
-from workflowops.contracts import GenerationResult, Message, ToolCall, Usage
-from workflowops.database import make_engine
-from workflowops.identity import PERSONAS
+from yice_agent.agent.contracts import ConversationCreate, TurnRequest
+from yice_agent.agent.runtime import AgentService
+from yice_agent.agent.store import AgentStore, Base, Event, Snapshot
+from yice_agent.config import Settings
+from yice_agent.contracts import GenerationResult, Message, ToolCall, Usage
+from yice_agent.database import make_engine
+from yice_agent.identity import PERSONAS
 
 pytestmark = pytest.mark.integration
 A = PERSONAS["customer-a1"]
@@ -232,7 +232,7 @@ def test_draft_ends_run_and_no_order_created_until_human_confirm(environment):
         and store.conversation(A, c["id"])["active_run"] is None
     )
     assert len(domain.orders(A)) == before
-    from workflowops.agent.contracts import ActionConfirmation
+    from yice_agent.agent.contracts import ActionConfirmation
 
     row = r["result"]["action"]
     result = asyncio.run(
@@ -275,9 +275,11 @@ def test_context_summary_preserves_correction_and_four_recent_turns(environment)
     snap = store.private(A, run["id"], Snapshot)[-1]
     summary = store.summary(A, c["id"])
     assert ids[-4:] == [mid for mid in ids if mid in snap["included_message_ids"]]
-    for value in constraints:
+    for value in ("预算上限15元", "不要自动支付", "纠正：偏好改为英文", "订单ORD-ABC"):
         assert value in json.dumps(summary["content"], ensure_ascii=False)
         assert value in json.dumps(snap["messages"], ensure_ascii=False)
+    for value in constraints:
+        assert value in json.dumps(store.history(A, c["id"]), ensure_ascii=False)
     assert len(store.history(A, c["id"])) == 31
     assert snap["after_tokens"] < snap["before_tokens"]
     same = asyncio.run(service.context.assemble(A, run, generate_summary=summarize, manual=True))
@@ -306,13 +308,13 @@ def test_bad_summary_is_not_saved_and_raw_fallback_kept(environment):
     req = asyncio.run(service.context.assemble(A, run, generate_summary=invalid, manual=True))
     assert store.summary(A, c["id"]) is None
     assert any("预算上限15元" in (m.content or "") for m in req.messages)
-    assert store.private(A, run["id"], Event)[0]["kind"] == "summary_rejected"
+    assert any(e["kind"] == "summary_rejected" for e in store.private(A, run["id"], Event))
 
 
 def test_http_owner_csrf_duplicate_run_and_private_snapshot(environment):
     import httpx
 
-    from workflowops.app import create_app
+    from yice_agent.app import create_app
 
     create, store, domain = environment
     service = create(FakeGateway())
@@ -326,7 +328,7 @@ def test_http_owner_csrf_duplicate_run_and_private_snapshot(environment):
             session = (
                 await client.post("/api/v2/demo/session", json={"persona": "customer-a1"})
             ).json()
-            headers = {"X-WorkflowOps-CSRF": session["csrf_token"]}
+            headers = {"X-Yice-Agent-CSRF": session["csrf_token"]}
             assert (await client.post("/api/v2/conversations", json={})).status_code == 403
             c = (await client.post("/api/v2/conversations", json={}, headers=headers)).json()
             body = {"text": "hello", "client_request_id": str(uuid4())}
@@ -391,7 +393,7 @@ def test_eight_tool_calls_limit_even_in_batched_native_responses(environment):
 
 
 def test_timeout_and_model_error_persist_terminal_status(environment):
-    from workflowops.model_store import ModelError
+    from yice_agent.model_store import ModelError
 
     create, store, _ = environment
 
@@ -407,8 +409,8 @@ def test_timeout_and_model_error_persist_terminal_status(environment):
 
 
 def test_recall_rechecks_authority_if_memory_edited_during_generation(environment):
-    from workflowops.agent.contracts import CandidateInput, MemoryConfirm, MemoryEdit
-    from workflowops.agent.memory import model_view
+    from yice_agent.agent.contracts import CandidateInput, MemoryConfirm, MemoryEdit
+    from yice_agent.agent.memory import model_view
 
     create, store, _ = environment
     c = store.create(A, ConversationCreate())
@@ -669,7 +671,7 @@ def test_handwritten_loop_records_dispatch_metadata_without_message_content(envi
     r = asyncio.run(completed(service, c["id"], "PRIVATE-CONTENT"))
     events = store.private(A, r["id"], Event)
     started = next(e for e in events if e["kind"] == "loop_started")
-    assert started["engine"] == "workflowops-react-v1" and started["max_steps"] == 24
+    assert started["engine"] == "yice-agent-react-v1" and started["max_steps"] == 24
     transitions = [e for e in events if e["kind"] == "loop_transition"]
     assert [(e["from"], e["to"]) for e in transitions] == [
         ("analyse", "decide"),
@@ -698,3 +700,205 @@ def test_duplicate_after_fast_completion_returns_durable_run_without_new_model_c
         assert gateway.calls == before
 
     asyncio.run(scenario())
+
+
+def test_task_state_compaction_prunes_stale_summary_and_keeps_history(environment):
+    create, store, _ = environment
+    service = create(FakeGateway())
+    c = store.create(A, ConversationCreate())
+    for i in range(14):
+        run, _ = store.begin(A, c["id"], str(uuid4()), {})
+        text = (
+            "预算200元，不要自动支付。"
+            if i == 0
+            else "纠正：预算改为100元。"
+            if i == 1
+            else "天气音乐闲聊。" * 20
+        )
+        store.append(run["id"], {"role": "user", "content": text})
+        store.append(run["id"], {"role": "assistant", "content": "收到。"})
+        store.finish(run["id"], "completed")
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    store.append(run["id"], {"role": "user", "content": "请回忆当前预算。"})
+
+    async def summarize(request, purpose):
+        return await FakeGateway().generate("qwen", request, "fake")
+
+    request = asyncio.run(service.context.assemble(A, run, generate_summary=summarize, manual=True))
+    state = store.task_state(A, c["id"])
+    assert [f.value for f in state.active() if f.key == "budget_cny"] == ["100"]
+    body = json.dumps([m.model_dump() for m in request.messages], ensure_ascii=False)
+    assert "200元" not in body and "100元" in body and "不要自动支付" in body
+    assert "200元" in json.dumps(store.history(A, c["id"]), ensure_ascii=False)
+    snapshots = store.private(A, run["id"], Snapshot)
+    assert snapshots[-1]["task_state"]["inactive_count"] == 1
+    assert "task_fact_inactive" in [r["reason"] for r in snapshots[-1]["omitted"]] or any(
+        f.status == "superseded" for f in state.facts
+    )
+    assert len(store.history(A, c["id"])) == 29
+
+
+def test_model_task_patch_is_sourced_and_does_not_add_model_roundtrip(environment):
+    class StateGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                self.calls += 1
+                return response(
+                    {
+                        "intent": "clarify",
+                        "needs_clarification": False,
+                        "task_updates": [
+                            {
+                                "kind": "goal",
+                                "key": "goal",
+                                "quote": "请比较两种订单的取消规则",
+                                "operation": "set",
+                                "replaces": [],
+                            }
+                        ],
+                    }
+                )
+            return await super().generate(channel, request, scope)
+
+    create, store, _ = environment
+    gateway = StateGateway()
+    service = create(gateway)
+    c = store.create(A, ConversationCreate())
+    run = asyncio.run(completed(service, c["id"], "请比较两种订单的取消规则"))
+    state = store.task_state(A, c["id"])
+    assert state.active()[0].kind == "goal" and state.active()[0].origin == "model"
+    assert state.active()[0].quote == "请比较两种订单的取消规则"
+    assert run["model_calls"] == 1 and gateway.calls == 1
+
+
+def test_task_state_conflict_stops_before_tools_or_business_draft(environment):
+    create, store, domain = environment
+    gateway = FakeGateway()
+    service = create(gateway)
+    c = store.create(A, ConversationCreate())
+    old, _ = store.begin(A, c["id"], str(uuid4()), {})
+    store.append(old["id"], {"role": "user", "content": "预算100元。"})
+    store.finish(old["id"], "completed")
+    before = len(domain.orders(A))
+    run = asyncio.run(completed(service, c["id"], "预算200元。"))
+    assert run["result"]["status"] == "clarification"
+    assert run["result"]["task_state_conflicts"] == ["budget_cny"]
+    assert run["tool_calls"] == 0 and run["model_calls"] == 1
+    assert len(domain.orders(A)) == before
+    assert len(store.task_state(A, c["id"]).active()) == 2
+
+
+def test_session_only_request_does_not_create_long_term_candidate(environment):
+    class ScopedGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                self.calls += 1
+                return response(
+                    {
+                        "intent": "memory",
+                        "needs_clarification": False,
+                        "candidates": [
+                            {"key": "language", "kind": "preference", "quote": "回答使用中文"}
+                        ],
+                        "task_updates": [],
+                    }
+                )
+            return await super().generate(channel, request, scope)
+
+    create, store, _ = environment
+    gateway = ScopedGateway()
+    service = create(gateway)
+    c = store.create(A, ConversationCreate())
+    run = asyncio.run(completed(service, c["id"], "只记住本会话：回答使用中文。"))
+    assert run["result"]["status"] == "task_state_updated"
+    assert store.memories(A, True) == []
+    assert run["model_calls"] == 1
+
+
+def test_recall_model_context_uses_message_sources_not_internal_fact_handles(environment):
+    from yice_agent.agent.contracts import RecallSelection
+
+    create, store, _ = environment
+    service = create(FakeGateway())
+    c = store.create(A, ConversationCreate())
+    old, _ = store.begin(A, c["id"], str(uuid4()), {})
+    msg = store.append(old["id"], {"role": "user", "content": "预算100元。"})
+    store.finish(old["id"], "completed")
+    run, _ = store.begin(A, c["id"], str(uuid4()), {})
+    query = store.append(run["id"], {"role": "user", "content": "请回忆当前预算。"})
+    request = asyncio.run(
+        service.context.assemble(A, run, schema=RecallSelection.model_json_schema())
+    )
+    view = json.loads(request.messages[1].content.split("：", 1)[1])["effective_task_state"]
+    assert view["facts"][0]["source_id"] == msg["id"]
+    assert "id" not in view["facts"][0]
+    assert all(f["source_id"] != query["id"] for f in view["facts"])
+
+
+def test_session_correction_scope_uses_validated_replacement_not_model_flag(environment):
+    class GatewayWithoutFlag(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "Analysis":
+                self.calls += 1
+                return response(
+                    {
+                        "intent": "memory",
+                        "needs_clarification": False,
+                        "correction": False,
+                        "candidates": [
+                            {"key": "language", "kind": "preference", "quote": "回答使用英文"}
+                        ],
+                    }
+                )
+            return await super().generate(channel, request, scope)
+
+    create, store, _ = environment
+    service = create(GatewayWithoutFlag())
+    c = store.create(A, ConversationCreate())
+    old, _ = store.begin(A, c["id"], str(uuid4()), {})
+    store.append(old["id"], {"role": "user", "content": "预算200元，回答使用中文。"})
+    store.finish(old["id"], "completed")
+    run = asyncio.run(completed(service, c["id"], "纠正：预算改为100元，回答使用英文。"))
+    assert run["result"]["status"] == "task_state_updated"
+    assert store.memories(A, True) == []
+    assert [f.value for f in store.task_state(A, c["id"]).active() if f.key == "budget_cny"] == [
+        "100"
+    ]
+
+
+def test_manual_summary_rejection_is_not_published_as_successful_compression(environment):
+    class RejectingGateway(FakeGateway):
+        async def generate(self, channel, request, scope):
+            if request.output_schema and request.output_schema.get("title") == "SummaryOutput":
+                return response(
+                    {
+                        "goals": [],
+                        "constraints": [],
+                        "corrections": [],
+                        "confirmed": [],
+                        "unresolved": [],
+                    }
+                )
+            return await super().generate(channel, request, scope)
+
+    create, store, _ = environment
+    service = create(RejectingGateway())
+    c = store.create(A, ConversationCreate())
+    for i in range(7):
+        old, _ = store.begin(A, c["id"], str(uuid4()), {})
+        store.append(
+            old["id"], {"role": "user", "content": "预算100元。" if i == 0 else "天气闲聊。"}
+        )
+        store.append(old["id"], {"role": "assistant", "content": "收到。"})
+        store.finish(old["id"], "completed")
+
+    async def run():
+        r = await service.submit(
+            A, c["id"], TurnRequest(client_request_id=str(uuid4()), text="整理"), manual=True
+        )
+        await service.tasks[r["id"]]
+        return store.run(A, r["id"])
+
+    result = asyncio.run(run())
+    assert result["result"]["status"] == "compression_fallback"
+    assert store.summary(A, c["id"]) is None

@@ -6,15 +6,15 @@ from uuid import uuid4
 import pytest
 from sqlalchemy import text
 
-from workflowops.business.bootstrap import provision, seed
-from workflowops.business.service import BusinessService
-from workflowops.config import Settings
-from workflowops.database import make_engine
+from yice_agent.business.bootstrap import provision, seed
+from yice_agent.business.service import BusinessService
+from yice_agent.config import Settings
+from yice_agent.database import make_engine
 
 
 @pytest.fixture
 def business():
-    if os.environ.get("WORKFLOWOPS_V2_INTEGRATION") != "1":
+    if os.environ.get("YICE_AGENT_INTEGRATION") != "1":
         pytest.skip("explicit_owned_integration_gate_not_enabled")
     schema = "v2_test_" + uuid4().hex
     control = make_engine(Settings.load())
@@ -41,14 +41,14 @@ def business():
 def ordinary_tests_never_dispatch_live_models(request, monkeypatch):
     # Paid runtime settings must never turn ordinary tests into live acceptance.
     if request.node.get_closest_marker("live"):
-        if os.environ.get("WORKFLOWOPS_V2_LIVE") != "1":
+        if os.environ.get("YICE_AGENT_LIVE") != "1":
             pytest.skip("explicit_live_model_gate_not_enabled")
         return
 
     import httpx
 
-    from workflowops.models.gateway import PiAdapter
-    from workflowops.models.http import HttpAdapter
+    from yice_agent.models.gateway import PiAdapter
+    from yice_agent.models.http import HttpAdapter
 
     original = HttpAdapter.generate
 

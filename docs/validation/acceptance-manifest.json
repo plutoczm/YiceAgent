@@ -211,6 +211,35 @@
       "cap_cny": "15.00",
       "full_three_models_30_turn_reacceptance": "NOT_RUN",
       "full_dual_business_reacceptance": "NOT_RUN"
+    },
+    "structured_task_state": {
+      "required": true,
+      "status": "PASS",
+      "scope": "current_structured_task_state_change_acceptance",
+      "python_tests": 215,
+      "node_tests": 18,
+      "configured_mypy_files": 14,
+      "checks": ".runtime/v2/task-state/checks.json",
+      "live_summary": ".runtime/v2/task-state/live-summary.json",
+      "real_channels": 3,
+      "actual_agent_user_turns_per_channel": 3,
+      "manual_model_compression_per_channel": 1,
+      "synthetic_history_turns_per_channel": 6,
+      "browser": ".runtime/v2/task-state/browser.json",
+      "resource_protection": ".runtime/v2/task-state/business-protection.json",
+      "full_30_turn_reacceptance": "NOT_RUN",
+      "strategy_comparison": "NOT_RUN",
+      "schema_migration": false,
+      "business_writes": 0,
+      "cap_cny": "15.00",
+      "conservative_used_or_reserved_cny": "1.455794"
+    },
+    "project_rename_regression": {
+      "required": true,
+      "status": "PASS",
+      "scope": "application_paths_runtime_and_compatibility_only",
+      "llm_generation": "NOT_RUN",
+      "git_metadata_finalization": "PENDING_USER_REOPEN"
     }
   },
   "artifacts": [
@@ -613,6 +642,226 @@
     {
       "path": "docs/validation/react-runtime.md",
       "sha256": "ad515985b8f224b163a4438b0dfd22b4e988545cdea0b0186d4f30cb358ba6b0"
+    },
+    {
+      "path": ".runtime/v2/screenshots/task-state-context.jpg",
+      "sha256": "6a33de6d89063cffa8e635aa5307b5fd822f36e354dcb7ad695a35e743856066"
+    },
+    {
+      "path": ".runtime/v2/screenshots/task-state-history.jpg",
+      "sha256": "592e5ca4f9076da974d998951d35013f5f70c455f5af890b644b8f46823356a4"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/.runtime__v2__phase5__checks.json",
+      "sha256": "40a656689de38e0857aedcb186821cb52fffacfacbe26067a19e57907cd3fd90"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/.runtime__v2__phase5__tests.xml",
+      "sha256": "53f021bd7e76163fc2132947ad0dd801092adf4b0470484d050b4820fb682f3f"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/docs__CONTEXT_MEMORY.md",
+      "sha256": "a9ab61e80f5253cef1634167d5800838fd47a7e38e2ca3edc5ff767e37f6db1d"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/docs__PLAN.md",
+      "sha256": "481054825e42bee26a64289eb6ad09b3ceaff166abdb8546000358d9e2f9c392"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/docs__SPEC.md",
+      "sha256": "0044f392b2d40684063bad844182b655ff987e49a5bfb72b0c656b7c19680a1e"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/docs__validation__acceptance-manifest.json",
+      "sha256": "f4328122b129f2ceef78a4286b0ab1961ec6976b47a87c8d3ba62acf03cac2f9"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/hashes.json",
+      "sha256": "567ee275c80fd01d4368a094120e8ca34d6dc87ac9e56b6fffb6e69c19377c22"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/pyproject.toml",
+      "sha256": "c1822ca059ea2829cc764d25186839ad22e222ab1e80639dfedeaba5d9191d10"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__agent__api.py",
+      "sha256": "58dc1cab46a5f5b823d5ff1a9d8e0e22e28414c5c23a69bb557ec3842f748b98"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__agent__context.py",
+      "sha256": "a913af36fdc90ce6fdcc46ea60ffaa6e145f44092fda366063c6189b87c604c8"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__agent__contracts.py",
+      "sha256": "b5b569a29bf271b35af84ea2ded84fd0acdbd603ec4bf6e0ee3962ba16a294cd"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__agent__runtime.py",
+      "sha256": "3718bebcff47c460bf7b45920b5167344459e1454daaec1198065040b299d7ea"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__agent__store.py",
+      "sha256": "2b04254ac7e56f682dfd5061f1816c712309aaab216d41f608170ede745232ae"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__static__agent.js",
+      "sha256": "933a30e74ae6ac6cdcbd1a4d69feb3d53ec1cb7ba4801d2e710fdcf2ae8d9668"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__static__index.html",
+      "sha256": "e423f002ed6379eb265b544d2e0491f5546770b00f53d3eb805299c16f46e740"
+    },
+    {
+      "path": ".runtime/v2/task-state/baseline/src__workflowops__static__styles.css",
+      "sha256": "50a380b6e35081f29cbff87413ba0ecccb79b95364ed8b4f4b0687c8099a1044"
+    },
+    {
+      "path": ".runtime/v2/task-state/browser-fixture.json",
+      "sha256": "4f4a379670c81a36719cccb47d062325b7c6ed51ea106170afd81ab1d9fcd9f9"
+    },
+    {
+      "path": ".runtime/v2/task-state/browser.json",
+      "sha256": "c981edcf58f069e2340bab0c71282aee531eb9917483e9e3b040126886bea0e0"
+    },
+    {
+      "path": ".runtime/v2/task-state/business-baseline.json",
+      "sha256": "1e6060a1e46bd439b547c8daba09e5e308eacace8dcfbfda6a277251841c95c4"
+    },
+    {
+      "path": ".runtime/v2/task-state/business-protection.json",
+      "sha256": "880368a611412da237d0b2fcdf08c4fe55ce1a3a97140765b63866723136c2a5"
+    },
+    {
+      "path": ".runtime/v2/task-state/checks.json",
+      "sha256": "dff5fdaee9475d9e29f240a9d00116569955b7d9fcac86de7d55ce43f14cfbd0"
+    },
+    {
+      "path": ".runtime/v2/task-state/docker-repair.json",
+      "sha256": "7befe8cc336a8bcfa35c2a410b92e952d0682b794b7ad787a6c6a9320a94944e"
+    },
+    {
+      "path": ".runtime/v2/task-state/failed-startup-checks.json",
+      "sha256": "4ece383a0405cc0de16510effbdd805f6a74d3254c224b454a2fd73b07d2adfc"
+    },
+    {
+      "path": ".runtime/v2/task-state/failed-startup-tests.xml",
+      "sha256": "500c1d1cf8748ba6cab4276d0b5d2639be7f7bd42eb457d174cace772974ca6b"
+    },
+    {
+      "path": ".runtime/v2/task-state/failed-targeted-tests.xml",
+      "sha256": "aa4767ea7f5d683428ede760e14f778c431e514c4336fe7b12fe378835e42e88"
+    },
+    {
+      "path": ".runtime/v2/task-state/live-133fc2d3.json",
+      "sha256": "e3986a235eeead8365221e85f7eae44e3ffc0c530051b1c4889d046b3c35629c"
+    },
+    {
+      "path": ".runtime/v2/task-state/live-537255fc.json",
+      "sha256": "1104777a9676a26ec81ddc4bc9a4e5a9e51a9e66920e907d1c970d1742d45e73"
+    },
+    {
+      "path": ".runtime/v2/task-state/live-9394b454.json",
+      "sha256": "c26f17a29116b06cab633be69f1a4f1dff951203896ec85e6df212ca1e2f1afb"
+    },
+    {
+      "path": ".runtime/v2/task-state/live-a59c17e1.json",
+      "sha256": "6ea33d3ef369cd492f9f94d827258cbff0d889865135ba14a1739d6603731b4e"
+    },
+    {
+      "path": ".runtime/v2/task-state/live-summary.json",
+      "sha256": "965a49be77c7804a2e16d8680d083f49410b92050d2640879e35bc39ac107404"
+    },
+    {
+      "path": ".runtime/v2/task-state/offline-tests.xml",
+      "sha256": "83e9fb0968363f2687f598719fc0c0e3f500f6ecb3fe66dd1edcdc3c5e77b8b8"
+    },
+    {
+      "path": ".runtime/v2/task-state/ollama-process.json",
+      "sha256": "229f787689bd907d2a336bd1f81fc4174280cb78826927c5ac621c91274b24af"
+    },
+    {
+      "path": ".runtime/v2/task-state/pricing-check.json",
+      "sha256": "0711b792e5116dc1f6bcd30303b0af7160212bd7f2c5f43cbb1334cc9c5a1e1c"
+    },
+    {
+      "path": ".runtime/v2/task-state/startup-failure.json",
+      "sha256": "94d4d65754c4cbdc050f7c44b9bc530550badb3403b7f12074047c151e051a2b"
+    },
+    {
+      "path": ".runtime/v2/task-state/targeted-final-tests.xml",
+      "sha256": "a72e483b475022f26215fc77301fcc60b3aecdceb0ab795104ffae591945e483"
+    },
+    {
+      "path": ".runtime/v2/task-state/targeted-tests.xml",
+      "sha256": "aa4767ea7f5d683428ede760e14f778c431e514c4336fe7b12fe378835e42e88"
+    },
+    {
+      "path": ".runtime/v2/task-state/tests.xml",
+      "sha256": "95e67226bb3b8053cc58d758174078010901b46cbc5d4818646f38c0cf033ccc"
+    },
+    {
+      "path": "docs/TASK_STATE.md",
+      "sha256": "ae1a9c2965b8dd29a3dc75ea46c2dbff49191c9a062bc2ef3d70f76bd983714a"
+    },
+    {
+      "path": "docs/validation/task-state.md",
+      "sha256": "d549dc09a5abdf1e4b1ca754f541a36ea47c85563d38f621bd96459a5d0d709a"
+    },
+    {
+      "path": ".runtime/v2/project-rename/checks.json",
+      "sha256": "538ab0c558f3a62b117553cd7a1729c146c6bb829d2f09cb9bc99e0989c28902"
+    },
+    {
+      "path": ".runtime/v2/project-rename/tests.xml",
+      "sha256": "1ca5e2374883c87eb143252cdeac313f7286a9970b94dfae01726c7451832637"
+    },
+    {
+      "path": ".runtime/v2/project-rename/pytest.log",
+      "sha256": "999ef55e9464d75dd06fcd40f023889d7458d95940ec0ab5e7a80495d530bf71"
+    },
+    {
+      "path": ".runtime/v2/project-rename/preservation.json",
+      "sha256": "207cdbc238be4187e488390e26ffee713f7131bf071d17d23216bcbcb4362145"
+    },
+    {
+      "path": ".runtime/v2/project-rename/rag-read-only.json",
+      "sha256": "2680d464e381123a6a2c8d47a9d779a02dcf3e3a9fa86786677f576a4e6244b5"
+    },
+    {
+      "path": ".runtime/v2/project-rename/rag-initial-check.json",
+      "sha256": "a593d18e833b9fe0e34650c0f7ea3baad0f509333e0372a88ed2651478ae514b"
+    },
+    {
+      "path": ".runtime/v2/project-rename/launcher-probes.json",
+      "sha256": "53ddffd8027a26932003174ea42ea02044c7eddc9b26ad9623fe738ed7319fb9"
+    },
+    {
+      "path": ".runtime/v2/project-rename/database-before.json",
+      "sha256": "8c9e894e656e6f0a6d7da666b0a2d545fb9fcabd8f0a8a71f43e6bb17525b8e7"
+    },
+    {
+      "path": ".runtime/v2/project-rename/database-after.json",
+      "sha256": "8c9e894e656e6f0a6d7da666b0a2d545fb9fcabd8f0a8a71f43e6bb17525b8e7"
+    },
+    {
+      "path": ".runtime/v2/project-rename/browser.json",
+      "sha256": "c7b12709958171debe9154b01c6792ff1a97d2d6c0b6a1912a79b8b81f48266b"
+    },
+    {
+      "path": ".runtime/v2/project-rename/workbench.png",
+      "sha256": "dc50c1079575ad8634cfe21d534e769fcf21cc8fe477eb18d808e8fa2dbd78a2"
+    },
+    {
+      "path": ".runtime/v2/project-rename/start-stop.json",
+      "sha256": "5cdd2a3dcb9cc74646502f7f08b2c576d7e097f3b94ef88155814033ef3c6035"
+    },
+    {
+      "path": ".runtime/v2/project-rename/semantic-diff.json",
+      "sha256": "f398aaf1053a7ea6726f487e6f25a9c8211ea971963e64696408498da27e3478"
+    },
+    {
+      "path": ".runtime/v2/project-rename/relocation.json",
+      "sha256": "f03e3bebf3caceff1c6cf91d3db0dbee9393662d1fc0ec2e748ff3ee972ea9af"
     }
   ],
   "source_files": [
@@ -630,11 +879,11 @@
     },
     {
       "path": "bridge/package-lock.json",
-      "sha256": "50cc61dcd82a29dcd5e318777642a3f23bd76a4109ce49e12e8d776aeadad19f"
+      "sha256": "02f80d835b99fa9c6747908f6057bedbb9208ebb299de6222073629eec57e18d"
     },
     {
       "path": "bridge/package.json",
-      "sha256": "5ec9607af63152c5394f9da6fd5b79431ee5fef8a942cc9f9bf6f1925cb5cd5a"
+      "sha256": "52cbc0b6fb2b50ab61c294dd88a326f70c24143be3205d50b4c32ebf02f4ff86"
     },
     {
       "path": "config/model-sources.json",
@@ -646,7 +895,7 @@
     },
     {
       "path": "contracts/api/business.openapi.json",
-      "sha256": "64243cfec8b7503a3802b5522e383241be2ea1d11555b189e0102dffe10b359e"
+      "sha256": "a81bc963038b2fd2ce1ab944e4f58df387467e6e8a34363cd240c64e2c6744db"
     },
     {
       "path": "data/fixtures/manifest.json",
@@ -710,15 +959,15 @@
     },
     {
       "path": "docs/SPEC.md",
-      "sha256": "0044f392b2d40684063bad844182b655ff987e49a5bfb72b0c656b7c19680a1e"
+      "sha256": "da88087573f21d98d65cd18e08f62119f2db00e44297fe0fccb50bb2338e9301"
     },
     {
       "path": "infra/compose.yml",
-      "sha256": "d92746d2861ffe31438426a243994ecc013d981b023b5b9d679116242512ab4a"
+      "sha256": "758dd8f5a9f979ec2bff9754b4455df2455629922bbc6ae34e761d7941713ed3"
     },
     {
       "path": "pyproject.toml",
-      "sha256": "c1822ca059ea2829cc764d25186839ad22e222ab1e80639dfedeaba5d9191d10"
+      "sha256": "2a8d6f2700df7e42fc8172114e5bb96da05cb352ef73536d718f97a1ad85013f"
     },
     {
       "path": "requirements/inference-cpu.lock.txt",
@@ -738,11 +987,11 @@
     },
     {
       "path": "scripts/agent.py",
-      "sha256": "91c9692714c2d32f36fe86f670cd6379981090f989635250aa80614c9fc07511"
+      "sha256": "ecf2af9d08dd20fcfe7d13d4e37d4abf7f82701839aaf3e57ba9c7d265d9c1a6"
     },
     {
       "path": "scripts/knowledge.py",
-      "sha256": "8190ca3c6f127081263a5f4ed9fdef9405dbe1ecba67775c7deced00c8f769de"
+      "sha256": "8189f9f9c38ba56fac335a6413cc42add9a8b5b6a28b230b0df525e69e9bb6e2"
     },
     {
       "path": "scripts/maintenance/verify_layout.py",
@@ -750,11 +999,11 @@
     },
     {
       "path": "scripts/manage.py",
-      "sha256": "f75f9fbe1aac9f52cfeb56ce670a0b073dbad3c75890732e2aa5685d4876f84f"
+      "sha256": "7c0ae241d1cc76e2e0f1f13580eec0286a9cd35968e667eeeac2a32be7f55794"
     },
     {
       "path": "scripts/models/account.py",
-      "sha256": "bb13b65ebb6ad9606f637468415e3935d649d266d4c92a17565a608461c0a9a5"
+      "sha256": "ef4eaf5795ac0b88c5d7303447f3804273a582e17142ebf4a85fd11f7b01f7a9"
     },
     {
       "path": "scripts/models/download_torch.py",
@@ -766,11 +1015,11 @@
     },
     {
       "path": "scripts/models/smoke.py",
-      "sha256": "2e2ba6e34cfa04d8e46cdc8b0bbc588522df58ed5fc62b8a96ef68a28aa5ed5e"
+      "sha256": "eeedbabd39346f069584edf4fe73b3d7f2b981612977cde1789119e24c6482a5"
     },
     {
       "path": "scripts/models/verify_accelerator.py",
-      "sha256": "ac403d1c99d941da8cf66b9bfa977a645bc3c9bc3faf5968555f05f86177238b"
+      "sha256": "8e403ddf773fd9b1b4cb92c5036026af40e819e354f5681b0778535ead04ef22"
     },
     {
       "path": "scripts/process_control.py",
@@ -782,275 +1031,275 @@
     },
     {
       "path": "scripts/validation/adversarial.py",
-      "sha256": "77df8624b937e3cebf7bd54e3cd5fc98beed198f6fee0f013d7799cfdfa5e852"
+      "sha256": "81e48b0b5b5ccf6d27e121c0c74323974cb6aeec96bdca899bb385db683a8d32"
     },
     {
       "path": "scripts/validation/agent_drafts.py",
-      "sha256": "470421e3f8a1a199ffd347435ea90b42838a8264e85553a54a7f76954a60ddb1"
+      "sha256": "49aee1dde99c56a04769dfd2bc281f88393ddd70241a9fa675d1ea37cc375acd"
     },
     {
       "path": "scripts/validation/business_agent.py",
-      "sha256": "4ba44cd2eb88f0b022c16ba35f4493c38354a7512798afb6e068ee5e6a7ebc11"
+      "sha256": "94c74b8b29cb58e4ec2c5b7c3cb00dbe37cdef57f000c6f93fad5340b6b6bd10"
     },
     {
       "path": "scripts/validation/context_memory.py",
-      "sha256": "5bb1497bc7a741625a135ef74e845a9ab04f82a93c6edbc8e0e7594d8cb9958d"
+      "sha256": "64b486d7b5b3b8d93da30b6caa6cfafb217c056e3e929c1eeb1a23cae143a325"
     },
     {
       "path": "scripts/validation/memory_switch.py",
-      "sha256": "fbca8de4a6dce1b93a763c5a603d05acc357bc55ae47f6d8887afb57233881c8"
+      "sha256": "bb4cdc1d7498afa8e6a07a4f9f37f006ba57a9ff35555245660daf3d1914626d"
     },
     {
       "path": "scripts/validation/verify.py",
-      "sha256": "fdf236a58b769f0b238997ff8f6d12f2e8c2f4b0bf6893b1686d195515ccf369"
+      "sha256": "7125edb02b8a06e90ef5e8626faedddbe9b4b4231de0fd550eed5bba3df957fb"
     },
     {
-      "path": "src/workflowops/__init__.py",
-      "sha256": "d9f29b2ffa1ca4f18fa8e8d52f1107dac1273fc03d24fc5d3ef36482bffc7544"
+      "path": "src/yice_agent/__init__.py",
+      "sha256": "05fabd50f810cf0caae06376dd544feeadb4bb1cd52dc5412e84974a8ad3359f"
     },
     {
-      "path": "src/workflowops/agent/__init__.py",
+      "path": "src/yice_agent/agent/__init__.py",
       "sha256": "eb81a0dbbf2a47ceb245c4b762768b1eef6cad55a41d86b04f107d1375d5869b"
     },
     {
-      "path": "src/workflowops/agent/api.py",
-      "sha256": "58dc1cab46a5f5b823d5ff1a9d8e0e22e28414c5c23a69bb557ec3842f748b98"
+      "path": "src/yice_agent/agent/api.py",
+      "sha256": "7f5a622ae5503d35cc2ae10594c6851887fde7ef548bcf87003bec64b1af24bc"
     },
     {
-      "path": "src/workflowops/agent/context.py",
-      "sha256": "a913af36fdc90ce6fdcc46ea60ffaa6e145f44092fda366063c6189b87c604c8"
+      "path": "src/yice_agent/agent/context.py",
+      "sha256": "a7785c4ad28116bb7f2b3d00f6906cf778dc052d732da92c821dec1dc11adb18"
     },
     {
-      "path": "src/workflowops/agent/contracts.py",
-      "sha256": "b5b569a29bf271b35af84ea2ded84fd0acdbd603ec4bf6e0ee3962ba16a294cd"
+      "path": "src/yice_agent/agent/contracts.py",
+      "sha256": "a006388a9510be32ebdf45d401403e255e0434c10e4b722846527df3713dec48"
     },
     {
-      "path": "src/workflowops/agent/memory.py",
-      "sha256": "ad7454fee93290715e2af192646e92f5f0475f380b3b58948a26ff5b9495d0e9"
+      "path": "src/yice_agent/agent/memory.py",
+      "sha256": "6428a16e36d8b59e20846218f9a9e6473ba58b6a4c1feed93f825e961a441a12"
     },
     {
-      "path": "src/workflowops/agent/runtime.py",
-      "sha256": "3718bebcff47c460bf7b45920b5167344459e1454daaec1198065040b299d7ea"
+      "path": "src/yice_agent/agent/runtime.py",
+      "sha256": "87f3b6f6d6d5de467c3a99dce208a369331d4993a0cc5778379ba9f8d90cb410"
     },
     {
-      "path": "src/workflowops/agent/store.py",
-      "sha256": "2b04254ac7e56f682dfd5061f1816c712309aaab216d41f608170ede745232ae"
+      "path": "src/yice_agent/agent/store.py",
+      "sha256": "3e0b332400e045b3e7a0f6351d96fdc2af74f18ebb65b8aa8227500f151ec203"
     },
     {
-      "path": "src/workflowops/agent/tools.py",
-      "sha256": "6d0e23ee7c62a148171a4b35c98e3216aa112c58fbe6efea3849558b1a851d26"
+      "path": "src/yice_agent/agent/tools.py",
+      "sha256": "fb2ad31a4a1a3aed5e031ca69ae50770b375ea945f4a6db6257fab267cf9722d"
     },
     {
-      "path": "src/workflowops/app.py",
-      "sha256": "5a041acb9c6327fef2f5aa5d02ada68b699e05117dde8de90643c0ef351f9abf"
+      "path": "src/yice_agent/app.py",
+      "sha256": "06f41044174de15381d081f0c689c27e82a77574ca98310641ddc85bf6d05bcb"
     },
     {
-      "path": "src/workflowops/business/__init__.py",
+      "path": "src/yice_agent/business/__init__.py",
       "sha256": "a46a2c323eacf6799c3078943b0d7aca295a657f68d17523d6c1dc78ae16101e"
     },
     {
-      "path": "src/workflowops/business/api.py",
-      "sha256": "0bdf695b03edc56e6e0106ce6d7bf60ea335ce66d581b14fa8cc7a606bbef17e"
+      "path": "src/yice_agent/business/api.py",
+      "sha256": "fc8ba3dc8f536e2da586bee610a1c3142041d4da69b6a8aeb0c535d6a716dfe1"
     },
     {
-      "path": "src/workflowops/business/bootstrap.py",
-      "sha256": "188e5f1aaba435ce45894debbcac55e33c86b7fa331b8ef678c6f4b10fa68138"
+      "path": "src/yice_agent/business/bootstrap.py",
+      "sha256": "9007a9acc50a3a46e5b1a255129cce363d8db1c120ac6eff792fd839674da10e"
     },
     {
-      "path": "src/workflowops/business/contracts.py",
-      "sha256": "27a02fd10270eb128ae26a4f354e03fec563325a700ad7c5816cbb048c3c20d5"
+      "path": "src/yice_agent/business/contracts.py",
+      "sha256": "bdf82c803f5b4c8a8f05508b2a512f452b6c5ffc9698a429d61649998dc5724b"
     },
     {
-      "path": "src/workflowops/business/models.py",
+      "path": "src/yice_agent/business/models.py",
       "sha256": "1f21f2efb666d95077ec78c8667d1fc3b1cbcd701ebbc8e4ba2166ecad00c4e5"
     },
     {
-      "path": "src/workflowops/business/rules.py",
+      "path": "src/yice_agent/business/rules.py",
       "sha256": "98d7b887ccc2796f8620ee360be128b89da1a1efd3b0b4c9277ca0acc39b4afa"
     },
     {
-      "path": "src/workflowops/business/scenarios.py",
-      "sha256": "af81ae3f71cb1e824413fa12ec53c1fe6083bd114e0d206239f012cf4c01af3e"
+      "path": "src/yice_agent/business/scenarios.py",
+      "sha256": "bbe185f9421fdf3a57da5a970dec06bbccd7f55ec2360b37bbad99c328498249"
     },
     {
-      "path": "src/workflowops/business/service.py",
-      "sha256": "052ab1af4634b43947b39cd4b4ff17cecd61e30af62494b843a0856abd8e52cf"
+      "path": "src/yice_agent/business/service.py",
+      "sha256": "d0b58681194ce6619269dc148eaf0f299247e0ea027ce7c4430e61d5ea794b87"
     },
     {
-      "path": "src/workflowops/compute.py",
-      "sha256": "48f4100809ade3bbe6b5126df35917c012b6684d047421e4b19f7e7ae6438b6a"
+      "path": "src/yice_agent/compute.py",
+      "sha256": "611c78dd4f466c37bd4273706ace1ebe7908d97ce68b39b809e46938fd53800b"
     },
     {
-      "path": "src/workflowops/config.py",
-      "sha256": "b5585414954112a1733cef4aca1ae5c7b8b749f4c139c727848e7266fb3f0c55"
+      "path": "src/yice_agent/config.py",
+      "sha256": "a26b706a1d9b00fc13c93cf6a66fa1369720f74f4cf62a3176eee009bdbae663"
     },
     {
-      "path": "src/workflowops/contracts.py",
+      "path": "src/yice_agent/contracts.py",
       "sha256": "b59ec84d56cc6fae79c0d60d20e819e8b3b8b3b14cb30dfca43731ca485d06b5"
     },
     {
-      "path": "src/workflowops/database.py",
-      "sha256": "c32a9b4de7b109eb99389206c6d5eae20a16cbc0f725987763184d003e41fee9"
+      "path": "src/yice_agent/database.py",
+      "sha256": "8dfcbd5e7e9c84e4d5f91efc36183c4769ab4db1cc423cb7985d46679672b0f6"
     },
     {
-      "path": "src/workflowops/device.py",
+      "path": "src/yice_agent/device.py",
       "sha256": "552efd95d4d62d48b5539a3a8dc95715645020c307f706d14903816fbd46ff44"
     },
     {
-      "path": "src/workflowops/identity.py",
+      "path": "src/yice_agent/identity.py",
       "sha256": "056a9041ff85dd79086702257f4e37338462f803c0c2ac205043bde35a400cc8"
     },
     {
-      "path": "src/workflowops/inference.py",
-      "sha256": "61f5dc061cc4b197a6fea29fddec47a08b9b87e1b6ec2313f5dd7312fd2a6ce9"
+      "path": "src/yice_agent/inference.py",
+      "sha256": "c5021d10e1319622e5594017ea87c58a42a7594080dbf79e2386c9eb084f556f"
     },
     {
-      "path": "src/workflowops/inference_worker.py",
-      "sha256": "39f0801cacb07d2be635134351c01ee5865449ea3c4df4a9425666d0c4010b5e"
+      "path": "src/yice_agent/inference_worker.py",
+      "sha256": "d9d61772e793567b7515e5b8c9831a58cd643d4000fed25d0b5738bfb8fe7d41"
     },
     {
-      "path": "src/workflowops/knowledge/__init__.py",
+      "path": "src/yice_agent/knowledge/__init__.py",
       "sha256": "70e4ca4469dc585b1eb804622b1178af6d6bf96eee255f4be2f2c81d39e604a2"
     },
     {
-      "path": "src/workflowops/knowledge/answer.py",
-      "sha256": "0af674391dc02602e16116b70622e136a30370d7a59e7012552cd3e1c7c4f51f"
+      "path": "src/yice_agent/knowledge/answer.py",
+      "sha256": "695b3a4f73184c2291b86cc959340a40162a7cffb10a3f88441d60343819584a"
     },
     {
-      "path": "src/workflowops/knowledge/corpus.py",
-      "sha256": "4760c0c52d516ca307e0b4fa66877a69ebc7a7595252f9d986088b13327aa324"
+      "path": "src/yice_agent/knowledge/corpus.py",
+      "sha256": "11b85de90257c33bcf11fd22f8c937c3704ed472443a7dd2460011d412677bf0"
     },
     {
-      "path": "src/workflowops/knowledge/retrieval.py",
-      "sha256": "a7839f4dd129b2d7eea287313307349daea9db270fe64e9bba0f61f4b231f97f"
+      "path": "src/yice_agent/knowledge/retrieval.py",
+      "sha256": "0236ccb5890dffc73c71fdad5e92b5d9b3f82ebc9a605a226a640a02cbaa8214"
     },
     {
-      "path": "src/workflowops/knowledge/store.py",
-      "sha256": "0a7ecd941bdc91caa7aa5dedad53ce947bd596b47d79f8015fcb682c1c65e7f8"
+      "path": "src/yice_agent/knowledge/store.py",
+      "sha256": "cf8aaad55b544619b94a2f30dc8192daa6672e59c2170e080423ba78aae6f8f7"
     },
     {
-      "path": "src/workflowops/knowledge/vector.py",
-      "sha256": "01c4f8f15305a197e7bae686f073deeb3e355a00cb70d5d8f4e29b354d8542cc"
+      "path": "src/yice_agent/knowledge/vector.py",
+      "sha256": "f9bb6b5eb8212a57a8b371d93aa693f546758b6134e775bec6dd361dce03f711"
     },
     {
-      "path": "src/workflowops/model_store.py",
-      "sha256": "d50099bf440e45e0a6017c1d517ed7876801b96c8ef4baeee49068b1b6901f19"
+      "path": "src/yice_agent/model_store.py",
+      "sha256": "7521ec7d1f0ec944ebd563549659100fa7f626c12757c699e10f3050cbffd6f6"
     },
     {
-      "path": "src/workflowops/models/__init__.py",
+      "path": "src/yice_agent/models/__init__.py",
       "sha256": "01336c3e6aae9ac286dba1a927ba86fe09bd1f65da4abe25c405dd4b98f5a741"
     },
     {
-      "path": "src/workflowops/models/api.py",
-      "sha256": "747595e4e8e4f50dccff9adb273815e6849331955d64102d2b0c9ce4b8a8d83d"
+      "path": "src/yice_agent/models/api.py",
+      "sha256": "4a5ca8ac98e146122dae1bbcdcb96b84bf97fe0d3929caef432b67457ae1fdeb"
     },
     {
-      "path": "src/workflowops/models/gateway.py",
-      "sha256": "9bb8194e1a0013687babf386832b16d7f7871e73f175899a076d5b928a7bd365"
+      "path": "src/yice_agent/models/gateway.py",
+      "sha256": "999c3cd96dcef4f640f83a54086be57e716acd936a9cd5d863e91f04b32c29a0"
     },
     {
-      "path": "src/workflowops/models/http.py",
-      "sha256": "ee63c9958bfd17d0e099a5c0824c5ed6afd65e780df6faf5fc7ab1ff23c69880"
+      "path": "src/yice_agent/models/http.py",
+      "sha256": "1977f43819f39e670c337ba662f1e947b07d8e7774efc8c513a0de18a0ced08c"
     },
     {
-      "path": "src/workflowops/models/node_env.py",
+      "path": "src/yice_agent/models/node_env.py",
       "sha256": "b400471e8bdeb97265fe9d91ffa618ab3e23a5d92bc485e2fc6c4b619a2d69e0"
     },
     {
-      "path": "src/workflowops/rpc.py",
-      "sha256": "ecacb87e644b1602984e632ed9c09a870012b2683a15767b31b7f74e8c2ff90d"
+      "path": "src/yice_agent/rpc.py",
+      "sha256": "a9b2303cd1f6d447e7c182c306d6e05ec8b6a5eed9e4a42db0782c3898c50244"
     },
     {
-      "path": "src/workflowops/server.py",
-      "sha256": "0eb6597f31b1ab2ac907bcb60c8dbc8b8c741fe7430d98e91dab55ee6ada9865"
+      "path": "src/yice_agent/server.py",
+      "sha256": "fdaaf9a7f9ffeafc626c24e5d520491408cabab025a7d345fefa0a74a8eaa11c"
     },
     {
-      "path": "src/workflowops/static/agent.html",
-      "sha256": "94264c47174efe3974b5cc41ecd3f80ad3c56078d4320a8c36406e434f908634"
+      "path": "src/yice_agent/static/agent.html",
+      "sha256": "5db6381871627e40f6e8da937a4d7fd2f7dce17ee7496e7bc7be1588444d5a8b"
     },
     {
-      "path": "src/workflowops/static/agent.js",
-      "sha256": "933a30e74ae6ac6cdcbd1a4d69feb3d53ec1cb7ba4801d2e710fdcf2ae8d9668"
+      "path": "src/yice_agent/static/agent.js",
+      "sha256": "225850131d8743d868bd28457cbfa58146eb8336624d06934e9c89516c3338c3"
     },
     {
-      "path": "src/workflowops/static/app.js",
-      "sha256": "25df3e7274d0d2ef820b84b7140b49adba5e9686876700c79999f25c878bcdf0"
+      "path": "src/yice_agent/static/app.js",
+      "sha256": "f1ffaebeafb2d81484dcfecb4d7682aa37f20817b76c2915d92ca84720d3b4aa"
     },
     {
-      "path": "src/workflowops/static/index.html",
-      "sha256": "e423f002ed6379eb265b544d2e0491f5546770b00f53d3eb805299c16f46e740"
+      "path": "src/yice_agent/static/index.html",
+      "sha256": "9f2199307465765951b6e1503903aacce8797160ab73d701f64d567921af8ac3"
     },
     {
-      "path": "src/workflowops/static/styles.css",
-      "sha256": "50a380b6e35081f29cbff87413ba0ecccb79b95364ed8b4f4b0687c8099a1044"
+      "path": "src/yice_agent/static/styles.css",
+      "sha256": "aef634a7e37cd8b5dfb4dbfc3e32f8f5611e7662c43a9ccb805940aed964cbeb"
     },
     {
-      "path": "src/workflowops/static/workbench.js",
-      "sha256": "7cafa075cba4253868f5cfa1827ca42d60f9e24d2f86652df31e92b03bb61df2"
+      "path": "src/yice_agent/static/workbench.js",
+      "sha256": "96c8bb74cd962a69cf316d36b9d8ba21be24c265f9f9eeda27406b4a3bfee7dc"
     },
     {
-      "path": "src/workflowops/tokens.py",
+      "path": "src/yice_agent/tokens.py",
       "sha256": "0271eca022d64aca5c077b0e65ba0bfdeafbde5902aaca2ab09ca85955ee3970"
     },
     {
       "path": "tests/conftest.py",
-      "sha256": "b7c2027e8cdb999966d291c9cb96dfded4ced3f82a13117b8fd1f0e3243bdbf6"
+      "sha256": "0eda873d60034a8503ec338c362fbe97abfdb3985126316c115ef84c2db1a44d"
     },
     {
       "path": "tests/integration/test_agent_runtime.py",
-      "sha256": "3382d443449fec807909d1573eaee6b7c7111ad12d47d2bdd0580b7e4be5c842"
+      "sha256": "da67e5c97e4824b479dd9d36be899c5acb9691f978f5ebd61e5f94cf389f251b"
     },
     {
       "path": "tests/integration/test_agent_store.py",
-      "sha256": "819a2f061c8051a4310bb4e77abfc255b9f2573006bbb47ef6f9c8d2efe4ebfb"
+      "sha256": "f3b5907b0c209e54cb9e6dce6d46117972636bb40f64451b31e2cdfe5478b26a"
     },
     {
       "path": "tests/integration/test_business_http.py",
-      "sha256": "3dbdbe99580bb38c1c9da58d1373eb9fed3c7b3ee5a29a523be27f7fb2bd9a40"
+      "sha256": "b5d8a34bf67e6fe058e7823ed50dab25bf4aa1e190331e46f87448d7c0e42fc9"
     },
     {
       "path": "tests/integration/test_business_postgres.py",
-      "sha256": "1f919d8ab7207c74c18f363de69f86f3f1f3de5dee46e99bafbf4b271e933bc6"
+      "sha256": "f9793a41d7afba3dbc029634a0a9f0c761c7a4bfd2a1c70b4c00dd6d8b1e31b1"
     },
     {
       "path": "tests/integration/test_business_provision.py",
-      "sha256": "0e105fc92fd12e2f90c31e62c6bb5f050c4b1079b3155ce4538cf4992a2c1bee"
+      "sha256": "17b28be6becc0aab69fed0c3c0606e56b3dd4b931db11ba3ec27d431295d683a"
     },
     {
       "path": "tests/integration/test_infrastructure.py",
-      "sha256": "9686e70fcacf5890dc2f5bd6bc8ff954a1911ed67cce196f28fee38038bf8ff0"
+      "sha256": "e412cb849c1f84a41f839935d742d6ed5bec470528cdfb8627a9d5d80c0bbed1"
     },
     {
       "path": "tests/integration/test_model_budget.py",
-      "sha256": "0eeb23e683f68fc41938d99c2abf903426ea37e6a982e6afb96431fcf7c566f3"
+      "sha256": "c38ae4bb6d0dc5e26d2bbc168d318a84209ffe03ccfe8866635791ae4f69ec62"
     },
     {
       "path": "tests/integration/test_model_http_boundary.py",
-      "sha256": "e3d542653c831ac2e67f7a3421e114affb777bdece1d41439962fa72e866b90e"
+      "sha256": "a8cfa9896778c1b4202e47822c03bed8f046c9cddcba57a9277e716a6838017c"
     },
     {
       "path": "tests/integration/test_workbench.py",
-      "sha256": "f841f3e302da89e86c926cb123d9c19c54c1876cb9d3b1a905a2b2d2001a2b6d"
+      "sha256": "c14cecf491de3aa2c53c1885b117715fc8fed24c0fa05a691f5ff015bcabfb2d"
     },
     {
       "path": "tests/unit/test_business_rules.py",
-      "sha256": "3417d1455a921ca9a9c99a34ec9a46f67b97be1609ca5adc0fac541be0ab34e7"
+      "sha256": "b3f20676971c99f8dbb3b87eae79199c5232cbf32b4c62ff446036bf6abc5986"
     },
     {
       "path": "tests/unit/test_context_memory.py",
-      "sha256": "9c64410bb86cb7db05ac5fca054a16c5fc6488741eaacc850f5d36e4b14e79d3"
+      "sha256": "e6d188dd0b44cf647b748110f6eb76b25618097dfeed7457657d5ff8b22956e6"
     },
     {
       "path": "tests/unit/test_device.py",
-      "sha256": "48cac21e3e5741d6fbcd80add179150cf60935b63f6766935722a8801a29ba67"
+      "sha256": "9af878c888829b8dbcba57ece1e32c9dcfe5ce2888d811d7ee0d2fb3dea9a8c8"
     },
     {
       "path": "tests/unit/test_foundation.py",
-      "sha256": "8b04fd21906fa056970c9c7ed2dea7aaf15adc80730b22ae924d532852d91e52"
+      "sha256": "f51a083948f5ab2ec8cfa8d4803bd7d0fb529cf878b18b502ae603d588dd9441"
     },
     {
       "path": "tests/unit/test_http_foundation.py",
-      "sha256": "e42f6ece88d5f0e1bef84331cec0d76d1ee2a69d9abc7d77a2a86099a9b216b5"
+      "sha256": "1acefb771de76d3d93ecad891d4171c01770fe3218d7420ef83ecaa284126392"
     },
     {
       "path": "tests/unit/test_layout_history.py",
@@ -1058,11 +1307,11 @@
     },
     {
       "path": "tests/unit/test_model_protocols.py",
-      "sha256": "21414eeb82c1f0bf04403412ddde692c43ecfa1e791724f7545752f45b608ee8"
+      "sha256": "8e96cad5d69f948585cb3c6cb3143814c568e94423f50f255480bba9e0c38819"
     },
     {
       "path": "tests/unit/test_node_env.py",
-      "sha256": "623bf1d0c6814db2338fd9bc8ed6f89453a74d8ab3408bfa3e7161399ea5228e"
+      "sha256": "8f94a62aee8e3e071e2fd07a16519540b8babbe66eae3f33c5d95883ec7ce653"
     },
     {
       "path": "tests/unit/test_oauth_errors.mjs",
@@ -1073,28 +1322,48 @@
       "sha256": "00866249d69cd38bd46c4fd7c1b57918dd8c5b54e820c258e82c28c6f009fec6"
     },
     {
-      "path": "src/workflowops/static/ui-controls.js",
+      "path": "src/yice_agent/static/ui-controls.js",
       "sha256": "78bb1f7332a78fe79f5a1fddba8a7e8169ad5371ddacf253dad91b035867e082"
     },
     {
-      "path": "src/workflowops/static/chevron.svg",
+      "path": "src/yice_agent/static/chevron.svg",
       "sha256": "84e382fd75705962391f31a993f1f685dbe7d522ac40b225a14b29c3c54ab2c8"
     },
     {
       "path": "tests/unit/test_ui_controls.mjs",
-      "sha256": "678f82dd0d46688b87286f4a2df38afdeb9e49f886a8600d90365c4f7b23f608"
+      "sha256": "ad4d8f36a41d2af5d5ce1334eef8add5645812f51b7560ee2d8afd13b9d45cb3"
     },
     {
-      "path": "src/workflowops/agent/loop.py",
-      "sha256": "bfd02863e929c8155acc91dbe71de1b822bded2a0af414bd693e0e9f39d7e007"
+      "path": "src/yice_agent/agent/loop.py",
+      "sha256": "ee2e9acc70d19af4717ceb3f54c944474e28a22c8521fd999e9cef9f3aa2bb1c"
     },
     {
       "path": "tests/unit/test_react_loop.py",
-      "sha256": "71f459077221ddeade416e795d8e29c579bbe4b0eee920279c980cd93bc0cd45"
+      "sha256": "11581de614533f9ac5051c0e393be8fdf7be05fd2283dc09d9e74daabc92d256"
     },
     {
       "path": "scripts/validation/react_loop.py",
-      "sha256": "b3d1aa7f33e31dd3b460ec3dbeed656c45f5e26bafa18ffa681322999222b3df"
+      "sha256": "4f1bb23ce4f98fcde8969568ba80b601ac560a60a42cd03b0970e028a69f7cef"
+    },
+    {
+      "path": "src/yice_agent/agent/task_state.py",
+      "sha256": "a12bd7f891c215676963ed8748bb1e2b05ff0c072427fd90fbdf61dac62d6709"
+    },
+    {
+      "path": "tests/unit/test_task_state.py",
+      "sha256": "25cad0877b21e8522287d563ebedbae5239216ef8b96b69d4e4ce3e40eca0c55"
+    },
+    {
+      "path": "scripts/validation/task_state.py",
+      "sha256": "d274f620165f809958d3037b62087d34b3557410e25873682d6f600ba02a4a42"
+    },
+    {
+      "path": "scripts/maintenance/finalize_rename.py",
+      "sha256": "fe8b1f24fb01026274f791acde73ace130348860a0857221c256bc0fc5b6ccaf"
+    },
+    {
+      "path": "docs/PROJECT_RENAME.md",
+      "sha256": "5694d477aea9b07c061924e46360788b15406e17bdd2af078e3a95c88dfad2f2"
     }
   ],
   "limitations": [
@@ -1106,7 +1375,9 @@
     "jev_optional_not_run",
     "legacy_runtime_dependent_gates_are_historical",
     "current_runtime_focused_12_cases_not_full_30_turn_repeat",
-    "initial_three_live_failures_retained_root_causes_unproven"
+    "initial_three_live_failures_retained_root_causes_unproven",
+    "structured_state_source_checks_do_not_prove_all_semantics",
+    "focused_task_state_is_not_full_30_turn_or_strategy_comparison"
   ],
   "amendments": [
     {
@@ -1197,11 +1468,63 @@
       "environment_packages": "declared_framework_dependencies_removed_installed_packages_left_untouched",
       "committed": false,
       "pushed": false
+    },
+    {
+      "date": "2026-10-10",
+      "scope": "user_selected_structured_task_state_improvement_only",
+      "baseline_commit": "1e4365bef5b1082c12c9e4e49eb046afd0c03cab",
+      "baseline_manifest_sha256": "f4328122b129f2ceef78a4286b0ab1961ec6976b47a87c8d3ba62acf03cac2f9",
+      "changed_source_files": [
+        "docs/SPEC.md",
+        "pyproject.toml",
+        "src/workflowops/agent/api.py",
+        "src/workflowops/agent/context.py",
+        "src/workflowops/agent/contracts.py",
+        "src/workflowops/agent/runtime.py",
+        "src/workflowops/agent/store.py",
+        "src/workflowops/static/agent.js",
+        "src/workflowops/static/index.html",
+        "src/workflowops/static/styles.css",
+        "tests/integration/test_agent_runtime.py",
+        "tests/integration/test_agent_store.py"
+      ],
+      "added_source_files": [
+        "src/workflowops/agent/task_state.py",
+        "tests/unit/test_task_state.py",
+        "scripts/validation/task_state.py"
+      ],
+      "prior_artifacts": "all100prior_artifact_hashes_unchanged",
+      "current_acceptance": "215Python18Node14mypy3focusedchannels_actual_browser_and_public_data_protection",
+      "fixture_scope": "six_synthetic_history_turns_per_channel_not_real_model_turns",
+      "failures": "all_prior_batches_retained_same_channel_recheck_no_provider_substitution",
+      "pricing": "verified_same_peak_rates_only_project_date_refreshed_credentials_preserved",
+      "docker_recovery": "user_manual_not_factory_reset_or_directory_move_by_agent",
+      "committed": false,
+      "pushed": false
+    },
+    {
+      "date": "2026-10-10",
+      "scope": "user_approved_yice_agent_project_rename",
+      "prior_manifest_sha256": "15a2e62baa07c98d630ce31c90215b9f98acc9571de4a3878b6e08560403b3d1",
+      "baseline_commit": "1e4365bef5b1082c12c9e4e49eb046afd0c03cab",
+      "prior_manifest_archive": ".runtime/v2/project-rename/pre-rename-source.zip::docs/validation/acceptance-manifest.json",
+      "old_root": "D:/Projects/WorkflowOps",
+      "new_root": "D:/Projects/YiceAgent",
+      "package": "yice_agent",
+      "prior_artifacts_verified_unchanged": 141,
+      "current_checks": "215Python18Node14mypy83format81AST889history",
+      "rag_scope": "one_read_only_query_real_gpu_embedding_and_reranker_existing_index",
+      "full_model_generation_reacceptance": "NOT_RUN",
+      "historical_gate_paths": "refer_to_pre_rename_namespace_do_not_reinterpret_as_current_live_results",
+      "data_credentials_and_user_git_refs": "preserved",
+      "git_metadata_finalization": "PENDING_USER_REOPEN_USER_APPROVED_SHARED_POINTER",
+      "committed": false,
+      "pushed": false
     }
   ],
-  "acceptance_basis": "legacy_v2_baseline_plus_handwritten_runtime_change_acceptance",
+  "acceptance_basis": "historical_v2_and_react_baselines_plus_structured_task_state_change_acceptance",
   "status_scope": "historical_baseline_and_current_change_scope_only",
-  "current_engine": "workflowops-react-v1",
+  "current_engine": "yice-agent-react-v1",
   "current_runtime_full_v2_reacceptance": "NOT_RUN",
-  "last_amended_at": "2026-10-09T13:29:58.655469+00:00"
+  "last_amended_at": "2026-10-10T09:27:25.115684+00:00"
 }

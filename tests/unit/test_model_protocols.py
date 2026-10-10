@@ -7,12 +7,12 @@ from decimal import Decimal
 import httpx
 import pytest
 
-from workflowops.config import Settings
-from workflowops.contracts import GenerationRequest, Message, ToolCall, ToolDefinition
-from workflowops.knowledge.answer import Quote, Selection, publish
-from workflowops.knowledge.retrieval import bm25, rrf
-from workflowops.model_store import ModelError, cost
-from workflowops.models.http import HttpAdapter, validate_request
+from yice_agent.config import Settings
+from yice_agent.contracts import GenerationRequest, Message, ToolCall, ToolDefinition
+from yice_agent.knowledge.answer import Quote, Selection, publish
+from yice_agent.knowledge.retrieval import bm25, rrf
+from yice_agent.model_store import ModelError, cost
+from yice_agent.models.http import HttpAdapter, validate_request
 
 
 def settings(**extra):

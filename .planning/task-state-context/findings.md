@@ -1,0 +1,4 @@
+# Findings
+Current protected(history) pins whole messages by regex. Summaries append validated excerpts and preserve all protected quotes, so superseded constraints can consume growing context. Full original history already persists in PG; Snapshot JSON and conversation/run ownership can support versioned task state without schema migrations. Existing Analysis call can propose sourced state changes without adding an unconditional model round trip. All action statuses must remain fresh business-service data.
+
+Review caught over-pruning of unclassified goal excerpts when a message also had a typed fact. Summary projection now removes only inactive source clauses, retaining unrelated excerpts. Private clause provenance is excluded from active model view to avoid reintroducing old amounts in from-old-to-new corrections. Two regression cases added.
