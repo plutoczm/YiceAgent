@@ -20,7 +20,7 @@
 | codex/models-rag | 第三阶段工作分支，阶段源码由v2.0.0-p3冻结 |
 | codex/directory-normalization | 本次重排工作分支；main 的原提交未覆盖 |
 
-`v2.0.0-p2` 保留此前基础与业务节点。`v2.0.0-p3` 冻结已验证的三模型与真实RAG；Agent上下文、记忆和完整场景验收仍未完成，不能标成完整 `v2.0.0`。这些节点和新增v2.0.0-p4均为本地阶段标签，未推送。
+`v2.0.0-p2` 保留此前基础与业务节点。`v2.0.0-p3` 冻结已验证的三模型与真实RAG；Agent上下文、记忆和完整场景验收仍未完成，不能标成完整 `v2.0.0`。这些阶段标签已于2026-10-10同步到GitHub，同步不改变各标签原有验收范围。
 
 历史 v1 原目录、来源 manifest、原 LICENSE 和 P1–P6 记录在 Git 中。当前保留的 `licenses/` 与 `docs/provenance/` 支持复用署名和追溯。Git 不包含数据库、模型、账号凭据或依赖环境，它们由既有资源管理。
 
@@ -71,3 +71,5 @@ git show f048f2949c101b2f8b869728d59c4254a6eb2049:docs/SPEC_V2.md
 用户授权同步当前忆策 Agent 到已存在的公开仓库 [plutoczm/YiceAgent](https://github.com/plutoczm/YiceAgent)。当前任务状态改进与目录/命名迁移保存为新提交，main仅允许从其原节点快进到当前代码；远程为origin，推送main和五个已有阶段标签，禁止force或上传refs/codex。旧版本通过原提交和标签还原，不复制源码目录。提交使用已确认的GitHub noreply身份，仅在命令进程内设置，不修改用户级Git配置。
 
 上传前检查当前文件和可达版本历史，凭据/数据库/环境/模型仍在ignored资源中。原模型验收范围保持；本次不执行新模型调用或宣称新生产能力。Git元数据物理搬迁仍按此前用户选择延后，共享Git指针不影响正常提交与同步。实际同步结果以remote main和标签查询为准。
+
+同步核对：当前源码提交 e11cc0f 已进入 GitHub main；五个原阶段标签的对象和目标提交均与本地一致。工作分支已切换为 main，并跟踪 origin/main；工作区不包含runtime和凭据。后续同步可在main使用git push，开发新功能仍使用codex/任务名分支。记录时的原验收committed/pushed字段保留其生成时意义，不据此覆盖真实Git状态。
